@@ -3,6 +3,7 @@ using System;
 using AspNetCoreApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AspNetCoreApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250301151930_SeedMembers")]
+    partial class SeedMembers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +58,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 1,
                             Email = "john.doe@example.com",
                             FirstName = "John",
-                            JoinedDate = new DateTime(2024, 2, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            JoinedDate = new DateTime(2025, 2, 19, 15, 19, 29, 516, DateTimeKind.Utc).AddTicks(3891),
                             LastName = "Doe"
                         },
                         new
@@ -63,7 +66,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 2,
                             Email = "jane.smith@example.com",
                             FirstName = "Jane",
-                            JoinedDate = new DateTime(2024, 2, 25, 0, 0, 0, 0, DateTimeKind.Utc),
+                            JoinedDate = new DateTime(2025, 2, 24, 15, 19, 29, 516, DateTimeKind.Utc).AddTicks(4209),
                             LastName = "Smith"
                         },
                         new
@@ -71,7 +74,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 3,
                             Email = "alice.johnson@example.com",
                             FirstName = "Alice",
-                            JoinedDate = new DateTime(2024, 2, 28, 0, 0, 0, 0, DateTimeKind.Utc),
+                            JoinedDate = new DateTime(2025, 2, 27, 15, 19, 29, 516, DateTimeKind.Utc).AddTicks(4215),
                             LastName = "Johnson"
                         });
                 });
