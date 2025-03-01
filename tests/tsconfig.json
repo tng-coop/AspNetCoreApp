@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "sourceMap": true,
+      "outDir": "dist",
+      "strict": true,
+      "types": ["node", "playwright/test"]  // 👈 THIS LINE IS REQUIRED
+    },
+    "include": ["**/*.ts"]
+  }
+  
