@@ -7,7 +7,14 @@ MSSQL_EDITION="Express"
 
 # Install required dependencies
 sudo apt update
-sudo apt install -y libldap2-dev curl
+sudo apt install -y libldap-common curl libldap2-dev
+
+# Manually install missing OpenLDAP libraries for Ubuntu 24.04 compatibility
+if ! dpkg -l | grep -q liblber-2.5-0; then
+    wget -q http://archive.ubuntu.com/ubuntu/pool/main/o/openldap/libldap-2.5-0_2.5.16+dfsg-0ubuntu0.22.04.1_amd64.deb
+    wget -q http://archive.ubuntu.com/ubuntu/pool/main/o/openldap/liblber-2.5-0_2.5.16+dfsg-0ubuntu0.22.04.1_amd64.deb
+    sudo dpkg -i liblber-2.5-0_*.deb libldap-2.5-0_*.deb || sudo apt install -f -y
+fi
 
 # Stop SQL Server if running
 if systemctl is-active --quiet mssql-server; then
