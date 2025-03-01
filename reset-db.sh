@@ -31,4 +31,7 @@ run_psql "CREATE DATABASE \"$DB_NAME\" OWNER \"$DB_USER\";"
 db_exists=$(run_psql "SELECT 1 FROM pg_database WHERE datname='$DB_NAME';")
 [ "$db_exists" = "1" ] && echo "✓ Database '$DB_NAME' exists." || { echo "✗ Database '$DB_NAME' missing!"; exit 1; }
 
+# Apply Entity Framework migrations
+dotnet ef database update
+
 echo "\n✅ Database reset and ready for ASP.NET Entity Framework!"
