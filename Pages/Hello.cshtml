@@ -1,0 +1,11 @@
+@page "{name?}"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello Razor!</title>
+</head>
+<body>
+    <h1>Hello, @RouteData.Values["name"]!</h1>
+    <p>The current server time is: @DateTime.Now</p>
+</body>
+</html>
