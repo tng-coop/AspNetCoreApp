@@ -1,11 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+
+using AspNetCoreApp.Data;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Existing API services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 👇 Add Razor Pages services
+// Add Razor Pages services
 builder.Services.AddRazorPages();
+
+// Add Entity Framework Core DbContext
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -16,13 +25,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// 👇 Serve static files and Razor Pages
+// Serve static files and Razor Pages
 app.UseStaticFiles();
 app.UseRouting();
 
 app.MapRazorPages(); // Razor pages endpoints
 
-// Your existing JSON API endpoint stays the same
+// Existing JSON API endpoint
 app.MapGet("/weatherforecast", () =>
 {
     var summaries = new[]
