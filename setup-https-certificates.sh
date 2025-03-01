@@ -2,6 +2,12 @@
 
 set -e
 
+
+# Run database setup first
+chmod +x ./reset-db.sh
+./reset-db.sh
+
+
 # Variables
 CERT_PASSWORD="yourpassword"
 CA_NAME="LocalhostDevelopmentCA"
