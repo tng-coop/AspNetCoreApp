@@ -40,6 +40,18 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Install dotnet-ef CLI
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Add dotnet tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Make reset-db.sh executable
+        run: chmod +x ./reset-db.sh
+
+      - name: Reset database and apply migrations
+        run: ./reset-db.sh
+
       - name: Set up Google Chrome
         uses: browser-actions/setup-chrome@v1
         with:
