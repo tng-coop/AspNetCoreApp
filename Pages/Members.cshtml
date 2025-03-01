@@ -1,0 +1,11 @@
+@page
+@model AspNetCoreApp.Pages.MembersModel
+
+<h1>Members List</h1>
+
+<ul>
+    @foreach (var member in Model.Members)
+    {
+        <li>@member.FirstName @member.LastName (@member.Email)</li>
+    }
+</ul>
