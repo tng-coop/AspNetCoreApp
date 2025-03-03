@@ -28,7 +28,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders()
-.AddDefaultUI(); // <-- Default UI handles cookies internally!
+.AddDefaultUI(); // Handles cookie authentication internally!
 
 // JWT configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -36,9 +36,9 @@ var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = IdentityConstants.ApplicationScheme;  // UI pages default to cookies
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // APIs default JWT
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;    // APIs default JWT
+    options.DefaultScheme = IdentityConstants.ApplicationScheme; // Cookies by default
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
@@ -54,7 +54,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// API-specific policy enforcing JWT only
+// Authorization policy explicitly for APIs (JWT only)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ApiPolicy", policy =>
