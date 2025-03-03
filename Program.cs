@@ -33,10 +33,10 @@ var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme; // Cookie scheme for Razor pages
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -49,6 +49,7 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true
     };
 });
+
 
 var app = builder.Build();
 
@@ -74,10 +75,9 @@ app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 
     return Results.Ok(members);
 })
-.RequireAuthorization() // Ensures JWT protection
+.RequireAuthorization()
 .WithName("GetMembersApi")
 .WithOpenApi();
-
 
 app.MapGet("/weatherforecast", () =>
 {
@@ -113,10 +113,8 @@ app.MapPost("/api/login", async (
     if (!result.Succeeded)
         return Results.Unauthorized();
 
-    // Issue Cookie (for server-side HTTP pages)
     await signInManager.SignInAsync(user, isPersistent: true);
 
-    // Generate JWT Token
     var tokenHandler = new JwtSecurityTokenHandler();
     var tokenDescriptor = new SecurityTokenDescriptor
     {
@@ -138,7 +136,6 @@ app.MapPost("/api/login", async (
 })
 .WithName("ApiLogin")
 .WithOpenApi();
-
 
 using (var scope = app.Services.CreateScope())
 {
