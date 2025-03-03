@@ -2,11 +2,9 @@
 
 set -e
 
-
 # Run database setup first
 chmod +x ./reset-db.sh
 ./reset-db.sh
-
 
 # Variables
 CERT_PASSWORD="yourpassword"
@@ -72,10 +70,22 @@ cat > appsettings.json <<EOF
 }
 EOF
 
-# Kill existing server
+# Kill existing server gracefully
 existing_pid=$(lsof -t -i:5001 || true)
 if [ -n "$existing_pid" ]; then
-    kill -9 $existing_pid && echo "✅ Existing server on port 5001 terminated."
+    kill -SIGTERM "$existing_pid"
+    TIMEOUT=10
+    while kill -0 "$existing_pid" >/dev/null 2>&1; do
+        if [ $TIMEOUT -le 0 ]; then
+            echo "⚠️ Server didn't stop gracefully; forcing shutdown."
+            kill -9 "$existing_pid"
+            break
+        fi
+        echo "Waiting for graceful shutdown..."
+        sleep 1
+        TIMEOUT=$((TIMEOUT - 1))
+    done
+    echo "✅ Existing server on port 5001 terminated gracefully."
 fi
 
 # Start ASP.NET Core app
@@ -87,7 +97,7 @@ TIMEOUT=30
 until curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html &>/dev/null; do
     if [ "$TIMEOUT" -le 0 ]; then
         echo "❌ Server did not start within expected time."
-        kill $SERVER_PID || true
+        kill "$SERVER_PID" || true
         exit 1
     fi
     echo "Waiting for server to start..."
@@ -97,10 +107,10 @@ done
 echo "✅ ASP.NET Core server started successfully."
 
 # Verify Swagger UI
-curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && echo "✅ Swagger UI verified via curl." || { echo "❌ Swagger UI failed via curl."; exit 1; }
+curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && echo "✅ Swagger UI verified via curl." || { echo "❌ Swagger UI failed via curl."; kill "$SERVER_PID"; exit 1; }
 
 # Verify Swagger UI via Chrome
-google-chrome --headless --disable-gpu --no-sandbox --dump-dom https://localhost:5001/swagger/index.html | grep -q 'swagger-ui' && echo "✅ Swagger UI verified via Chrome headless." || { echo "❌ Swagger UI failed via Chrome headless."; kill $SERVER_PID || true; exit 1; }
+google-chrome --headless --disable-gpu --no-sandbox --dump-dom https://localhost:5001/swagger/index.html | grep -q 'swagger-ui' && echo "✅ Swagger UI verified via Chrome headless." || { echo "❌ Swagger UI failed via Chrome headless."; kill "$SERVER_PID"; exit 1; }
 
 # 👇 Now continue with Playwright setup and tests:
 
@@ -113,9 +123,11 @@ if npx playwright test; then
     echo "✅ Playwright tests passed."
 else
     echo "❌ Playwright tests failed."
-    kill $SERVER_PID || true
+    kill "$SERVER_PID" || true
     exit 1
 fi
 
-# Cleanup
-kill $SERVER_PID && echo "✅ ASP.NET Core server stopped."
+# Graceful cleanup
+kill -SIGTERM "$SERVER_PID"
+wait "$SERVER_PID" || true
+echo "✅ ASP.NET Core server stopped gracefully."
