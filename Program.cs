@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
+    options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
     options.Password.RequireUppercase = true;
@@ -26,14 +27,15 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+.AddDefaultTokenProviders()
+.AddDefaultUI();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme; // Cookie scheme for Razor pages
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
     options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -49,7 +51,6 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true
     };
 });
-
 
 var app = builder.Build();
 
@@ -81,11 +82,7 @@ app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 
 app.MapGet("/weatherforecast", () =>
 {
-    var summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool",
-        "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+    var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
 
     return Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast(
@@ -102,7 +99,6 @@ app.MapPost("/api/login", async (
     SignInManager<IdentityUser> signInManager,
     UserManager<IdentityUser> userManager,
     IConfiguration config,
-    HttpContext httpContext,
     LoginRequest loginRequest) =>
 {
     var user = await userManager.FindByEmailAsync(loginRequest.Email);
@@ -112,8 +108,6 @@ app.MapPost("/api/login", async (
     var result = await signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, lockoutOnFailure: true);
     if (!result.Succeeded)
         return Results.Unauthorized();
-
-    await signInManager.SignInAsync(user, isPersistent: true);
 
     var tokenHandler = new JwtSecurityTokenHandler();
     var tokenDescriptor = new SecurityTokenDescriptor

@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AspNetCoreApp.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialIdentitySetup : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -176,7 +176,7 @@ namespace AspNetCoreApp.Migrations
             migrationBuilder.InsertData(
                 table: "Members",
                 columns: new[] { "Id", "Email", "FirstName", "JoinedDate", "LastName" },
-                values: new object[] { 1, "john.doe@example.com", "John", new DateTime(2025, 3, 3, 6, 7, 48, 630, DateTimeKind.Utc).AddTicks(3825), "Doe" });
+                values: new object[] { 1, "john.doe@example.com", "John", new DateTime(2025, 3, 3, 13, 32, 40, 376, DateTimeKind.Utc).AddTicks(2240), "Doe" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

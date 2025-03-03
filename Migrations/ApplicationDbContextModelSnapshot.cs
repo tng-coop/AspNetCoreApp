@@ -55,7 +55,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 1,
                             Email = "john.doe@example.com",
                             FirstName = "John",
-                            JoinedDate = new DateTime(2025, 3, 3, 6, 7, 48, 630, DateTimeKind.Utc).AddTicks(3825),
+                            JoinedDate = new DateTime(2025, 3, 3, 13, 32, 40, 376, DateTimeKind.Utc).AddTicks(2240),
                             LastName = "Doe"
                         });
                 });
