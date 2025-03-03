@@ -11,10 +11,6 @@ for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Devel
   [ -f $file ] && echo "✅ $file exists." || { echo "❌ $file missing."; exit 1; }
 done
 
-# --- Detect Primary IPv4 Address ---
-PRIMARY_IP=$(hostname -I | awk '{print $1}')
-echo "✅ Detected primary IP: ${PRIMARY_IP}"
-
 # --- Reset Database ---
 chmod +x ./reset-db.sh
 ./reset-db.sh
@@ -42,10 +38,10 @@ openssl req -newkey rsa:4096 -nodes \
   -keyout localhost.key -out localhost.csr \
   -subj "/CN=localhost"
 
-# --- Sign cert with SAN including localhost and detected IP ---
+# --- Sign cert with SAN for localhost only ---
 openssl x509 -req -in localhost.csr -CA localhost-ca.crt -CAkey localhost-ca.key \
   -CAcreateserial -out localhost.crt -days 3650 -sha256 \
-  -extfile <(echo "subjectAltName=DNS:localhost,IP:${PRIMARY_IP}")
+  -extfile <(echo "subjectAltName=DNS:localhost")
 
 # --- Create PFX and PEM certificates ---
 openssl pkcs12 -export -out localhost.pfx -inkey localhost.key \
