@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace AspNetCoreApp.Pages;
 
-public class IndexModel : PageModel
+public class RazorPageModel : PageModel
 {
     public void OnGet()
     {

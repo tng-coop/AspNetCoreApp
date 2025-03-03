@@ -30,6 +30,17 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddDefaultTokenProviders()
 .AddDefaultUI(); // Handles cookie authentication internally!
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+    options.LogoutPath = "/Identity/Account/Logout";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    
+    // ✅ Add this line to set the default post-login redirect
+    options.ReturnUrlParameter = "returnUrl";
+});
+
+
 // JWT configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
