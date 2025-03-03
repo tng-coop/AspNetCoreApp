@@ -76,9 +76,16 @@ app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 
     return Results.Ok(members);
 })
-.RequireAuthorization()
+.RequireAuthorization(policy => policy
+    .RequireAuthenticatedUser()
+    .AddAuthenticationSchemes(
+        JwtBearerDefaults.AuthenticationScheme,
+        IdentityConstants.ApplicationScheme
+    ))
 .WithName("GetMembersApi")
 .WithOpenApi();
+
+
 
 app.MapGet("/weatherforecast", () =>
 {
