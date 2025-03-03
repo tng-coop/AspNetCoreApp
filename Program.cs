@@ -66,6 +66,19 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
+app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
+{
+    var members = await dbContext.Members
+        .Select(m => new { m.FirstName, m.LastName, m.Email })
+        .ToListAsync();
+
+    return Results.Ok(members);
+})
+.RequireAuthorization() // Ensures JWT protection
+.WithName("GetMembersApi")
+.WithOpenApi();
+
+
 app.MapGet("/weatherforecast", () =>
 {
     var summaries = new[]
