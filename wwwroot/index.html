@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Component SPA with JWT</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+        .hidden { display: none; }
+        input, button { padding: 0.5rem; margin-bottom: 1rem; width: 100%; box-sizing: border-box; }
+        button { cursor: pointer; }
+        .protected-content { background: #f0f4f8; padding: 1rem; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<login-component></login-component>
+<protected-component class="hidden"></protected-component>
+
+<template id="login-template">
+    <form>
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Log In</button>
+        <p id="error" style="color:red;"></p>
+    </form>
+</template>
+
+<template id="protected-template">
+    <div>
+        <h2>Protected Content</h2>
+        <button id="fetch-content">Fetch Protected Members</button>
+        <pre class="protected-content" id="content"></pre>
+        <button id="logout">Log Out</button>
+    </div>
+</template>
+
+<script>
+    class LoginComponent extends HTMLElement {
+        connectedCallback() {
+            this.attachShadow({ mode: 'open' });
+            this.shadowRoot.append(document.getElementById('login-template').content.cloneNode(true));
+
+            this.shadowRoot.querySelector('form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = this.shadowRoot.getElementById('email').value;
+                const password = this.shadowRoot.getElementById('password').value;
+
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('token', data.token);
+                    this.dispatchEvent(new CustomEvent('logged-in', { bubbles: true }));
+                } else {
+                    this.shadowRoot.getElementById('error').textContent = 'Invalid credentials!';
+                }
+            });
+        }
+    }
+
+    class ProtectedComponent extends HTMLElement {
+        connectedCallback() {
+            this.attachShadow({ mode: 'open' });
+            this.shadowRoot.append(document.getElementById('protected-template').content.cloneNode(true));
+
+            this.shadowRoot.getElementById('fetch-content').onclick = async () => {
+                const token = localStorage.getItem('token');
+                const res = await fetch('/Members', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok) {
+                    const data = await res.text();
+                    this.shadowRoot.getElementById('content').textContent = data;
+                } else {
+                    this.shadowRoot.getElementById('content').textContent = 'Unauthorized!';
+                }
+            };
+
+            this.shadowRoot.getElementById('logout').onclick = () => {
+                localStorage.removeItem('token');
+                this.dispatchEvent(new CustomEvent('logged-out', { bubbles: true }));
+            };
+        }
+    }
+
+    customElements.define('login-component', LoginComponent);
+    customElements.define('protected-component', ProtectedComponent);
+
+    const loginComp = document.querySelector('login-component');
+    const protectedComp = document.querySelector('protected-component');
+
+    const updateUI = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            loginComp.classList.add('hidden');
+            protectedComp.classList.remove('hidden');
+        } else {
+            loginComp.classList.remove('hidden');
+            protectedComp.classList.add('hidden');
+        }
+    };
+
+    document.body.addEventListener('logged-in', updateUI);
+    document.body.addEventListener('logged-out', updateUI);
+
+    updateUI();
+</script>
+
+</body>
+</html>
