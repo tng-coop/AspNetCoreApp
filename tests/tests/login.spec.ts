@@ -11,4 +11,5 @@ test('Admin Login API', async ({ request }) => {
   expect(response.status()).toBe(200);
   const json = await response.json();
   expect(json.message).toBe('Login successful');
+  expect(json.token).toBeDefined();
 });

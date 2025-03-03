@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,15 +29,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-
-var secret = jwtSettings["Secret"] 
-    ?? throw new InvalidOperationException("JWT Secret is not configured.");
-var issuer = jwtSettings["Issuer"] 
-    ?? throw new InvalidOperationException("JWT Issuer is not configured.");
-var audience = jwtSettings["Audience"] 
-    ?? throw new InvalidOperationException("JWT Audience is not configured.");
-
-var key = Encoding.UTF8.GetBytes(secret);
+var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -49,9 +43,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
-        ValidIssuer = issuer,
+        ValidIssuer = jwtSettings["Issuer"],
         ValidateAudience = true,
-        ValidAudience = audience,
+        ValidAudience = jwtSettings["Audience"],
         ValidateLifetime = true
     };
 });
@@ -80,15 +74,13 @@ app.MapGet("/weatherforecast", () =>
         "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    var forecast = Enumerable.Range(1, 5).Select(index =>
+    return Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast(
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
             Random.Shared.Next(-20, 55),
             summaries[Random.Shared.Next(summaries.Length)]
         ))
         .ToArray();
-
-    return forecast;
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
@@ -96,6 +88,7 @@ app.MapGet("/weatherforecast", () =>
 app.MapPost("/api/login", async (
     SignInManager<IdentityUser> signInManager,
     UserManager<IdentityUser> userManager,
+    IConfiguration config,
     LoginRequest loginRequest) =>
 {
     var user = await userManager.FindByEmailAsync(loginRequest.Email);
@@ -106,7 +99,24 @@ app.MapPost("/api/login", async (
     if (!result.Succeeded)
         return Results.Unauthorized();
 
-    return Results.Ok(new { Message = "Login successful" });
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(new Claim[]
+        {
+            new Claim(ClaimTypes.Email, user.Email!)
+        }),
+        Expires = DateTime.UtcNow.AddDays(7),
+        Issuer = config["JwtSettings:Issuer"],
+        Audience = config["JwtSettings:Audience"],
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(config["JwtSettings:Secret"]!)), SecurityAlgorithms.HmacSha256Signature)
+    };
+
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    var jwt = tokenHandler.WriteToken(token);
+
+    return Results.Ok(new { Message = "Login successful", Token = jwt });
 })
 .WithName("ApiLogin")
 .WithOpenApi();
