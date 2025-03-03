@@ -55,7 +55,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 1,
                             Email = "simon.peter@example.com",
                             FirstName = "Simon",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8461),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(491),
                             LastName = "Peter"
                         },
                         new
@@ -63,7 +63,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 2,
                             Email = "andrew@example.com",
                             FirstName = "Andrew",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8463),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(492),
                             LastName = ""
                         },
                         new
@@ -71,7 +71,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 3,
                             Email = "james.zebedee@example.com",
                             FirstName = "James",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8464),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(493),
                             LastName = "son of Zebedee"
                         },
                         new
@@ -79,7 +79,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 4,
                             Email = "john.zebedee@example.com",
                             FirstName = "John",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8465),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(494),
                             LastName = "son of Zebedee"
                         },
                         new
@@ -87,7 +87,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 5,
                             Email = "philip@example.com",
                             FirstName = "Philip",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8466),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(495),
                             LastName = ""
                         },
                         new
@@ -95,7 +95,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 6,
                             Email = "bartholomew@example.com",
                             FirstName = "Bartholomew",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8467),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(496),
                             LastName = ""
                         },
                         new
@@ -103,7 +103,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 7,
                             Email = "thomas@example.com",
                             FirstName = "Thomas",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8468),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(497),
                             LastName = ""
                         },
                         new
@@ -111,7 +111,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 8,
                             Email = "matthew.levi@example.com",
                             FirstName = "Matthew",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8468),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(498),
                             LastName = "Levi"
                         },
                         new
@@ -119,7 +119,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 9,
                             Email = "james.alphaeus@example.com",
                             FirstName = "James",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8469),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(498),
                             LastName = "son of Alphaeus"
                         },
                         new
@@ -127,7 +127,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 10,
                             Email = "thaddaeus@example.com",
                             FirstName = "Thaddaeus",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8470),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(499),
                             LastName = ""
                         },
                         new
@@ -135,7 +135,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 11,
                             Email = "simon.zealot@example.com",
                             FirstName = "Simon",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8471),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(500),
                             LastName = "the Zealot"
                         },
                         new
@@ -143,7 +143,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 12,
                             Email = "judas.iscariot@example.com",
                             FirstName = "Judas",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8472),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(501),
                             LastName = "Iscariot"
                         },
                         new
@@ -151,7 +151,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 13,
                             Email = "matthias@example.com",
                             FirstName = "Matthias",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8473),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(502),
                             LastName = ""
                         },
                         new
@@ -159,7 +159,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 14,
                             Email = "paul@example.com",
                             FirstName = "Paul",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8474),
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(503),
                             LastName = ""
                         });
                 });

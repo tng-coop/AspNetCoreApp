@@ -180,20 +180,20 @@ namespace AspNetCoreApp.Migrations
                 columns: new[] { "Id", "Email", "FirstName", "JoinedDate", "LastName" },
                 values: new object[,]
                 {
-                    { 1, "simon.peter@example.com", "Simon", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8461), "Peter" },
-                    { 2, "andrew@example.com", "Andrew", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8463), "" },
-                    { 3, "james.zebedee@example.com", "James", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8464), "son of Zebedee" },
-                    { 4, "john.zebedee@example.com", "John", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8465), "son of Zebedee" },
-                    { 5, "philip@example.com", "Philip", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8466), "" },
-                    { 6, "bartholomew@example.com", "Bartholomew", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8467), "" },
-                    { 7, "thomas@example.com", "Thomas", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8468), "" },
-                    { 8, "matthew.levi@example.com", "Matthew", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8468), "Levi" },
-                    { 9, "james.alphaeus@example.com", "James", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8469), "son of Alphaeus" },
-                    { 10, "thaddaeus@example.com", "Thaddaeus", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8470), "" },
-                    { 11, "simon.zealot@example.com", "Simon", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8471), "the Zealot" },
-                    { 12, "judas.iscariot@example.com", "Judas", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8472), "Iscariot" },
-                    { 13, "matthias@example.com", "Matthias", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8473), "" },
-                    { 14, "paul@example.com", "Paul", new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8474), "" }
+                    { 1, "simon.peter@example.com", "Simon", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(491), "Peter" },
+                    { 2, "andrew@example.com", "Andrew", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(492), "" },
+                    { 3, "james.zebedee@example.com", "James", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(493), "son of Zebedee" },
+                    { 4, "john.zebedee@example.com", "John", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(494), "son of Zebedee" },
+                    { 5, "philip@example.com", "Philip", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(495), "" },
+                    { 6, "bartholomew@example.com", "Bartholomew", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(496), "" },
+                    { 7, "thomas@example.com", "Thomas", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(497), "" },
+                    { 8, "matthew.levi@example.com", "Matthew", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(498), "Levi" },
+                    { 9, "james.alphaeus@example.com", "James", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(498), "son of Alphaeus" },
+                    { 10, "thaddaeus@example.com", "Thaddaeus", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(499), "" },
+                    { 11, "simon.zealot@example.com", "Simon", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(500), "the Zealot" },
+                    { 12, "judas.iscariot@example.com", "Judas", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(501), "Iscariot" },
+                    { 13, "matthias@example.com", "Matthias", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(502), "" },
+                    { 14, "paul@example.com", "Paul", new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(503), "" }
                 });
 
             migrationBuilder.CreateIndex(
