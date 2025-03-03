@@ -102,6 +102,7 @@ app.MapPost("/api/login", async (
     SignInManager<IdentityUser> signInManager,
     UserManager<IdentityUser> userManager,
     IConfiguration config,
+    HttpContext httpContext,
     LoginRequest loginRequest) =>
 {
     var user = await userManager.FindByEmailAsync(loginRequest.Email);
@@ -112,6 +113,10 @@ app.MapPost("/api/login", async (
     if (!result.Succeeded)
         return Results.Unauthorized();
 
+    // Issue Cookie (for server-side HTTP pages)
+    await signInManager.SignInAsync(user, isPersistent: true);
+
+    // Generate JWT Token
     var tokenHandler = new JwtSecurityTokenHandler();
     var tokenDescriptor = new SecurityTokenDescriptor
     {
@@ -133,6 +138,7 @@ app.MapPost("/api/login", async (
 })
 .WithName("ApiLogin")
 .WithOpenApi();
+
 
 using (var scope = app.Services.CreateScope())
 {
