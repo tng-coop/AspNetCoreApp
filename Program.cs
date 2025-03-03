@@ -40,16 +40,28 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapRazorPages();
+
+// Restore WeatherForecast endpoint
 app.MapGet("/weatherforecast", () =>
 {
-    var summaries = new[] { "Freezing", "Chilly", "Cool", "Warm", "Hot" };
-    return Enumerable.Range(1, 5).Select(index => new
+    var summaries = new[]
     {
-        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-        TemperatureC = Random.Shared.Next(-20, 55),
-        Summary = summaries[Random.Shared.Next(summaries.Length)]
-    });
-}).WithName("GetWeatherForecast").WithOpenApi();
+        "Freezing", "Bracing", "Chilly", "Cool",
+        "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+    var forecast = Enumerable.Range(1, 5).Select(index =>
+        new WeatherForecast(
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+        .ToArray();
+
+    return forecast;
+})
+.WithName("GetWeatherForecast")
+.WithOpenApi();
 
 // Initialize roles and admin user
 using (var scope = app.Services.CreateScope())
@@ -58,3 +70,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
