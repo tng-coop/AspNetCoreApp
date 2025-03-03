@@ -28,15 +28,17 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders()
-.AddDefaultUI();
+.AddDefaultUI(); // <-- Default UI handles cookies internally!
 
+// JWT configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;  // UI pages default to cookies
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // APIs default JWT
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;    // APIs default JWT
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
@@ -50,6 +52,14 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         ValidateLifetime = true
     };
+});
+
+// API-specific policy enforcing JWT only
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiPolicy", policy =>
+        policy.RequireAuthenticatedUser()
+              .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));
 });
 
 var app = builder.Build();
@@ -68,6 +78,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
+// JWT-authenticated API endpoint (JWT ONLY!)
 app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 {
     var members = await dbContext.Members
@@ -76,17 +87,11 @@ app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 
     return Results.Ok(members);
 })
-.RequireAuthorization(policy => policy
-    .RequireAuthenticatedUser()
-    .AddAuthenticationSchemes(
-        JwtBearerDefaults.AuthenticationScheme,
-        IdentityConstants.ApplicationScheme
-    ))
+.RequireAuthorization("ApiPolicy")
 .WithName("GetMembersApi")
 .WithOpenApi();
 
-
-
+// Weather forecast endpoint (public)
 app.MapGet("/weatherforecast", () =>
 {
     var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
@@ -102,6 +107,7 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+// JWT Login endpoint
 app.MapPost("/api/login", async (
     SignInManager<IdentityUser> signInManager,
     UserManager<IdentityUser> userManager,
@@ -138,6 +144,7 @@ app.MapPost("/api/login", async (
 .WithName("ApiLogin")
 .WithOpenApi();
 
+// Initialize DB seed data
 using (var scope = app.Services.CreateScope())
 {
     await DbInitializer.InitializeAsync(scope.ServiceProvider);
