@@ -17,7 +17,7 @@ namespace AspNetCoreApp.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -55,24 +55,8 @@ namespace AspNetCoreApp.Migrations
                             Id = 1,
                             Email = "john.doe@example.com",
                             FirstName = "John",
-                            JoinedDate = new DateTime(2024, 2, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            JoinedDate = new DateTime(2025, 3, 3, 6, 7, 48, 630, DateTimeKind.Utc).AddTicks(3825),
                             LastName = "Doe"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Email = "jane.smith@example.com",
-                            FirstName = "Jane",
-                            JoinedDate = new DateTime(2024, 2, 25, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LastName = "Smith"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Email = "alice.johnson@example.com",
-                            FirstName = "Alice",
-                            JoinedDate = new DateTime(2024, 2, 28, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LastName = "Johnson"
                         });
                 });
 

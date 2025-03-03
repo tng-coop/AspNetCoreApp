@@ -1,10 +1,10 @@
-using AspNetCoreApp.Data;
 using Microsoft.AspNetCore.Identity;
+using AspNetCoreApp.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Existing API services
+// Existing services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddRazorPages();
@@ -12,7 +12,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Identity configuration with secure defaults
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -20,9 +19,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
-
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -39,9 +35,11 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapRazorPages();
 
-// Restore WeatherForecast endpoint
 app.MapGet("/weatherforecast", () =>
 {
     var summaries = new[]
@@ -63,7 +61,24 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-// Initialize roles and admin user
+app.MapPost("/api/login", async (
+    SignInManager<IdentityUser> signInManager,
+    UserManager<IdentityUser> userManager,
+    LoginRequest loginRequest) =>
+{
+    var user = await userManager.FindByEmailAsync(loginRequest.Email);
+    if (user is null)
+        return Results.Unauthorized();
+
+    var result = await signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, lockoutOnFailure: true);
+    if (!result.Succeeded)
+        return Results.Unauthorized();
+
+    return Results.Ok(new { Message = "Login successful" });
+})
+.WithName("ApiLogin")
+.WithOpenApi();
+
 using (var scope = app.Services.CreateScope())
 {
     await DbInitializer.InitializeAsync(scope.ServiceProvider);
@@ -75,3 +90,5 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+record LoginRequest(string Email, string Password);

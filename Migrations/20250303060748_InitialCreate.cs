@@ -4,12 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace AspNetCoreApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -178,12 +176,7 @@ namespace AspNetCoreApp.Migrations
             migrationBuilder.InsertData(
                 table: "Members",
                 columns: new[] { "Id", "Email", "FirstName", "JoinedDate", "LastName" },
-                values: new object[,]
-                {
-                    { 1, "john.doe@example.com", "John", new DateTime(2024, 2, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Doe" },
-                    { 2, "jane.smith@example.com", "Jane", new DateTime(2024, 2, 25, 0, 0, 0, 0, DateTimeKind.Utc), "Smith" },
-                    { 3, "alice.johnson@example.com", "Alice", new DateTime(2024, 2, 28, 0, 0, 0, 0, DateTimeKind.Utc), "Johnson" }
-                });
+                values: new object[] { 1, "john.doe@example.com", "John", new DateTime(2025, 3, 3, 6, 7, 48, 630, DateTimeKind.Utc).AddTicks(3825), "Doe" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
