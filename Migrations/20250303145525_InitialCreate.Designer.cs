@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AspNetCoreApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250303133241_InitialIdentitySetup")]
-    partial class InitialIdentitySetup
+    [Migration("20250303145525_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,7 +58,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 1,
                             Email = "john.doe@example.com",
                             FirstName = "John",
-                            JoinedDate = new DateTime(2025, 3, 3, 13, 32, 40, 376, DateTimeKind.Utc).AddTicks(2240),
+                            JoinedDate = new DateTime(2025, 3, 3, 14, 55, 24, 874, DateTimeKind.Utc).AddTicks(4297),
                             LastName = "Doe"
                         });
                 });
