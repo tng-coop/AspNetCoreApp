@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AspNetCoreApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250303145525_InitialCreate")]
+    [Migration("20250303150559_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -56,10 +56,114 @@ namespace AspNetCoreApp.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "john.doe@example.com",
+                            Email = "simon.peter@example.com",
+                            FirstName = "Simon",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8461),
+                            LastName = "Peter"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "andrew@example.com",
+                            FirstName = "Andrew",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8463),
+                            LastName = ""
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Email = "james.zebedee@example.com",
+                            FirstName = "James",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8464),
+                            LastName = "son of Zebedee"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Email = "john.zebedee@example.com",
                             FirstName = "John",
-                            JoinedDate = new DateTime(2025, 3, 3, 14, 55, 24, 874, DateTimeKind.Utc).AddTicks(4297),
-                            LastName = "Doe"
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8465),
+                            LastName = "son of Zebedee"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Email = "philip@example.com",
+                            FirstName = "Philip",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8466),
+                            LastName = ""
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Email = "bartholomew@example.com",
+                            FirstName = "Bartholomew",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8467),
+                            LastName = ""
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Email = "thomas@example.com",
+                            FirstName = "Thomas",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8468),
+                            LastName = ""
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Email = "matthew.levi@example.com",
+                            FirstName = "Matthew",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8468),
+                            LastName = "Levi"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Email = "james.alphaeus@example.com",
+                            FirstName = "James",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8469),
+                            LastName = "son of Alphaeus"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Email = "thaddaeus@example.com",
+                            FirstName = "Thaddaeus",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8470),
+                            LastName = ""
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Email = "simon.zealot@example.com",
+                            FirstName = "Simon",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8471),
+                            LastName = "the Zealot"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Email = "judas.iscariot@example.com",
+                            FirstName = "Judas",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8472),
+                            LastName = "Iscariot"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Email = "matthias@example.com",
+                            FirstName = "Matthias",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8473),
+                            LastName = ""
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Email = "paul@example.com",
+                            FirstName = "Paul",
+                            JoinedDate = new DateTime(2025, 3, 3, 15, 5, 58, 653, DateTimeKind.Utc).AddTicks(8474),
+                            LastName = ""
                         });
                 });
 

@@ -11,7 +11,7 @@ chmod +x ./clear-db.sh
 dotnet ef database update
 
 # Verify seeded data
-EXPECTED_EMAIL="john.doe@example.com"
+EXPECTED_EMAIL="simon.peter@example.com"
 ACTUAL_EMAIL=$(PGPASSWORD="postgres" psql -X -A -t \
   --host="127.0.0.1" \
   --port="5432" \

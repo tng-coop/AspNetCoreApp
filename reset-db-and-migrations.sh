@@ -38,7 +38,7 @@ dotnet ef database update
 echo "✅ Database updated with new migrations."
 
 # --- Verify seed data ---
-EXPECTED_EMAIL="john.doe@example.com"
+EXPECTED_EMAIL="simon.peter@example.com"
 ACTUAL_EMAIL=$(run_psql 'SELECT "Email" FROM "Members" WHERE "Id"=1;' "$DB_NAME")
 
 if [ "$ACTUAL_EMAIL" = "$EXPECTED_EMAIL" ]; then
