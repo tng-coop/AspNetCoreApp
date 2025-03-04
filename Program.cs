@@ -159,11 +159,15 @@ app.MapPost("/api/login", async (
 .WithName("ApiLogin")
 .WithOpenApi();
 
-// Initialize DB seed data
+// Initialize DB seed data and apply migrations
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.MigrateAsync(); // ← this applies migrations automatically
+
     await DbInitializer.InitializeAsync(scope.ServiceProvider);
 }
+
 
 app.Run();
 
