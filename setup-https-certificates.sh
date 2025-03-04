@@ -49,21 +49,21 @@ openssl pkcs12 -export -out localhost.pfx -inkey localhost.key \
 openssl pkcs12 -in localhost.pfx -out localhost.pem -nodes -passin pass:"${CERT_PASSWORD}"
 
 # --- Update appsettings.json explicitly ---
-cat > appsettings.json <<EOF
-{
-  "Kestrel": {
-    "Endpoints": {
-      "Https": {
-        "Url": "https://0.0.0.0:5001",
-        "Certificate": {
-          "Path": "localhost.pfx",
-          "Password": "${CERT_PASSWORD}"
-        }
-      }
-    }
-  }
-}
-EOF
+# cat > appsettings.json <<EOF
+# {
+#   "Kestrel": {
+#     "Endpoints": {
+#       "Https": {
+#         "Url": "https://0.0.0.0:5001",
+#         "Certificate": {
+#           "Path": "localhost.pfx",
+#           "Password": "${CERT_PASSWORD}"
+#         }
+#       }
+#     }
+#   }
+# }
+# EOF
 
 # --- Gracefully terminate existing server ---
 existing_pid=$(lsof -t -i:5001 || true)
