@@ -13,6 +13,7 @@ required_files=(
     "./Areas/Identity/Pages/Account/*.cshtml.cs"
     "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml"
     "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml.cs"
+    "./*.sh"
 )
 
 
