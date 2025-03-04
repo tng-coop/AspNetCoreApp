@@ -17,6 +17,7 @@ required_files=(
     "./*.env"
     "./appsettings.json"
     "./appsettings.*.json"
+    "./Dockerfile"
 )
 
 # Display contents of required files
