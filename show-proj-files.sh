@@ -14,6 +14,7 @@ required_files=(
     "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml"
     "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml.cs"
     "./*.sh"
+    "./*.env"
     "./appsettings.json"
     "./appsettings.*.json"
 )
