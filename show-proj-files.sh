@@ -9,7 +9,12 @@ required_files=(
     "./Models/*.cs"
     "./Data/*.cs"
     "./wwwroot/index.html"
+    "./Areas/Identity/Pages/Account/*.cshtml"
+    "./Areas/Identity/Pages/Account/*.cshtml.cs"
+    "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml"
+    "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml.cs"
 )
+
 
 # Display contents of required files
 echo "=== Required Files Content ==="
