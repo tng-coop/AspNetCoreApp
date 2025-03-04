@@ -90,5 +90,17 @@
     </environment>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const jwtTokenElement = document.getElementById('jwt-token');
+        if (jwtToken && jwtToken.value.length > 0) {
+            localStorage.setItem('token', jwtToken.value);
+            jwtToken.remove(); // Clean up after storing
+            console.log('JWT token stored in localStorage.');
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -5,3 +5,12 @@
 }
 
 <h1>Welcome to the Razor Page!</h1>
+
+@{
+    var jwtToken = ViewData["JwtToken"] as string;
+}
+
+@if (!string.IsNullOrEmpty(jwtToken))
+{
+    <input type="hidden" id="jwtToken" value="@jwtToken" />
+}
