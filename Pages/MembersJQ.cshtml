@@ -1,0 +1,41 @@
+@page
+@model AspNetCoreApp.Pages.MembersJQModel
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<h1>Members List (jQuery)</h1>
+
+<button id="fetch-members-btn">Fetch Members via jQuery</button>
+<ul id="members-list"></ul>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#fetch-members-btn').click(function () {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Please log in first!');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/api/members',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    success: function (members) {
+                        const $list = $('#members-list');
+                        $list.empty();
+                        members.forEach(member => {
+                            $list.append(`<li>${member.firstName} ${member.lastName} (${member.email})</li>`);
+                        });
+                    },
+                    error: function () {
+                        alert('Failed to fetch members. Check your authentication status.');
+                    }
+                });
+            });
+        });
+    </script>
+}

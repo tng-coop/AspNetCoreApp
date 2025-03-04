@@ -6,11 +6,11 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'list',
+  reporter: 'html',
   use: {
     baseURL: 'https://localhost:5001', // recommended best practice
     ignoreHTTPSErrors: true, // enables self-signed HTTPS
-    trace: 'on-first-retry',
+    trace: 'on',
   },
   projects: [
     {
