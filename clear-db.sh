@@ -2,7 +2,7 @@
 set -e  # Exit on error
 
 # --- Configuration ---
-DB_NAME="coop-members"
+DB_NAME="asp-members"
 DB_USER="postgres"
 DB_PASSWORD="postgres" # Development only
 

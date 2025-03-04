@@ -14,8 +14,9 @@ required_files=(
     "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml"
     "./Areas/Identity/Pages/Account/Manage/Enable*.cshtml.cs"
     "./*.sh"
+    "./appsettings.json"
+    "./appsettings.*.json"
 )
-
 
 # Display contents of required files
 echo "=== Required Files Content ==="

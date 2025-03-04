@@ -16,7 +16,7 @@ ACTUAL_EMAIL=$(PGPASSWORD="postgres" psql -X -A -t \
   --host="127.0.0.1" \
   --port="5432" \
   --username="postgres" \
-  -c 'SELECT "Email" FROM "Members" WHERE "Id"=1;' "coop-members")
+  -c 'SELECT "Email" FROM "Members" WHERE "Id"=1;' "asp-members")
 
 if [ "$ACTUAL_EMAIL" = "$EXPECTED_EMAIL" ]; then
     echo "✓ Seed data verification passed (Member with email $EXPECTED_EMAIL exists)."
