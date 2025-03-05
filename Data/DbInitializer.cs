@@ -15,25 +15,48 @@ public static class DbInitializer
         }
     }
 
-    public static async Task SeedAdminUserAsync(UserManager<IdentityUser> userManager)
+    public static async Task SeedUsersAsync(UserManager<IdentityUser> userManager)
     {
-        const string adminEmail = "admin@example.com";
-        const string adminPassword = "SecureP@ssword123!";
-
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-        if (adminUser == null)
+        var usersWithPasswords = new (string Email, string Password, string Role)[]
         {
-            adminUser = new IdentityUser
-            {
-                UserName = adminEmail,
-                Email = adminEmail,
-                EmailConfirmed = true
-            };
+            ("admin@example.com", "SecureP@ssword123!", "Administrator"),
+            ("simon.peter@example.com", "SecureP@ssword123!", "Member"),
+            ("andrew@example.com", "SecureP@ssword123!", "Member"),
+            ("james.zebedee@example.com", "SecureP@ssword123!", "Member"),
+            ("john.zebedee@example.com", "SecureP@ssword123!", "Member"),
+            ("philip@example.com", "SecureP@ssword123!", "Member"),
+            ("bartholomew@example.com", "SecureP@ssword123!", "Member"),
+            ("thomas@example.com", "SecureP@ssword123!", "Member"),
+            ("matthew.levi@example.com", "SecureP@ssword123!", "Member"),
+            ("james.alphaeus@example.com", "SecureP@ssword123!", "Member"),
+            ("thaddaeus@example.com", "SecureP@ssword123!", "Member"),
+            ("simon.zealot@example.com", "SecureP@ssword123!", "Member"),
+            ("judas.iscariot@example.com", "SecureP@ssword123!", "Member"),
+            ("matthias@example.com", "SecureP@ssword123!", "Member"),
+            ("paul@example.com", "SecureP@ssword123!", "Member")
+        };
 
-            var result = await userManager.CreateAsync(adminUser, adminPassword);
-            if (result.Succeeded)
+        foreach (var (email, password, role) in usersWithPasswords)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                await userManager.AddToRoleAsync(adminUser, "Administrator");
+                user = new IdentityUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(user, password);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, role);
+                }
+                else
+                {
+                    throw new Exception($"Failed to create user {email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
             }
         }
     }
@@ -44,6 +67,6 @@ public static class DbInitializer
         var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
         await SeedRolesAsync(roleManager);
-        await SeedAdminUserAsync(userManager);
+        await SeedUsersAsync(userManager);
     }
 }

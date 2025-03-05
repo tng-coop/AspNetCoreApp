@@ -6,6 +6,20 @@ set -e
 CERT_PASSWORD="yourpassword"
 CA_NAME="LocalhostDevelopmentCA"
 
+# --- Function to gracefully terminate server ---
+cleanup() {
+    echo "🛑 Stopping ASP.NET Core server..."
+    if [[ -n "$SERVER_PID" ]] && ps -p "$SERVER_PID" > /dev/null; then
+        kill -SIGTERM "$SERVER_PID"
+        wait "$SERVER_PID"
+        echo "✅ Server stopped gracefully."
+    fi
+    exit 1
+}
+
+# Trap interrupt signals (Ctrl+C and termination)
+trap cleanup SIGINT SIGTERM
+
 # --- Ensure required .NET files exist ---
 for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Development.json; do
   [ -f $file ] && echo "✅ $file exists." || { echo "❌ $file missing."; exit 1; }
@@ -48,23 +62,6 @@ openssl pkcs12 -export -out localhost.pfx -inkey localhost.key \
   -in localhost.crt -passout pass:"${CERT_PASSWORD}"
 openssl pkcs12 -in localhost.pfx -out localhost.pem -nodes -passin pass:"${CERT_PASSWORD}"
 
-# --- Update appsettings.json explicitly ---
-# cat > appsettings.json <<EOF
-# {
-#   "Kestrel": {
-#     "Endpoints": {
-#       "Https": {
-#         "Url": "https://0.0.0.0:5001",
-#         "Certificate": {
-#           "Path": "localhost.pfx",
-#           "Password": "${CERT_PASSWORD}"
-#         }
-#       }
-#     }
-#   }
-# }
-# EOF
-
 # --- Gracefully terminate existing server ---
 existing_pid=$(lsof -t -i:5001 || true)
 if [ -n "$existing_pid" ]; then
@@ -93,18 +90,17 @@ done
 
 if [ $TIMEOUT -le 0 ]; then
     echo "❌ Server failed to start."
-    kill "$SERVER_PID" || true
-    exit 1
+    cleanup
 fi
 
 echo "✅ Server running."
 
 # --- Verify Swagger UI ---
 curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && \
-  echo "✅ Swagger UI (curl) OK." || { echo "❌ Swagger UI (curl) failed."; kill "$SERVER_PID"; exit 1; }
+  echo "✅ Swagger UI (curl) OK." || { echo "❌ Swagger UI (curl) failed."; cleanup; }
 
 google-chrome --headless --disable-gpu --no-sandbox --dump-dom https://localhost:5001/swagger/index.html | grep -q 'swagger-ui' && \
-  echo "✅ Swagger UI (Chrome) OK." || { echo "❌ Swagger UI (Chrome) failed."; kill "$SERVER_PID"; exit 1; }
+  echo "✅ Swagger UI (Chrome) OK." || { echo "❌ Swagger UI (Chrome) failed."; cleanup; }
 
 # --- Run Playwright tests ---
 cd tests
@@ -115,11 +111,8 @@ if npx playwright test; then
     echo "✅ Playwright tests passed."
 else
     echo "❌ Playwright tests failed."
-    kill "$SERVER_PID" || true
-    exit 1
+    cleanup
 fi
 
 # --- Cleanup ---
-kill -SIGTERM "$SERVER_PID"
-wait "$SERVER_PID" || true
-echo "✅ Server stopped gracefully."
+cleanup

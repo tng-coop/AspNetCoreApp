@@ -17,7 +17,7 @@ test('Admin Login API (correct credentials)', async ({ request }) => {
 test('Admin Login API (wrong password)', async ({ request }) => {
   const response = await request.post('/api/login', {
     data: {
-      email: 'admin@example.com',
+      email: 'simon.peter@example.com',
       password: 'WrongPassword!'
     }
   });

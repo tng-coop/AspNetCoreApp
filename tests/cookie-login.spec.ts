@@ -21,7 +21,7 @@ test('Cookie-based login fails with invalid credentials', async ({ page }) => {
   // Ensure no error initially
   await expect(page.getByText('Invalid login attempt.')).toHaveCount(0);
 
-  await page.fill('input[name="Input.Email"]', 'admin@example.com');
+  await page.fill('input[name="Input.Email"]', 'paul@example.com');
   await page.fill('input[name="Input.Password"]', 'WrongPassword!');
 
   await Promise.all([

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change to the script's own directory reliably
+cd "$(dirname "$(realpath "$0")")"
+
 # Files explicitly required
 required_files=(
     "Program.cs"
@@ -18,6 +21,7 @@ required_files=(
     "./appsettings.json"
     "./appsettings.*.json"
     "./Dockerfile.*"
+    "tests/*.ts"
 )
 
 # Display contents of required files
