@@ -9,6 +9,7 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddRazorPages();
@@ -16,10 +17,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true; // Keep or adjust as needed
+    options.SignIn.RequireConfirmedAccount = true;
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
     options.Password.RequireUppercase = true;
@@ -32,26 +32,21 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddDefaultTokenProviders()
 .AddDefaultUI();
 
-
-
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
     options.LogoutPath = "/Identity/Account/Logout";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    
-    // ✅ Add this line to set the default post-login redirect
     options.ReturnUrlParameter = "returnUrl";
 });
 
-
-// JWT configuration
+// JWT Configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = IdentityConstants.ApplicationScheme; // Cookies by default
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
     options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
     options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
 })
@@ -69,7 +64,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Authorization policy explicitly for APIs (JWT only)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ApiPolicy", policy =>
@@ -93,7 +87,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-// JWT-authenticated API endpoint (JWT ONLY!)
+// JWT-authenticated API endpoint
 app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 {
     var members = await dbContext.Members
@@ -106,10 +100,11 @@ app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 .WithName("GetMembersApi")
 .WithOpenApi();
 
-// Weather forecast endpoint (public)
+// Public endpoint
 app.MapGet("/weatherforecast", () =>
 {
-    var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+    var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild",
+                            "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
 
     return Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast(
@@ -122,7 +117,7 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-// JWT Login endpoint
+// JWT login API endpoint
 app.MapPost("/api/login", async (
     SignInManager<IdentityUser> signInManager,
     UserManager<IdentityUser> userManager,
@@ -159,18 +154,17 @@ app.MapPost("/api/login", async (
 .WithName("ApiLogin")
 .WithOpenApi();
 
-// Initialize DB seed data and apply migrations
+// Initialize Database with migrations and seed data
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await dbContext.Database.MigrateAsync(); // ← this applies migrations automatically
-
+    await dbContext.Database.MigrateAsync();
     await DbInitializer.InitializeAsync(scope.ServiceProvider);
 }
 
-
 app.Run();
 
+// Supporting Records
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
