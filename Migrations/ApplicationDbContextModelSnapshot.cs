@@ -55,7 +55,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 1,
                             Email = "simon.peter@example.com",
                             FirstName = "Simon",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(491),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4891),
                             LastName = "Peter"
                         },
                         new
@@ -63,7 +63,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 2,
                             Email = "andrew@example.com",
                             FirstName = "Andrew",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(492),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4892),
                             LastName = ""
                         },
                         new
@@ -71,7 +71,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 3,
                             Email = "james.zebedee@example.com",
                             FirstName = "James",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(493),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4893),
                             LastName = "son of Zebedee"
                         },
                         new
@@ -79,7 +79,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 4,
                             Email = "john.zebedee@example.com",
                             FirstName = "John",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(494),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4894),
                             LastName = "son of Zebedee"
                         },
                         new
@@ -87,7 +87,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 5,
                             Email = "philip@example.com",
                             FirstName = "Philip",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(495),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4895),
                             LastName = ""
                         },
                         new
@@ -95,7 +95,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 6,
                             Email = "bartholomew@example.com",
                             FirstName = "Bartholomew",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(496),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4896),
                             LastName = ""
                         },
                         new
@@ -103,7 +103,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 7,
                             Email = "thomas@example.com",
                             FirstName = "Thomas",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(497),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4897),
                             LastName = ""
                         },
                         new
@@ -111,7 +111,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 8,
                             Email = "matthew.levi@example.com",
                             FirstName = "Matthew",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(498),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(4898),
                             LastName = "Levi"
                         },
                         new
@@ -119,7 +119,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 9,
                             Email = "james.alphaeus@example.com",
                             FirstName = "James",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(498),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(5020),
                             LastName = "son of Alphaeus"
                         },
                         new
@@ -127,7 +127,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 10,
                             Email = "thaddaeus@example.com",
                             FirstName = "Thaddaeus",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(499),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(5021),
                             LastName = ""
                         },
                         new
@@ -135,7 +135,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 11,
                             Email = "simon.zealot@example.com",
                             FirstName = "Simon",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(500),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(5022),
                             LastName = "the Zealot"
                         },
                         new
@@ -143,7 +143,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 12,
                             Email = "judas.iscariot@example.com",
                             FirstName = "Judas",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(501),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(5023),
                             LastName = "Iscariot"
                         },
                         new
@@ -151,7 +151,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 13,
                             Email = "matthias@example.com",
                             FirstName = "Matthias",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(502),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(5024),
                             LastName = ""
                         },
                         new
@@ -159,7 +159,7 @@ namespace AspNetCoreApp.Migrations
                             Id = 14,
                             Email = "paul@example.com",
                             FirstName = "Paul",
-                            JoinedDate = new DateTime(2025, 3, 3, 15, 8, 8, 861, DateTimeKind.Utc).AddTicks(503),
+                            JoinedDate = new DateTime(2025, 3, 5, 12, 0, 43, 945, DateTimeKind.Utc).AddTicks(5025),
                             LastName = ""
                         });
                 });
@@ -277,6 +277,218 @@ namespace AspNetCoreApp.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "0fd088af-ea18-47a5-be6a-8de9d122b000",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "1d68c85a-ec35-4ca9-b776-123a16875598",
+                            Email = "simon.peter@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "SIMON.PETER@EXAMPLE.COM",
+                            NormalizedUserName = "SIMON.PETER@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "4103531e-e81b-4a8f-a041-ddbc847762da",
+                            TwoFactorEnabled = false,
+                            UserName = "simon.peter@example.com"
+                        },
+                        new
+                        {
+                            Id = "c04109ba-6626-4e74-9b03-68eb94b9cbe2",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "17a966b4-1550-46cc-bf3e-d16c2361a98d",
+                            Email = "andrew@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ANDREW@EXAMPLE.COM",
+                            NormalizedUserName = "ANDREW@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "4717b963-0011-4bb9-9582-f1fea5c1f8f0",
+                            TwoFactorEnabled = false,
+                            UserName = "andrew@example.com"
+                        },
+                        new
+                        {
+                            Id = "d317aa03-8531-43e2-9d26-15e05e5a3966",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f5accac3-df96-49bf-b850-ad307a346de2",
+                            Email = "james.zebedee@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "JAMES.ZEBEDEE@EXAMPLE.COM",
+                            NormalizedUserName = "JAMES.ZEBEDEE@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "56ec27ea-4385-4fa7-a268-12abafefa077",
+                            TwoFactorEnabled = false,
+                            UserName = "james.zebedee@example.com"
+                        },
+                        new
+                        {
+                            Id = "f1a37d8f-959c-40e5-b84d-f2605b66a99f",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "ed60b3b1-59ad-4eed-a6a9-25d943f01305",
+                            Email = "john.zebedee@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "JOHN.ZEBEDEE@EXAMPLE.COM",
+                            NormalizedUserName = "JOHN.ZEBEDEE@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "52fd3b61-d7d4-4734-98f3-0dfc2772ea10",
+                            TwoFactorEnabled = false,
+                            UserName = "john.zebedee@example.com"
+                        },
+                        new
+                        {
+                            Id = "09e20cb8-fa0a-43f8-b746-bb9d7f38af59",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "4c0939f8-574b-4b99-9a4e-27c502494e8d",
+                            Email = "philip@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "PHILIP@EXAMPLE.COM",
+                            NormalizedUserName = "PHILIP@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "d22783ff-3d12-4d24-8e3e-1b4125017d66",
+                            TwoFactorEnabled = false,
+                            UserName = "philip@example.com"
+                        },
+                        new
+                        {
+                            Id = "5200e26a-1ebe-4494-a268-d15f79335494",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a6e4af6c-34bb-4bea-9d4a-052faeee7b35",
+                            Email = "bartholomew@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BARTHOLOMEW@EXAMPLE.COM",
+                            NormalizedUserName = "BARTHOLOMEW@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "1bb772a6-eb4f-456a-bc75-406cf27cfb10",
+                            TwoFactorEnabled = false,
+                            UserName = "bartholomew@example.com"
+                        },
+                        new
+                        {
+                            Id = "53c267ed-3802-41cf-9fd5-cf30a6a1784a",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "064b86f2-09a8-4be1-a532-80119c6dd33b",
+                            Email = "thomas@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "THOMAS@EXAMPLE.COM",
+                            NormalizedUserName = "THOMAS@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "39e91aef-a592-4301-854a-97fe07d253f7",
+                            TwoFactorEnabled = false,
+                            UserName = "thomas@example.com"
+                        },
+                        new
+                        {
+                            Id = "c25fe4db-62b8-4bbd-a151-f65f6673ee14",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "4eb3cb85-5462-4e3f-9a00-4c957e0e6843",
+                            Email = "matthew.levi@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MATTHEW.LEVI@EXAMPLE.COM",
+                            NormalizedUserName = "MATTHEW.LEVI@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "18115745-3e4b-4f34-a787-bda8db791527",
+                            TwoFactorEnabled = false,
+                            UserName = "matthew.levi@example.com"
+                        },
+                        new
+                        {
+                            Id = "ee237298-78ec-48ef-ac6f-878e6f42d676",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "db8f652a-abec-4776-bb08-c4f157c816bd",
+                            Email = "james.alphaeus@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "JAMES.ALPHAEUS@EXAMPLE.COM",
+                            NormalizedUserName = "JAMES.ALPHAEUS@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "859f9772-91e7-4b80-8b95-55ae1b216915",
+                            TwoFactorEnabled = false,
+                            UserName = "james.alphaeus@example.com"
+                        },
+                        new
+                        {
+                            Id = "a15a9cf0-c043-4c7d-b3e8-8bf14bba45b0",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3dfbfa7d-adda-4ca6-be09-10e8127b9ebc",
+                            Email = "thaddaeus@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "THADDAEUS@EXAMPLE.COM",
+                            NormalizedUserName = "THADDAEUS@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "fd1a2d1e-63f0-4e4a-a541-9a3a4c2c6c67",
+                            TwoFactorEnabled = false,
+                            UserName = "thaddaeus@example.com"
+                        },
+                        new
+                        {
+                            Id = "9ad78183-057c-4553-b94a-fdfc403284e1",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "7e123711-7fee-4f41-a338-8d9c3419157d",
+                            Email = "simon.zealot@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "SIMON.ZEALOT@EXAMPLE.COM",
+                            NormalizedUserName = "SIMON.ZEALOT@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "74ee57c6-a245-4e54-976f-ddf4692acce7",
+                            TwoFactorEnabled = false,
+                            UserName = "simon.zealot@example.com"
+                        },
+                        new
+                        {
+                            Id = "6d1d973a-0da6-44f0-9cee-d3a7b68e592c",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "17c0ba9c-74b1-4d70-82a0-f24a6289679b",
+                            Email = "judas.iscariot@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "JUDAS.ISCARIOT@EXAMPLE.COM",
+                            NormalizedUserName = "JUDAS.ISCARIOT@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "d0a32f1b-bb31-41c9-a6dd-ef228ef48391",
+                            TwoFactorEnabled = false,
+                            UserName = "judas.iscariot@example.com"
+                        },
+                        new
+                        {
+                            Id = "30b33dfc-7907-4c59-80c4-c377befa8c17",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "49069f8c-43bc-4c55-abb1-1252ea17509e",
+                            Email = "matthias@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MATTHIAS@EXAMPLE.COM",
+                            NormalizedUserName = "MATTHIAS@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "19baadce-ca91-4d3e-9a3c-311ceb4b60a0",
+                            TwoFactorEnabled = false,
+                            UserName = "matthias@example.com"
+                        },
+                        new
+                        {
+                            Id = "94bb6083-cfbb-4b48-ab12-7771ba0c08c0",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "d9ed4d11-bd63-4fa9-8183-18b531dbde3c",
+                            Email = "paul@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "PAUL@EXAMPLE.COM",
+                            NormalizedUserName = "PAUL@EXAMPLE.COM",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "68c72e71-7dae-4314-bbbc-0a68652292b9",
+                            TwoFactorEnabled = false,
+                            UserName = "paul@example.com"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>

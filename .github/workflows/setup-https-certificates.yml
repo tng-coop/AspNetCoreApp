@@ -58,8 +58,12 @@ jobs:
           chrome-version: 'latest'
           install-dependencies: true
 
-      - name: Make HTTPS setup script executable
-        run: chmod +x ./setup-https-certificates.sh
+      - name: setup https certificates
+        run: |
+          chmod +x ./setup-https-certificates.sh
+          ./setup-https-certificates.sh
 
-      - name: Run HTTPS setup script
-        run: ./setup-https-certificates.sh
+      - name: run tests
+        run: |
+          chmod +x ./run-app-and-tests.sh
+          ./run-app-and-tests.sh
