@@ -6,16 +6,17 @@ set -e
 CERT_PASSWORD="yourpassword"
 CA_NAME="LocalhostDevelopmentCA"
 
-# --- Function to gracefully terminate server ---
 cleanup() {
+    EXIT_CODE=${1:-0}
     echo "🛑 Stopping ASP.NET Core server..."
     if [[ -n "$SERVER_PID" ]] && ps -p "$SERVER_PID" > /dev/null; then
         kill -SIGTERM "$SERVER_PID"
         wait "$SERVER_PID"
         echo "✅ Server stopped gracefully."
     fi
-    exit 1
+    exit $EXIT_CODE
 }
+
 
 # Trap interrupt signals (Ctrl+C and termination)
 trap cleanup SIGINT SIGTERM
@@ -109,10 +110,8 @@ npx playwright install chromium --with-deps
 
 if npx playwright test; then
     echo "✅ Playwright tests passed."
+    cleanup 0
 else
     echo "❌ Playwright tests failed."
-    cleanup
+    cleanup 1
 fi
-
-# --- Cleanup ---
-cleanup
