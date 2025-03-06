@@ -16,6 +16,9 @@ cleanup() {
 # Trap interrupt signals (Ctrl+C and termination)
 trap cleanup SIGINT SIGTERM
 
+# Determine the script's directory
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # --- Ensure required .NET files exist ---
 for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Development.json; do
   [ -f $file ] && echo "✅ $file exists." || { echo "❌ $file missing."; exit 1; }
@@ -64,8 +67,13 @@ curl -fsSL --insecure https://localhost:5001/swagger/index.html | grep -q '<titl
 
 npm ci
 
-./fetch-html.sh https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && \
-  echo "✅ Swagger UI (Chrome) OK." || { echo "❌ Swagger UI (Chrome) failed."; cleanup 1; }
+"$scriptdir/fetch-html.sh" https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' || true
+if [ "${PIPESTATUS[1]}" -eq 0 ]; then
+  echo "✅ Swagger UI (Chrome) OK."
+else
+  echo "❌ Swagger UI (Chrome) failed."
+  cleanup 1
+fi
 
 
 # --- Run Playwright tests ---
