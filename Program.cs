@@ -97,8 +97,11 @@ app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
     return Results.Ok(members);
 })
 .RequireAuthorization("ApiPolicy")
+.Produces(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status401Unauthorized)
 .WithName("GetMembersApi")
 .WithOpenApi();
+
 
 // Public endpoint
 app.MapGet("/weatherforecast", () =>
