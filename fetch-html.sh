@@ -4,6 +4,12 @@ if [ -z "$1" ]; then
   echo "Usage: $0 <URL>"
   exit 1
 fi
+ 
+# Check if google-chrome is installed and in PATH
+if ! command -v google-chrome &>/dev/null; then
+  echo "Error: google-chrome is not installed or not in your PATH."
+  exit 1
+fi
 
 google-chrome --headless --remote-debugging-port=9222 >/dev/null 2>&1 &
 CHROME_PID=$!

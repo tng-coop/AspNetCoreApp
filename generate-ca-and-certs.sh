@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 # --- Variables ---
 CERT_PASSWORD="yourpassword"
