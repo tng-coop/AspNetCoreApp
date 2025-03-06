@@ -67,3 +67,21 @@ jobs:
         run: |
           chmod +x ./run-app-and-tests.sh
           ./run-app-and-tests.sh
+
+      - name: Display All Log Files Content
+        run: |
+          echo "=== Listing all log files ==="
+          ls -lah logs
+          echo "=== Log file contents ==="
+          for file in logs/*; do
+            echo -e "\n===== Contents of $file =====\n"
+            cat "$file"
+          done
+
+      - name: Upload Logs Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: logs/
+        if: always()
+          
