@@ -4,17 +4,12 @@ set -e
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
-
-# Generate timestamped logfile name
 LOGFILE="logs/aspnet-server-log-$(date +"%Y%m%d-%H%M%S").log"
-
-# Redirect all stdout and stderr to logfile and console
-exec > >(tee -a "$LOGFILE") 2>&1
 
 cleanup() {
     EXIT_CODE=${1:-0}
     echo "🛑 Stopping ASP.NET Core server..."
-    if [[ -n "$SERVER_PID" ]] && ps -p "$SERVER_PID" > /dev/null; then
+    if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" &>/dev/null; then
         kill -SIGTERM "$SERVER_PID"
         wait "$SERVER_PID"
         echo "✅ Server stopped gracefully."
@@ -28,16 +23,13 @@ trap cleanup SIGINT SIGTERM
 # Determine the script's directory
 scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# --- Ensure required .NET files exist ---
 for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Development.json; do
-  [ -f $file ] && echo "✅ $file exists." || { echo "❌ $file missing."; exit 1; }
+  [[ -f "$file" ]] || { echo "❌ Required file '$file' missing."; exit 1; }
 done
 
-# --- Reset Database ---
-chmod +x ./reset-db.sh
-./reset-db.sh
+chmod +x "$scriptdir/reset-db.sh"
+"$scriptdir/reset-db.sh"
 
-# --- Gracefully terminate existing server ---
 existing_pid=$(lsof -t -i:5001 || true)
 if [ -n "$existing_pid" ]; then
     kill -SIGTERM "$existing_pid"
@@ -51,11 +43,10 @@ if [ -n "$existing_pid" ]; then
     echo "✅ Existing server terminated."
 fi
 
-# --- Start ASP.NET Core app ---
-dotnet run &
+# Start ASP.NET Core app, logs only to file, NOT console
+dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
-# --- Wait for server readiness ---
 TIMEOUT=30
 until curl -fsSL --insecure https://localhost:5001/swagger/index.html &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
