@@ -69,7 +69,7 @@ curl -fsSL --insecure https://localhost:5001/swagger/index.html | grep -q '<titl
 # --- Run Playwright tests ---
 cd tests
 npm ci
-npx playwright install chromium --with-deps
+# npx playwright install chromium --with-deps
 
 if npx playwright test; then
     echo "✅ Playwright tests passed."
