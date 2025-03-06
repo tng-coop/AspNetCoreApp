@@ -2,6 +2,15 @@
 
 set -e
 
+# Create logs directory if it doesn't exist
+mkdir -p logs
+
+# Generate timestamped logfile name
+LOGFILE="logs/aspnet-server-log-$(date +"%Y%m%d-%H%M%S").log"
+
+# Redirect all stdout and stderr to logfile and console
+exec > >(tee -a "$LOGFILE") 2>&1
+
 cleanup() {
     EXIT_CODE=${1:-0}
     echo "🛑 Stopping ASP.NET Core server..."
@@ -74,7 +83,6 @@ else
   echo "❌ Swagger UI (Chrome) failed."
   cleanup 1
 fi
-
 
 # --- Run Playwright tests ---
 cd tests
