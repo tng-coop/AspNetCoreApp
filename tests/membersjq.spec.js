@@ -23,7 +23,23 @@ test.describe("MembersJQ Page", () => {
     // Wait explicitly for navigation after submit
     await page.click("button#login-submit"),
       // Click the button to fetch members
-      await page.click("#fetch-members-btn");
+      await page.waitForFunction(() => {
+        // Ensure jQuery has loaded on the page
+        const jqueryLoaded = !!window.jQuery;
+    
+        // Check if the button element exists in DOM
+        const btn = document.getElementById('fetch-members-btn');
+        const btnExists = !!btn;
+    
+        // Check if jQuery has attached a click handler to the button
+        const clickHandlerAttached = btnExists && jqueryLoaded && !!jQuery._data(btn, 'events')?.click;
+    
+        // Proceed only if all conditions are met
+        return jqueryLoaded && btnExists && clickHandlerAttached;
+    });
+    
+      await page.click('#fetch-members-btn');
+      
     await expect(page.getByText("Paul (paul@example.com)")).toHaveCount(1);
   });
 });
