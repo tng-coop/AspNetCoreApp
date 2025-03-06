@@ -62,13 +62,14 @@ echo "✅ Server running."
 curl -fsSL --insecure https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && \
   echo "✅ Swagger UI (curl) OK." || { echo "❌ Swagger UI (curl) failed."; cleanup 1; }
 
+npm ci
+
 ./fetch-html.sh https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && \
   echo "✅ Swagger UI (Chrome) OK." || { echo "❌ Swagger UI (Chrome) failed."; cleanup 1; }
 
 
 # --- Run Playwright tests ---
 cd tests
-npm ci
 # npx playwright install chromium --with-deps
 
 if npx playwright test; then
