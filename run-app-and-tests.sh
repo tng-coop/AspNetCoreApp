@@ -62,8 +62,9 @@ fi
 echo "✅ Server running."
 
 # --- Verify Swagger UI ---
-curl -fsSL --insecure https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && \
+curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && \
   echo "✅ Swagger UI (curl) OK." || { echo "❌ Swagger UI (curl) failed."; cleanup 1; }
+
 
 npm ci
 
