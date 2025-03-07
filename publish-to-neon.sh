@@ -9,7 +9,8 @@ run_psql() {
   PGPASSWORD="$PGPASSWORD" psql -X -A -t \
     --host="$PGHOST" \
     --username="$PGUSER" \
-    -c "$1" "$PGDATABASE"
+    -c "$1" "$PGDATABASE" \
+    -p 5432
 }
 
 # --- Clear existing Neon DB ---
