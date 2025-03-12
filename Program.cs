@@ -6,8 +6,46 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using AspNetCoreApp.Services;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load smtp.env if it exists
+if (File.Exists("smtp.env"))
+{
+    Env.Load("smtp.env");
+}
+
+builder.Services.Configure<SmtpSettings>(options =>
+{
+    options.Server = Environment.GetEnvironmentVariable("SMTP_SERVER")
+        ?? builder.Configuration["SmtpSettings:Server"]
+        ?? "localhost";
+
+    options.Port = int.TryParse(
+        Environment.GetEnvironmentVariable("SMTP_PORT")
+        ?? builder.Configuration["SmtpSettings:Port"],
+        out var port) ? port : 1025;
+
+    options.User = Environment.GetEnvironmentVariable("SMTP_USER")
+        ?? builder.Configuration["SmtpSettings:User"]
+        ?? string.Empty;
+
+    options.Password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
+        ?? builder.Configuration["SmtpSettings:Password"]
+        ?? string.Empty;
+
+    options.FromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL")
+        ?? builder.Configuration["SmtpSettings:FromEmail"]
+        ?? "no-reply@example.com";
+
+    options.UseStartTls = (Environment.GetEnvironmentVariable("USE_STARTTLS")
+        ?? builder.Configuration["SmtpSettings:UseStartTls"]
+        ?? "false").Equals("true", StringComparison.OrdinalIgnoreCase);
+
+        
+});
 
 // Register services
 builder.Services.AddEndpointsApiExplorer();
@@ -31,6 +69,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders()
 .AddDefaultUI();
+
+builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, EmailSender>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -87,7 +127,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-// JWT-authenticated API endpoint
 app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 {
     var members = await dbContext.Members
@@ -102,8 +141,6 @@ app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 .WithName("GetMembersApi")
 .WithOpenApi();
 
-
-// Public endpoint
 app.MapGet("/weatherforecast", () =>
 {
     var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild",
@@ -167,10 +204,20 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// Supporting Records
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
 
 record LoginRequest(string Email, string Password);
+
+// SmtpSettings class
+public class SmtpSettings
+{
+    public string Server { get; set; } = "";
+    public int Port { get; set; }
+    public string FromEmail { get; set; } = "";
+    public string User { get; set; } = "";
+    public string Password { get; set; } = "";
+    public bool UseStartTls { get; set; }
+}
