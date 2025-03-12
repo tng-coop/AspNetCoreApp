@@ -47,8 +47,8 @@ fi
 dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
-TIMEOUT=30
-until curl -fsSL --insecure https://localhost:5001/swagger/index.html &>/dev/null || [ $TIMEOUT -le 0 ]; do
+TIMEOUT=40
+until curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))
