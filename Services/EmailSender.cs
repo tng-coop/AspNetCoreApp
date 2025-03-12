@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 
 namespace AspNetCoreApp.Services;
 
@@ -15,12 +16,15 @@ public class EmailSender : IEmailSender
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        var smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "localhost";
-        var smtpPort = int.TryParse(_configuration["EmailSettings:SmtpPort"], out var port) ? port : 25;
-        var smtpUser = _configuration["EmailSettings:SmtpUser"];
-        var smtpPass = _configuration["EmailSettings:SmtpPassword"];
-        var fromEmail = _configuration["EmailSettings:FromEmail"] ?? "no-reply@example.com";
-        var useStartTls = bool.TryParse(_configuration["EmailSettings:UseStartTls"], out var tls) && tls;
+        var smtpServer = _configuration["EmailSettings:Server"];
+        var smtpPortString = _configuration["EmailSettings:Port"];
+        if (!int.TryParse(smtpPortString, out var smtpPort))
+        {
+            throw new InvalidOperationException("Invalid SMTP port configuration.");
+        }
+        var smtpUser = _configuration["EmailSettings:User"];
+        var smtpPass = _configuration["EmailSettings:Password"];
+        var fromEmail = _configuration["EmailSettings:FromEmail"];
 
         var message = new MimeMessage();
         message.From.Add(MailboxAddress.Parse(fromEmail));
@@ -30,23 +34,8 @@ public class EmailSender : IEmailSender
 
         using var smtpClient = new SmtpClient();
 
-        if (useStartTls)
-        {
-            await smtpClient.ConnectAsync(smtpServer, smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
-        }
-        else
-        {
-            await smtpClient.ConnectAsync(smtpServer, smtpPort, MailKit.Security.SecureSocketOptions.Auto);
-        }
-
-        var smtpUserProvided = !string.IsNullOrEmpty(smtpUser);
-        var smtpPassProvided = !string.IsNullOrEmpty(smtpPass);
-
-        if (smtpUserProvided && smtpPassProvided)
-        {
-            await smtpClient.AuthenticateAsync(smtpUser, smtpPass);
-        }
-
+        await smtpClient.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
+        await smtpClient.AuthenticateAsync(smtpUser, smtpPass);
         await smtpClient.SendAsync(message);
         await smtpClient.DisconnectAsync(true);
     }
