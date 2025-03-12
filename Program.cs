@@ -7,45 +7,11 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AspNetCoreApp.Services;
-using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load smtp.env if it exists
-if (File.Exists("smtp.env"))
-{
-    Env.Load("smtp.env");
-}
-
-builder.Services.Configure<SmtpSettings>(options =>
-{
-    options.Server = Environment.GetEnvironmentVariable("SMTP_SERVER")
-        ?? builder.Configuration["SmtpSettings:Server"]
-        ?? "localhost";
-
-    options.Port = int.TryParse(
-        Environment.GetEnvironmentVariable("SMTP_PORT")
-        ?? builder.Configuration["SmtpSettings:Port"],
-        out var port) ? port : 1025;
-
-    options.User = Environment.GetEnvironmentVariable("SMTP_USER")
-        ?? builder.Configuration["SmtpSettings:User"]
-        ?? string.Empty;
-
-    options.Password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
-        ?? builder.Configuration["SmtpSettings:Password"]
-        ?? string.Empty;
-
-    options.FromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL")
-        ?? builder.Configuration["SmtpSettings:FromEmail"]
-        ?? "no-reply@example.com";
-
-    options.UseStartTls = (Environment.GetEnvironmentVariable("USE_STARTTLS")
-        ?? builder.Configuration["SmtpSettings:UseStartTls"]
-        ?? "false").Equals("true", StringComparison.OrdinalIgnoreCase);
-
-        
-});
+// Explicitly configure SMTP settings from IConfiguration (no env vars)
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 // Register services
 builder.Services.AddEndpointsApiExplorer();
@@ -80,7 +46,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ReturnUrlParameter = "returnUrl";
 });
 
-// JWT Configuration
+// JWT Configuration from IConfiguration only
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
@@ -157,7 +123,6 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-// JWT login API endpoint
 app.MapPost("/api/login", async (
     SignInManager<IdentityUser> signInManager,
     UserManager<IdentityUser> userManager,

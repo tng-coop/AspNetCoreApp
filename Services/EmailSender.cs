@@ -1,6 +1,6 @@
-using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace AspNetCoreApp.Services;
 
@@ -15,20 +15,12 @@ public class EmailSender : IEmailSender
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        var smtpServer = Environment.GetEnvironmentVariable("SMTP_SERVER") 
-                         ?? _configuration["EmailSettings:SmtpServer"];
-
-        var smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") 
-                         ?? _configuration["EmailSettings:SmtpPort"]!);
-
-        var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER");
-        var smtpPass = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
-
-        var fromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL") 
-                         ?? _configuration["EmailSettings:FromEmail"];
-
-        var useStartTls = bool.Parse(Environment.GetEnvironmentVariable("USE_STARTTLS") 
-                         ?? _configuration["EmailSettings:UseStartTls"]!);
+        var smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "localhost";
+        var smtpPort = int.TryParse(_configuration["EmailSettings:SmtpPort"], out var port) ? port : 25;
+        var smtpUser = _configuration["EmailSettings:SmtpUser"];
+        var smtpPass = _configuration["EmailSettings:SmtpPassword"];
+        var fromEmail = _configuration["EmailSettings:FromEmail"] ?? "no-reply@example.com";
+        var useStartTls = bool.TryParse(_configuration["EmailSettings:UseStartTls"], out var tls) && tls;
 
         var message = new MimeMessage();
         message.From.Add(MailboxAddress.Parse(fromEmail));
@@ -41,12 +33,18 @@ public class EmailSender : IEmailSender
         if (useStartTls)
         {
             await smtpClient.ConnectAsync(smtpServer, smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
-            if (!string.IsNullOrEmpty(smtpUser) && !string.IsNullOrEmpty(smtpPass))
-                await smtpClient.AuthenticateAsync(smtpUser, smtpPass);
         }
         else
         {
-            await smtpClient.ConnectAsync(smtpServer, smtpPort, MailKit.Security.SecureSocketOptions.None);
+            await smtpClient.ConnectAsync(smtpServer, smtpPort, MailKit.Security.SecureSocketOptions.Auto);
+        }
+
+        var smtpUserProvided = !string.IsNullOrEmpty(smtpUser);
+        var smtpPassProvided = !string.IsNullOrEmpty(smtpPass);
+
+        if (smtpUserProvided && smtpPassProvided)
+        {
+            await smtpClient.AuthenticateAsync(smtpUser, smtpPass);
         }
 
         await smtpClient.SendAsync(message);
