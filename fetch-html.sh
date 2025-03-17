@@ -25,8 +25,11 @@ BROWSER_PID=$!
 
 cleanup() {
   echo "Stopping browser (PID $BROWSER_PID)..."
-  kill $BROWSER_PID >/dev/null 2>&1
+  kill -SIGTERM "$BROWSER_PID" >/dev/null 2>&1
+  wait "$BROWSER_PID"
+  echo "✅ Browser stopped gracefully."
 }
+
 
 trap cleanup EXIT INT TERM
 
