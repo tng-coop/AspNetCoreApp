@@ -64,6 +64,9 @@ jobs:
           ./generate-ca-and-certs.sh
 
       - name: run tests
+        env:
+          Authentication__GitHub__ClientId: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
+          Authentication__GitHub__ClientSecret: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
         run: |
           chmod +x ./run-app-and-tests.sh
           ./run-app-and-tests.sh
