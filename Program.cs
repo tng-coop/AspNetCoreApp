@@ -11,7 +11,7 @@ using AspNetCoreApp.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Explicitly configure SMTP settings from IConfiguration (no env vars)
-builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 // Register services
 builder.Services.AddEndpointsApiExplorer();
