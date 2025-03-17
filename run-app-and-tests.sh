@@ -68,7 +68,9 @@ curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html |
 
 npm ci
 
-"$scriptdir/fetch-html.sh" https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' || true
+output=$("$scriptdir/fetch-html.sh" https://localhost:5001/swagger/index.html)
+echo "$output" | grep -q '<title>Swagger UI</title>'
+
 if [ "${PIPESTATUS[1]}" -eq 0 ]; then
   echo "✅ Swagger UI (Chrome) OK."
 else
