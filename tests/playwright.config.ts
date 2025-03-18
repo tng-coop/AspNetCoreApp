@@ -1,8 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  globalSetup: require.resolve('./global-setup'),
-  globalTeardown: require.resolve('./global-teardown'),
   testDir: './',  // ✅ points directly to current directory
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
