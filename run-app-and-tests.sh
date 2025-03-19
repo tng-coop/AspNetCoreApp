@@ -30,7 +30,12 @@ done
 chmod +x "$scriptdir/reset-db.sh"
 "$scriptdir/reset-db.sh"
 
-existing_pid=$(lsof -t -i:5001 || true)
+# Extract port from environment variable (default to 5001 if not set)
+APP_URL="${Kestrel__Endpoints__Https__Url:-https://0.0.0.0:5001}"
+APP_PORT=$(echo "$APP_URL" | sed -E 's/.*:([0-9]+)$/\1/')
+
+# Kill existing process on the defined port
+existing_pid=$(lsof -t -i:$APP_PORT || true)
 if [ -n "$existing_pid" ]; then
     kill -SIGTERM "$existing_pid"
     TIMEOUT=10
@@ -48,7 +53,7 @@ dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
 TIMEOUT=40
-until curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html &>/dev/null || [ $TIMEOUT -le 0 ]; do
+until curl -fsSL --cacert localhost-ca.crt "$APP_URL/swagger/index.html" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))
@@ -59,16 +64,15 @@ if [ $TIMEOUT -le 0 ]; then
     cleanup 1
 fi
 
-echo "✅ Server running."
+echo "✅ Server running on $APP_URL"
 
 # --- Verify Swagger UI ---
-curl -fsSL --cacert localhost-ca.crt https://localhost:5001/swagger/index.html | grep -q '<title>Swagger UI</title>' && \
+curl -fsSL --cacert localhost-ca.crt "$APP_URL/swagger/index.html" | grep -q '<title>Swagger UI</title>' && \
   echo "✅ Swagger UI (curl) OK." || { echo "❌ Swagger UI (curl) failed."; cleanup 1; }
-
 
 npm ci
 
-output=$("$scriptdir/fetch-html.sh" https://localhost:5001/swagger/index.html)
+output=$("$scriptdir/fetch-html.sh" "$APP_URL/swagger/index.html")
 echo "$output" | grep -q '<title>Swagger UI</title>'
 
 if [ "${PIPESTATUS[1]}" -eq 0 ]; then

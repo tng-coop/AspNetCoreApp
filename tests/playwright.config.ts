@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['list'], ['html']],  // ✅ includes both list and html reporters
   use: {
-    baseURL: 'https://localhost:5001', // recommended best practice
+    baseURL: process.env.Kestrel__Endpoints__Https__Url || 'https://localhost:5001', // recommended best practice
     ignoreHTTPSErrors: true, // enables self-signed HTTPS
     trace: 'on',
   },
