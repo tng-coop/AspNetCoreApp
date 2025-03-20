@@ -31,7 +31,7 @@ chmod +x "$scriptdir/reset-db.sh"
 "$scriptdir/reset-db.sh"
 
 # Extract port from environment variable (default to 5001 if not set)
-APP_URL="${Kestrel__Endpoints__Https__Url:-https://0.0.0.0:5001}"
+APP_URL="${Kestrel__Endpoints__Https__Url:-https://localhost:5001}"
 APP_PORT=$(echo "$APP_URL" | sed -E 's/.*:([0-9]+)$/\1/')
 
 # Kill existing process on the defined port
