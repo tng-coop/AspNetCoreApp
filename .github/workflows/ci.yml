@@ -72,7 +72,7 @@ jobs:
           Authentication__GitHub__ClientSecret: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
         run: |
           chmod +x ./run-app-and-tests.sh
-          ./run-app-and-tests.sh
+          bash -vx ./run-app-and-tests.sh
 
       - name: Display All Log Files Content
         run: |
