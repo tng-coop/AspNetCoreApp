@@ -8,7 +8,9 @@ DB_PASSWORD="postgres" # Development only
 
 # Connection parameters
 PSQL_HOST="127.0.0.1"
-PSQL_PORT="5432"
+
+PSQL_PORT="${PSQL_PORT:-5432}"
+
 PSQL_USER="postgres"
 PSQL_PASS="postgres"
 

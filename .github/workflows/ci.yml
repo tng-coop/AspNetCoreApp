@@ -45,9 +45,12 @@ jobs:
 
       - name: Add dotnet tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
+      
       - name: Make reset-db.sh executable
         run: chmod +x ./reset-db.sh
+
+      - name: Restore dotnet
+        run: dotnet tool restore
 
       - name: Reset database and apply migrations
         run: ./reset-db.sh
