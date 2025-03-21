@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths-ignore:
-      - 'prototype/**'
+      - 'docs/**'
 
 jobs:
   setup-https-and-db:
