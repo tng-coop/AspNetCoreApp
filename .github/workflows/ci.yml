@@ -1,6 +1,11 @@
 name: Setup HTTPS Certificates and Database
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'prototype/**'
 
 jobs:
   setup-https-and-db:
