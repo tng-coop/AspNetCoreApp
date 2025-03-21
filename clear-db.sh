@@ -8,9 +8,7 @@ DB_PASSWORD="postgres" # Development only
 
 # Connection parameters
 PSQL_HOST="127.0.0.1"
-
-PSQL_PORT="${PSQL_PORT:-5432}"
-
+PSQL_PORT="5432"
 PSQL_USER="postgres"
 PSQL_PASS="postgres"
 
@@ -22,6 +20,9 @@ run_psql() {
     --username="$PSQL_USER" \
     -c "$1" "$2"
 }
+
+# Terminate existing connections to database
+run_psql "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$DB_NAME' AND pid <> pg_backend_pid();" postgres
 
 # Drop database
 run_psql "DROP DATABASE IF EXISTS \"$DB_NAME\";" postgres

@@ -14,7 +14,7 @@ dotnet ef database update
 EXPECTED_EMAIL="simon.peter@example.com"
 ACTUAL_EMAIL=$(PGPASSWORD="postgres" psql -X -A -t \
   --host="127.0.0.1" \
-  --port="${PSQL_PORT:-5432}" \
+  --port="5432" \
   --username="postgres" \
   -c 'SELECT "Email" FROM "Members" WHERE "Id"=1;' "asp-members")
 
