@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 set -e  # Exit on any error
 
-# Load Neon credentials safely from neon.env
-source ./neon.env
-
 # --- Helper function to run SQL commands ---
 run_psql() {
-  PGPASSWORD="$PGPASSWORD" psql -X -A -t \
-    --host="$PGHOST" \
-    --username="$PGUSER" \
-    -c "$1" "$PGDATABASE" \
+  PGPASSWORD="$NEON_PGPASSWORD" psql -X -A -t \
+    --host="$NEON_PGHOST" \
+    --username="$NEON_PGUSER" \
+    -c "$1" "$NEON_PGDATABASE" \
     -p 5432
 }
 
@@ -21,7 +18,7 @@ run_psql "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" || {
 
 # --- Apply EF migrations ---
 echo "Applying EF migrations to Neon..."
-dotnet ef database update --connection "Host=$PGHOST;Database=$PGDATABASE;Username=$PGUSER;Password=$PGPASSWORD;Ssl Mode=Require;Trust Server Certificate=true;"
+dotnet ef database update --connection "Host=$NEON_PGHOST;Database=$NEON_PGDATABASE;Username=$NEON_PGUSER;Password=$NEON_PGPASSWORD;Ssl Mode=Require;Trust Server Certificate=true;"
 
 # --- Verify seeded data ---
 EXPECTED_EMAIL="simon.peter@example.com"
