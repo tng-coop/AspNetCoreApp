@@ -487,4 +487,3 @@ $RECYCLE.BIN/
 /localhost*
 neon.env
 /out
-.maildev-pid
