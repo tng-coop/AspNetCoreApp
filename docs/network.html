@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ネットワーキングイベントサイト</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>ネットワーキングイベントサイトへようこそ</h1>
+    </header>
+    <main>
+        <section id="event-list">
+            <h2>今後のイベント</h2>
+            <ul id="events">
+                <!-- Events will be populated here by JavaScript -->
+            </ul>
+        </section>
+        <section id="event-form">
+            <h2>イベントを作成する</h2>
+            <form id="create-event">
+                <label for="event-name">イベント名:</label>
+                <input type="text" id="event-name" required>
+                <label for="event-date">イベント日付:</label>
+                <input type="date" id="event-date" required>
+                <label for="event-description">イベントの説明:</label>
+                <textarea id="event-description" required></textarea>
+                <button type="submit">イベントを作成する</button>
+            </form>
+        </section>
+        <section id="registration-form" style="display:none;">
+            <h2>イベントに登録する</h2>
+            <form id="register-event">
+                <label for="participant-name">参加者名:</label>
+                <input type="text" id="participant-name" required>
+                <label for="participant-email">参加者のメール:</label>
+                <input type="email" id="participant-email" required>
+                <button type="submit">登録する</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 ネットワーキングイベントサイト</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

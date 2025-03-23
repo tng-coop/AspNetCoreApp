@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #FFF8E1; /* Warm light background color */
+    color: #5D4037; /* Warm dark text color */
+}
+
+header {
+    background-color: #FF7043; /* Warm orange color */
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+}
+
+main {
+    padding: 1em;
+}
+
+#event-list, #event-form, #registration-form {
+    margin: 1em 0;
+}
+
+label {
+    display: block;
+    margin: 0.5em 0 0.2em;
+}
+
+input {
+    width: 100%;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    border: 1px solid #FF7043; /* Warm border color */
+    border-radius: 4px;
+    background-color: #FFE0B2; /* Warm input background color */
+}
+
+button {
+    background-color: #FF7043; /* Warm button color */
+    color: white;
+    padding: 0.5em 1em;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #FF5722; /* Slightly darker warm color for hover effect */
+}
+
+footer {
+    background-color: #FF7043; /* Warm footer color */
+    color: white;
+    text-align: center;
+    padding: 0.2em 0; /* Reduced padding */
+    margin: 0.2em 0; /* Reduced margin */
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
