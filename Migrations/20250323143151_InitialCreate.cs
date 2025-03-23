@@ -60,7 +60,8 @@ namespace AspNetCoreApp.Migrations
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    JoinedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    JoinedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

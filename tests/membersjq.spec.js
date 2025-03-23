@@ -40,6 +40,6 @@ test.describe("MembersJQ Page", () => {
     
       await page.click('#fetch-members-btn');
       
-    await expect(page.getByText("Paul (paul@example.com)")).toHaveCount(1);
+    await expect(page.getByText("Paul Last (paul@example.com)")).toHaveCount(1);
   });
 });
