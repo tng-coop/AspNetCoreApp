@@ -19,22 +19,23 @@ public static class DbInitializer
     {
         var usersWithPasswords = new (string Email, string Password, string Role)[]
         {
-            ("admin@example.com", "SecureP@ssword123!", "Administrator"),
-            ("simon.peter@example.com", "SecureP@ssword123!", "Member"),
-            ("andrew@example.com", "SecureP@ssword123!", "Member"),
-            ("james.zebedee@example.com", "SecureP@ssword123!", "Member"),
-            ("john.zebedee@example.com", "SecureP@ssword123!", "Member"),
-            ("philip@example.com", "SecureP@ssword123!", "Member"),
-            ("bartholomew@example.com", "SecureP@ssword123!", "Member"),
-            ("thomas@example.com", "SecureP@ssword123!", "Member"),
-            ("matthew.levi@example.com", "SecureP@ssword123!", "Member"),
-            ("james.alphaeus@example.com", "SecureP@ssword123!", "Member"),
-            ("thaddaeus@example.com", "SecureP@ssword123!", "Member"),
-            ("simon.zealot@example.com", "SecureP@ssword123!", "Member"),
-            ("judas.iscariot@example.com", "SecureP@ssword123!", "Member"),
-            ("matthias@example.com", "SecureP@ssword123!", "Member"),
-            ("paul@example.com", "SecureP@ssword123!", "Member")
+    ("admin@example.com", "SecureP@ssword123!", "Administrator"),
+    ("simon.peter@example.com", "MemberP@ssword123!", "Member"),
+    ("andrew@example.com", "MemberP@ssword123!", "Member"),
+    ("james.zebedee@example.com", "MemberP@ssword123!", "Member"),
+    ("john.zebedee@example.com", "MemberP@ssword123!", "Member"),
+    ("philip@example.com", "MemberP@ssword123!", "Member"),
+    ("bartholomew@example.com", "MemberP@ssword123!", "Member"),
+    ("thomas@example.com", "MemberP@ssword123!", "Member"),
+    ("matthew.levi@example.com", "MemberP@ssword123!", "Member"),
+    ("james.alphaeus@example.com", "MemberP@ssword123!", "Member"),
+    ("thaddaeus@example.com", "MemberP@ssword123!", "Member"),
+    ("simon.zealot@example.com", "MemberP@ssword123!", "Member"),
+    ("judas.iscariot@example.com", "MemberP@ssword123!", "Member"),
+    ("matthias@example.com", "MemberP@ssword123!", "Member"),
+    ("paul@example.com", "MemberP@ssword123!", "Member")
         };
+
 
         foreach (var (email, password, role) in usersWithPasswords)
         {
