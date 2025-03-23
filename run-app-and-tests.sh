@@ -1,5 +1,5 @@
 #!/bin/bash
-
+dotnet tool restore
 set -e
 
 # Create logs directory if it doesn't exist
