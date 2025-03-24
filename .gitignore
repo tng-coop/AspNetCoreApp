@@ -494,3 +494,6 @@ Client/bin/
 Client/obj/
 wwwroot/client/_framework/
 /published
+
+# Static web assets endpoint JSON
+Client.staticwebassets.endpoints.json
