@@ -14,15 +14,16 @@ public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>
 
     public WeatherForecastTests(WebApplicationFactory<Program> factory)
     {
-    _client = factory.WithWebHostBuilder(builder =>
-    {
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+        _client = factory.WithWebHostBuilder(builder =>
+        {
 
-builder.ConfigureAppConfiguration((context, config) => 
-{
-    config.AddJsonFile("appsettings.Test.json");
-});
+            builder.ConfigureAppConfiguration((context, config) =>
+        {
+        config.AddJsonFile("appsettings.Test.json");
+    });
 
-    }).CreateClient();
+        }).CreateClient();
     }
 
     [Fact]
