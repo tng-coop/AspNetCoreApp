@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 <URL>"
@@ -35,4 +36,4 @@ until curl -s http://localhost:9222/json/version >/dev/null 2>&1; do
   sleep 0.1
 done
 
-node fetch-html.mjs "$1"
+node "$scriptdir/fetch-html.mjs" "$1"

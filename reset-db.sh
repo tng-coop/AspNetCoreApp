@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
+
+# Determine the script's directory
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 set -e  # Exit on error
 
-# Ensure clear-db.sh is executable
-chmod +x ./clear-db.sh
 
 # Run the clearing script
-./clear-db.sh
+$scriptdir/clear-db.sh
 
+cd $scriptdir/AspNetCoreApp
 # Apply Entity Framework migrations
 dotnet ef database update
 

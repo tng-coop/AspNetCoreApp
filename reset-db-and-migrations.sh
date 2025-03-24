@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
+# Determine the script's directory
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 set -e  # Exit on error
 
-# Ensure clear-db.sh is executable and run it
-chmod +x ./clear-db.sh
-./clear-db.sh
+$scriptdir/clear-db.sh
 
 # Remove old migrations
-if [ -d "./Migrations" ]; then
-  rm -rf ./Migrations
+if [ -d "$scriptdir/AspNetCoreApp/Migrations" ]; then
+  rm -rf $scriptdir/AspNetCoreApp/Migrations
   echo "✅ Old migrations directory removed."
 fi
-
+cd $scriptdir/AspNetCoreApp
 # Create new migration
 dotnet ef migrations add InitialCreate
 echo "✅ New migration created."

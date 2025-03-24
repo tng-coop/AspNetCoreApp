@@ -68,8 +68,8 @@ jobs:
 
       - name: setup https certificates
         run: |
-          chmod +x ./generate-ca-and-certs.sh
-          ./generate-ca-and-certs.sh
+          chmod +x ./AspNetCoreApp/generate-ca-and-certs.sh
+          ./AspNetCoreApp/generate-ca-and-certs.sh
 
       - name: run tests
         env:

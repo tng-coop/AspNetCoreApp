@@ -1,10 +1,12 @@
 #!/bin/bash
+# Determine the script's directory
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dotnet tool restore
 set -e
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
-LOGFILE="logs/aspnet-server-log-$(date +"%Y%m%d-%H%M%S").log"
+LOGFILE="$scriptdir/logs/aspnet-server-log-$(date +"%Y%m%d-%H%M%S").log"
 
 cleanup() {
     EXIT_CODE=${1:-0}
@@ -20,9 +22,7 @@ cleanup() {
 # Trap interrupt signals (Ctrl+C and termination)
 trap cleanup SIGINT SIGTERM
 
-# Determine the script's directory
-scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
+cd $scriptdir/AspNetCoreApp
 for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Development.json; do
   [[ -f "$file" ]] || { echo "❌ Required file '$file' missing."; exit 1; }
 done
@@ -70,6 +70,7 @@ echo "✅ Server running on $APP_URL"
 curl -fsSL --cacert localhost-ca.crt "$APP_URL/swagger/index.html" | grep -q '<title>Swagger UI</title>' && \
   echo "✅ Swagger UI (curl) OK." || { echo "❌ Swagger UI (curl) failed."; cleanup 1; }
 
+cd $scriptdir
 npm ci
 
 output=$("$scriptdir/fetch-html.sh" "$APP_URL/swagger/index.html")
