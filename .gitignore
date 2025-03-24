@@ -487,3 +487,9 @@ $RECYCLE.BIN/
 /localhost*
 neon.env
 /out
+
+
+# Blazor WebAssembly outputs
+Client/bin/
+Client/obj/
+wwwroot/client/_framework/
