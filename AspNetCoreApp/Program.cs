@@ -111,7 +111,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Test"))
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseStaticFiles();
 app.UseRouting();
 
