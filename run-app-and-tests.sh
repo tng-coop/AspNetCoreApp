@@ -30,6 +30,16 @@ done
 chmod +x "$scriptdir/reset-db.sh"
 "$scriptdir/reset-db.sh"
 
+# Run xUnit tests explicitly before starting the app
+cd $scriptdir/AspNetCoreApp.Tests
+if dotnet test; then
+    echo "✅ xUnit tests passed."
+else
+    echo "❌ xUnit tests failed."
+    cleanup 1
+fi
+
+cd $scriptdir/AspNetCoreApp
 # Extract port from environment variable (default to 5001 if not set)
 APP_URL="${Kestrel__Endpoints__Https__Url:-https://localhost:5001}"
 APP_PORT=$(echo "$APP_URL" | sed -E 's/.*:([0-9]+)$/\1/')
