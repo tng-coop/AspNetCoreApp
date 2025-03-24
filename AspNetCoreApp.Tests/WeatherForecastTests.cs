@@ -16,7 +16,6 @@ public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>
     {
     _client = factory.WithWebHostBuilder(builder =>
     {
-builder.UseSetting("ASPNETCORE_ENVIRONMENT", "Test");
 
 builder.ConfigureAppConfiguration((context, config) => 
 {
