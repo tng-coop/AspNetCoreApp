@@ -11,7 +11,7 @@ while [[ "$#" -gt 0 ]]; do
   shift
 done
 
-FILES=$(find . -type f | egrep -vi '(./git|./published|node_module|logs|docs|./bin|./out|/obj|/.git|tests|asset|migratio|\.sh$|launchSett|\.txt$|\.md$|\.css$|\.mjs$|\.env$|localhost|Dockerfile|package-lock|package.json|\.ps1$)')
+FILES=$(find . -type f | egrep -vi '(./git|./published|node_module|logs|docs|./bin|./out|/obj|/.git|PlaywrightTests|asset|migratio|\.sh$|launchSett|\.txt$|\.md$|\.css$|\.mjs$|\.env$|localhost|Dockerfile|package-lock|package.json|\.ps1$)')
 
 for f in $FILES
 do

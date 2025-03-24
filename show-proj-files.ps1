@@ -20,7 +20,7 @@ $requiredFiles = @(
     "appsettings.json",
     "appsettings.*.json",
     "Dockerfile.*",
-    "tests/*.ts"
+    "PlaywrightTests/*.ts"
 )
 
 # Explicitly excluding unnecessary directories
@@ -28,7 +28,7 @@ $excludeDirs = @(
     "bin",
     "obj",
     ".git",
-    "tests/node_modules",
+    "PlaywrightTests/node_modules",
     ".github",
     "Areas/Identity"
 )

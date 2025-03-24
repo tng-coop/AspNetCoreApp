@@ -21,7 +21,7 @@ required_files=(
     "./appsettings.json"
     "./appsettings.*.json"
     "./Dockerfile.*"
-    "tests/*.ts"
+    "PlaywrightTests/*.ts"
 )
 
 # Display contents of required files
@@ -42,7 +42,7 @@ exclude_dirs=(
     "./bin"
     "./obj"
     "./.git"
-    "./tests/node_modules"
+    "./PlaywrightTests/node_modules"
     "./.github"
     "./Areas/Identity"
 )

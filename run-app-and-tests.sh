@@ -83,7 +83,7 @@ else
 fi
 
 # --- Run Playwright tests ---
-cd tests
+cd PlaywrightTests 
 # npx playwright install chromium --with-deps
 
 if npx playwright test; then
