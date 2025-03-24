@@ -4,6 +4,7 @@
   <Content Remove="Client\**\*" />
   <EmbeddedResource Remove="Client\**\*" />
   <None Remove="Client\**\*" />
+  <InternalsVisibleTo Include="AspNetCoreApp.Tests" />
 </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>

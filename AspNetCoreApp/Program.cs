@@ -213,3 +213,5 @@ public class SmtpSettings
     public string Password { get; set; } = "";
     public bool UseStartTls { get; set; }
 }
+
+public partial class Program { }
