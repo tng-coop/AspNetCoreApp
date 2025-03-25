@@ -6,6 +6,8 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using AspNetCoreApp; // Adjust this namespace to match your actual app's namespace
 using Microsoft.Extensions.Configuration;
+using AspNetCoreApp.Models;
+using System.Diagnostics; // Import the models namespace for EF Member
 
 [Collection("DatabaseCollection")]
 public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
@@ -17,12 +19,10 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
         _client = factory.WithWebHostBuilder(builder =>
         {
-
             builder.ConfigureAppConfiguration((context, config) =>
-        {
-            config.AddJsonFile("appsettings.Test.json");
-        });
-
+            {
+                config.AddJsonFile("appsettings.Test.json");
+            });
         }).CreateClient();
     }
 
@@ -42,7 +42,7 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.NotNull(loginResult);
         Assert.False(string.IsNullOrEmpty(loginResult!.Token));
 
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", loginResult.Token);
 
         // Act
@@ -50,6 +50,13 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
 
         // Assert
         response.EnsureSuccessStatusCode();
+        var rc = await response.Content.ReadAsStringAsync();
+
+        // Debug: Log the raw JSON response
+        Debug.WriteLine("Raw JSON Response:");
+        Debug.WriteLine(rc);
+
+        // Deserialize the response into the EF Member class
         var members = await response.Content.ReadFromJsonAsync<List<Member>>();
         Assert.NotNull(members);
         Assert.NotEmpty(members);
@@ -68,4 +75,3 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
 
 // DTO examples:
 public record LoginResponse(string Token);
-public record Member(int Id, string Name);
