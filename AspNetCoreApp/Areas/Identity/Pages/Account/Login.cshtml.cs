@@ -98,7 +98,7 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
 
-                    // ✅ Generate JWT Token
+                    // ✅ Generate JWT Token explicitly
                     var jwtSettings = _configuration.GetSection("JwtSettings");
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
@@ -107,8 +107,9 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
                     {
                         Subject = new ClaimsIdentity(new[]
                         {
-                            new Claim(ClaimTypes.Email, user.Email!)
-                        }),
+            new Claim(ClaimTypes.Email, user.Email!),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+        }),
                         Expires = DateTime.UtcNow.AddDays(7),
                         Issuer = jwtSettings["Issuer"],
                         Audience = jwtSettings["Audience"],
@@ -118,11 +119,15 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
                     var token = tokenHandler.CreateToken(tokenDescriptor);
                     var jwt = tokenHandler.WriteToken(token);
 
-                    // ✅ Pass JWT via ViewData (no cookie)
-                    ViewData["JwtToken"] = jwt;
+                    // ✅ Explicitly store JWT in a separate JS-accessible cookie
+                    HttpContext.Response.Cookies.Append("jwtToken", jwt, new CookieOptions
+                    {
+                        HttpOnly = false,  // explicitly allow JS to access ONLY this JWT cookie
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTimeOffset.UtcNow.AddDays(7)
+                    });
 
-                    // Proceed normally
-                    _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
