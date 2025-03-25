@@ -6,6 +6,7 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using AspNetCoreApp; // Adjust this namespace to match your actual app's namespace
 
+[Collection("DbTestCollection")]
 public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
