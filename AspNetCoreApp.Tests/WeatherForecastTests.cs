@@ -1,8 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
-using AspNetCoreApp;
+
 using Microsoft.AspNetCore.Mvc.Testing;
-using Xunit;
 using Microsoft.Extensions.Configuration;
 
 namespace AspNetCoreApp.Tests;

@@ -1,10 +1,7 @@
 ﻿using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
-using AspNetCoreApp; // Adjust this namespace to match your actual app's namespace
 using Microsoft.Extensions.Configuration;
 using AspNetCoreApp.Models;
 using System.Diagnostics; // Import the models namespace for EF Member
