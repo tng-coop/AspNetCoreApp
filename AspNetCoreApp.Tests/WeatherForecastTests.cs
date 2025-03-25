@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace AspNetCoreApp.Tests;
 
-[Collection("DbTestCollection")]
+[Collection("DatabaseCollection")]
 public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
