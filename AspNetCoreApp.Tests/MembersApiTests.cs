@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using Xunit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using AspNetCoreApp; // Adjust this namespace to match your actual app's namespace
+using Microsoft.Extensions.Configuration;
 
 [Collection("DatabaseCollection")]
 public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
@@ -13,7 +14,16 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>
 
     public MembersApiTests(WebApplicationFactory<Program> factory)
     {
-        _client = factory.CreateClient();
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+        _client = factory.WithWebHostBuilder(builder =>
+        {
+
+            builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddJsonFile("appsettings.Test.json");
+        });
+
+        }).CreateClient();
     }
 
     [Fact]

@@ -20,8 +20,8 @@ public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>
 
             builder.ConfigureAppConfiguration((context, config) =>
         {
-        config.AddJsonFile("appsettings.Test.json");
-    });
+            config.AddJsonFile("appsettings.Test.json");
+        });
 
         }).CreateClient();
     }
