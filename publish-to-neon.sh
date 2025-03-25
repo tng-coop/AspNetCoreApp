@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 set -e  # Exit on any error
 
 # --- Helper function to run SQL commands ---
 run_psql() {
-  PGPASSWORD="$NEON_PGPASSWORD" psql -X -A -t \
-    --host="$NEON_PGHOST" \
-    --username="$NEON_PGUSER" \
-    -c "$1" "$NEON_PGDATABASE" \
+  PGPASSWORD="$NEON_PASSWORD" psql -X -A -t \
+    --host="$NEON_HOST" \
+    --username="$NEON_USER" \
+    -c "$1" "$NEON_DB" \
     -p 5432
 }
 
@@ -17,8 +18,9 @@ run_psql "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" || {
 }
 
 # --- Apply EF migrations ---
+cd $scriptdir/AspNetCoreApp
 echo "Applying EF migrations to Neon..."
-dotnet ef database update --connection "Host=$NEON_PGHOST;Database=$NEON_PGDATABASE;Username=$NEON_PGUSER;Password=$NEON_PGPASSWORD;Ssl Mode=Require;Trust Server Certificate=true;"
+dotnet ef database update --connection "Host=$NEON_HOST;Database=$NEON_DB;Username=$NEON_USER;Password=$NEON_PASSWORD;Ssl Mode=Require;Trust Server Certificate=true;"
 
 # # --- Verify seeded data ---
 # EXPECTED_EMAIL="simon.peter@example.com"
