@@ -484,7 +484,7 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-/localhost*
+/AspNetCoreApp/localhost*
 neon.env
 /out
 
