@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using AspNetCoreApp.Data;
+using AspNetCoreApp.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -190,6 +191,43 @@ app.MapPost("/api/login", async (
 .WithName("ApiLogin")
 .WithOpenApi();
 
+app.MapPost("/api/register", async (
+    UserManager<IdentityUser> userManager,
+    ApplicationDbContext dbContext,
+    IConfiguration config,
+    RegistrationRequest registrationRequest) =>
+{
+    var existingUser = await userManager.FindByEmailAsync(registrationRequest.Email);
+    if (existingUser != null)
+        return Results.BadRequest(new { Message = "Email already registered." });
+
+    var newUser = new IdentityUser
+    {
+        UserName = registrationRequest.Email,
+        Email = registrationRequest.Email,
+        EmailConfirmed = true
+    };
+
+    var result = await userManager.CreateAsync(newUser, registrationRequest.Password);
+    if (!result.Succeeded)
+        return Results.BadRequest(result.Errors);
+
+    await userManager.AddToRoleAsync(newUser, "Member");
+
+    dbContext.Members.Add(new Member
+    {
+        FirstName = registrationRequest.FirstName,
+        LastName = registrationRequest.LastName,
+        Email = registrationRequest.Email,
+        UserId = newUser.Id
+    });
+    await dbContext.SaveChangesAsync();
+
+    return Results.Ok(new { Message = "Registration successful." });
+})
+.WithName("ApiRegister")
+.WithOpenApi()
+.AllowAnonymous();
 // Initialize Database with migrations and seed data
 using (var scope = app.Services.CreateScope())
 {
@@ -206,6 +244,7 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 }
 
 record LoginRequest(string Email, string Password);
+record RegistrationRequest(string FirstName, string LastName, string Email, string Password);
 
 // SmtpSettings class
 public class SmtpSettings
