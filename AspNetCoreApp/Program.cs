@@ -9,6 +9,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AspNetCoreApp.Services;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,7 +81,48 @@ builder.Services.AddAuthentication(options =>
     options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"]!;
     options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"]!;
     options.Scope.Add("user:email");
+})
+.AddOAuth("LINE", options =>
+{
+    options.ClientId = builder.Configuration["Authentication:LINE:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:LINE:ClientSecret"]!;
+
+    options.CallbackPath = new PathString("/signin-line");
+    options.AuthorizationEndpoint = "https://access.line.me/oauth2/v2.1/authorize";
+    options.TokenEndpoint = "https://api.line.me/oauth2/v2.1/token";
+    options.UserInformationEndpoint = "https://api.line.me/v2/profile";
+
+    options.SaveTokens = true;
+
+    options.Scope.Add("profile");
+    options.Scope.Add("openid");
+    options.Scope.Add("email");
+
+    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "userId");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "displayName");
+    options.ClaimActions.MapJsonKey("urn:line:picture", "pictureUrl");
+
+    options.Events = new OAuthEvents
+    {
+        OnCreatingTicket = async context =>
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, options.UserInformationEndpoint);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
+            var response = await context.Backchannel.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+            context.RunClaimActions(json);
+        }
+    };
 });
+
+// Set DisplayName explicitly here:
+builder.Services.Configure<AuthenticationOptions>(opts =>
+{
+    opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
+});
+
 
 
 builder.Services.AddAuthorization(options =>
