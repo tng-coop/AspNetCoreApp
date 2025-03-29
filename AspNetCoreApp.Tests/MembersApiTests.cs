@@ -32,10 +32,10 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>, ID
     // Constructor: sets up environment for tests (runs before each test)
     public MembersApiTests(WebApplicationFactory<Program> factory)
     {
-var appFactory = factory.WithWebHostBuilder(builder =>
-{
-    builder.UseEnvironment("Test"); // Explicitly set environment here
-});
+        var appFactory = factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseEnvironment("Test"); // Explicitly set environment here
+        });
 
         // Initialize HTTP client to simulate API calls
         _client = appFactory.CreateClient();
