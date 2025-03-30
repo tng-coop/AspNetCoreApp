@@ -86,16 +86,18 @@ builder.Services.AddAuthentication(options =>
 {
     options.ClientId = builder.Configuration["Authentication:LINE:ClientId"]!;
     options.ClientSecret = builder.Configuration["Authentication:LINE:ClientSecret"]!;
-
     options.CallbackPath = new PathString("/signin-line");
+
     options.AuthorizationEndpoint = "https://access.line.me/oauth2/v2.1/authorize";
     options.TokenEndpoint = "https://api.line.me/oauth2/v2.1/token";
     options.UserInformationEndpoint = "https://api.line.me/v2/profile";
 
     options.SaveTokens = true;
 
-    options.Scope.Add("profile");
+    // Scopes required for email
+    options.Scope.Clear();
     options.Scope.Add("openid");
+    options.Scope.Add("profile");
     options.Scope.Add("email");
 
     options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "userId");
@@ -111,11 +113,34 @@ builder.Services.AddAuthentication(options =>
             var response = await context.Backchannel.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-
             context.RunClaimActions(json);
+
+            // Extract email from id_token explicitly
+            if (context.TokenResponse?.Response?.RootElement.TryGetProperty("id_token", out var idTokenElement) == true)
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(idTokenElement.GetString());
+
+                var emailClaim = jwt.Claims.FirstOrDefault(c => c.Type == "email");
+                if (emailClaim != null)
+                {
+                    context.Identity?.AddClaim(new Claim(ClaimTypes.Email, emailClaim.Value));
+                }
+
+                // Debugging: log all JWT claims to console
+                foreach (var claim in jwt.Claims)
+                {
+                    Console.WriteLine($"Claim: {claim.Type} - {claim.Value}");
+                }
+            }
+
+            // Log all user info from profile endpoint
+            Console.WriteLine($"Profile JSON: {json}");
         }
     };
+
 });
+
 
 // Set DisplayName explicitly here:
 builder.Services.Configure<AuthenticationOptions>(opts =>
