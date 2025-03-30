@@ -34,34 +34,70 @@
         <section>
             <h3>Use another service to register.</h3>
             <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
+            @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+            {
+                <div>
+                    <p>
+                        There are no external authentication services configured. See this
+                        <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                            article about setting up external login
+                        </a>.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                     <div>
                         <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                if (provider.Name == "LINE")
+                                {
+                                    <button type="button" class="btn btn-primary" onclick="showLineDisclaimer()">@provider.DisplayName</button>
+                                }
+                                else
                                 {
                                     <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                                 }
-                            </p>
-                        </div>
-                    </form>
-                }
+                            }
+                        </p>
+                    </div>
+                </form>
             }
         </section>
     </div>
 </div>
 
+<!-- LINE Disclaimer Modal (EN/JP) -->
+<div class="modal fade" id="lineDisclaimerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Consent to Email Collection / メールアドレス取得の同意</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                By registering with LINE, you consent to share your email address with us.<br />
+                LINEで登録することにより、メールアドレスを弊社と共有することに同意するものとします。<br /><br />
+                <strong>Purpose / 目的:</strong><br />
+                Your email address will be used to manage your account, provide support, and send important notifications.<br />
+                メールアドレスはアカウント管理、サポート提供、重要なお知らせの送信に使用されます。
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel / キャンセル</button>
+                <button type="submit" form="external-account" class="btn btn-primary" name="provider" value="LINE">Agree and Register / 同意して登録</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function showLineDisclaimer() {
+            var disclaimerModal = new bootstrap.Modal(document.getElementById('lineDisclaimerModal'));
+            disclaimerModal.show();
+        }
+    </script>
 }
