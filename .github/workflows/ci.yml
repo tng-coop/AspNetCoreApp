@@ -76,6 +76,8 @@ jobs:
         env:
           Authentication__GitHub__ClientId: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
           Authentication__GitHub__ClientSecret: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
+          Authentication__LINE__ClientId: ${{ secrets.AUTH_LINE_CLIENT_ID }}
+          Authentication__LINE__ClientSecret: ${{ secrets.AUTH_LINE_CLIENT_SECRET }}
         run: |
           chmod +x ./run-app-and-tests.sh
           bash -vx ./run-app-and-tests.sh
