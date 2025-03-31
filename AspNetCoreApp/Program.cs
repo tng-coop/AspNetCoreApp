@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -82,6 +83,20 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"]!;
     options.Scope.Add("user:email");
 })
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    options.Scope.Add("email");
+    options.Scope.Add("profile");
+
+    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+    options.ClaimActions.MapJsonKey("urn:google:picture", "picture");
+
+    options.SaveTokens = true;
+})
 .AddOAuth("LINE", options =>
 {
     options.ClientId = builder.Configuration["Authentication:LINE:ClientId"]!;
@@ -141,14 +156,12 @@ builder.Services.AddAuthentication(options =>
 
 });
 
-
 // Set DisplayName explicitly here:
 builder.Services.Configure<AuthenticationOptions>(opts =>
 {
     opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
+    opts.Schemes.First(s => s.Name == GoogleDefaults.AuthenticationScheme).DisplayName = "Google";
 });
-
-
 
 builder.Services.AddAuthorization(options =>
 {
