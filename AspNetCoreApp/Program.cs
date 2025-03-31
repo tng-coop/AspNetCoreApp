@@ -212,7 +212,8 @@ app.MapRazorPages();
 app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
 {
     var members = await dbContext.Members
-        .Select(m => new { m.FirstName, m.LastName, m.Email })
+        .Include(m => m.User)
+        .Select(m => new { m.FirstName, m.LastName, Email = m.User.Email })
         .ToListAsync();
 
     return Results.Ok(members);
@@ -302,9 +303,9 @@ app.MapPost("/api/register", async (
     {
         FirstName = registrationRequest.FirstName,
         LastName = registrationRequest.LastName,
-        Email = registrationRequest.Email,
         UserId = newUser.Id
     });
+
     await dbContext.SaveChangesAsync();
 
     return Results.Ok(new { Message = "Registration successful." });

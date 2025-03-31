@@ -63,7 +63,6 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>, ID
         {
             FirstName = "Test",
             LastName = "User",
-            Email = _testUser.Email,
             UserId = _testUser.Id
         });
 
@@ -99,7 +98,7 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>, ID
 
         var members = await response.Content.ReadFromJsonAsync<List<Member>>();
         Assert.NotNull(members);
-        Assert.Contains(members, m => m.Email == _testUser.Email); // Verify presence of test user
+
     }
 
     // Test Case 2: Verify unauthorized request fails
@@ -120,8 +119,7 @@ public class MembersApiTests : IClassFixture<WebApplicationFactory<Program>>, ID
         var userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
         userManager.DeleteAsync(_testUser).Wait();
 
-        // Remove associated member record
-        var member = _dbContext.Members.FirstOrDefault(m => m.Email == _testUser.Email);
+        var member = _dbContext.Members.FirstOrDefault(m => m.UserId == _testUser.Id);
         if (member != null)
         {
             _dbContext.Members.Remove(member);

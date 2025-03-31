@@ -60,16 +60,16 @@ public static class DbInitializer
                     var firstName = names.FirstOrDefault() ?? "First";
                     var lastName = names.Skip(1).FirstOrDefault() ?? "Last";
 
-                    var memberExists = await context.Members.AnyAsync(m => m.Email == email);
+                    var memberExists = await context.Members.AnyAsync(m => m.UserId == user.Id);
                     if (!memberExists)
                     {
                         var member = new Member
                         {
                             FirstName = Capitalize(firstName),
                             LastName = Capitalize(lastName),
-                            Email = email,
                             JoinedDate = DateTime.UtcNow,
-                            UserId = user.Id  // link the IdentityUser here
+                            UserId = user.Id,  // link the IdentityUser here
+                            User = user
                         };
 
                         context.Members.Add(member);

@@ -7,6 +7,6 @@
 <ul>
     @foreach (var member in Model.Members)
     {
-        <li>@member.FirstName @member.LastName (@member.Email)</li>
+        <li>@member.FirstName @member.LastName (@member.User.Email)</li>
     }
 </ul>

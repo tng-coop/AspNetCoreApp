@@ -18,6 +18,8 @@ public class MembersModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Members = await _context.Members.ToListAsync();
+        Members = await _context.Members
+            .Include(m => m.User) // ✅ Explicitly include IdentityUser
+            .ToListAsync();
     }
 }
