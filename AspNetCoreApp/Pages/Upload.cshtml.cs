@@ -33,7 +33,7 @@ namespace AspNetCoreApp.Pages
             fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(uploadFile.ContentType);
             content.Add(fileContent, "file", uploadFile.FileName);
 
-            var response = await client.PostAsync("https://your-php-server.com/a.php", content);
+            var response = await client.PostAsync("https://tng.coop/photos/a.php", content);
 
             if (response.IsSuccessStatusCode)
             {
