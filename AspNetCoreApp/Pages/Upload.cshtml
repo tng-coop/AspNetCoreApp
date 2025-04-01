@@ -1,18 +1,28 @@
 @page
-@using AspNetCoreApp.Pages
-@model UploadModel
+@model AspNetCoreApp.Pages.UploadModel
 @{
-    ViewData["Title"] = "File Upload Test";
+    ViewData["Title"] = "File Upload";
 }
 
-<h2>Test File Upload</h2>
+<h2>File Upload</h2>
 
 <form method="post" enctype="multipart/form-data">
-    <input type="file" name="uploadFile" required />
-    <button type="submit">Upload</button>
+    <div class="form-group">
+        <label>Select file to upload:</label>
+        <input type="file" asp-for="uploadFile" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Upload</button>
 </form>
 
-@if (Model.Message != null)
+@if (!string.IsNullOrEmpty(Model.Message))
 {
-    <p>@Model.Message</p>
+    <div class="alert alert-info mt-3">@Model.Message</div>
+}
+
+@if (!string.IsNullOrEmpty(Model.JwtToken))
+{
+    <div class="alert alert-secondary mt-3">
+        <strong>JWT Token for Analysis:</strong><br />
+        <code>@Model.JwtToken</code>
+    </div>
 }
