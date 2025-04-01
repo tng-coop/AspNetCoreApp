@@ -52,6 +52,8 @@ jobs:
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       
       - name: Make reset-db.sh executable
+        env:
+          JwtSettings__Secret: ${{ secrets.JWTSETTINGS_SECRET }}
         run: chmod +x ./reset-db.sh
 
       - name: Restore dotnet
