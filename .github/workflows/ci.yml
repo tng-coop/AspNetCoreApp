@@ -80,7 +80,7 @@ jobs:
           Authentication__LINE__ClientSecret: ${{ secrets.AUTH_LINE_CLIENT_SECRET }}
           Authentication__GOOGLE__ClientId: ${{ secrets.AUTH_GOOGLE_CLIENT_ID }}
           Authentication__GOOGLE__ClientSecret: ${{ secrets.AUTH_GOOGLE_CLIENT_SECRET }}
-          PhotoUpload__Jwt__Key: ${{ secrets.PHOTOUPLOAD_JWT_KEY }}
+          JwtSettings__Secret: ${{ secrets.JWTSETTINGS_SECRET }}
         run: |
           chmod +x ./run-app-and-tests.sh
           bash -vx ./run-app-and-tests.sh
