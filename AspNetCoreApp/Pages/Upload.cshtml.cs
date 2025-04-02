@@ -14,7 +14,6 @@ namespace AspNetCoreApp.Pages
         public IFormFile? uploadFile { get; set; }
 
         public string Message { get; set; } = "";
-        public string JwtToken { get; set; } = "";
 
         public UploadModel(IHttpClientFactory httpClientFactory)
         {
@@ -26,7 +25,6 @@ namespace AspNetCoreApp.Pages
             if (uploadFile == null || uploadFile.Length == 0)
             {
                 Message = "Please select a file to upload.";
-                JwtToken = Request.Cookies["jwtToken"] ?? "JWT cookie not found.";
                 return;
             }
 
@@ -47,9 +45,6 @@ namespace AspNetCoreApp.Pages
             {
                 Message = $"Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
             }
-
-            // Always retrieve JWT directly from your cookie for analysis
-            JwtToken = Request.Cookies["JwtSettings"] ?? "JWT cookie not found.";
         }
     }
 }
