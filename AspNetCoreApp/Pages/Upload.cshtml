@@ -6,20 +6,15 @@
 
 <h2>File Upload</h2>
 
-<form method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label>Select file to upload:</label>
-        <input type="file" asp-for="uploadFile" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary mt-2">Upload</button>
-</form>
+<div class="form-group">
+    <label>Select file to upload:</label>
+    <input type="file" id="uploadFile" class="form-control" />
+</div>
+<button type="button" class="btn btn-primary mt-2" onclick="uploadFileWithJwt()">Upload</button>
 
 <button type="button" class="btn btn-secondary mt-3" onclick="showJwtToken()">Show JWT Token</button>
 
-@if (!string.IsNullOrEmpty(Model.Message))
-{
-    <div class="alert alert-info mt-3">@Model.Message</div>
-}
+<div id="message" class="alert alert-info mt-3" style="display:none;"></div>
 
 @section Scripts {
     <script>
@@ -36,6 +31,40 @@
             } else {
                 alert('JWT Token cookie not found.');
             }
+        }
+
+        function uploadFileWithJwt() {
+            const jwtToken = getCookie('jwtToken');
+            if (!jwtToken) {
+                alert('JWT Token cookie not found.');
+                return;
+            }
+
+            const fileInput = document.getElementById('uploadFile');
+            if (fileInput.files.length === 0) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('https://tng.coop/photos/a.php', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken
+                },
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = data;
+            })
+            .catch(error => {
+                alert('Upload error: ' + error);
+            });
         }
     </script>
 }
