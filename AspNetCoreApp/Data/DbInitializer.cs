@@ -54,26 +54,6 @@ public static class DbInitializer
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, role);
-
-                    // ✅ Also add a corresponding Member record
-                    var names = email.Split('@')[0].Split('.');
-                    var firstName = names.FirstOrDefault() ?? "First";
-                    var lastName = names.Skip(1).FirstOrDefault() ?? "Last";
-
-                    var memberExists = await context.Members.AnyAsync(m => m.UserId == user.Id);
-                    if (!memberExists)
-                    {
-                        var member = new Member
-                        {
-                            FirstName = Capitalize(firstName),
-                            LastName = Capitalize(lastName),
-                            JoinedDate = DateTime.UtcNow,
-                            UserId = user.Id,  // link the IdentityUser here
-                            User = user
-                        };
-
-                        context.Members.Add(member);
-                    }
                 }
                 else
                 {

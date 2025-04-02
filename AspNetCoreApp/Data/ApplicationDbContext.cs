@@ -8,6 +8,5 @@ namespace AspNetCoreApp.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<IdentityUser, IdentityRole, string>(options)
 {
-    public DbSet<Member> Members { get; set; } = null!;
 
 }

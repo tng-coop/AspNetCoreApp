@@ -213,21 +213,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.MapGet("/api/members", async (ApplicationDbContext dbContext) =>
-{
-    var members = await dbContext.Members
-        .Include(m => m.User)
-        .Select(m => new { m.FirstName, m.LastName, Email = m.User.Email })
-        .ToListAsync();
-
-    return Results.Ok(members);
-})
-.RequireAuthorization("ApiPolicy")
-.Produces(StatusCodes.Status200OK)
-.Produces(StatusCodes.Status401Unauthorized)
-.WithName("GetMembersApi")
-.WithOpenApi();
-
 app.MapGet("/weatherforecast", () =>
 {
     var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild",
@@ -303,13 +288,6 @@ app.MapPost("/api/register", async (
 
     await userManager.AddToRoleAsync(newUser, "Member");
 
-    dbContext.Members.Add(new Member
-    {
-        FirstName = registrationRequest.FirstName,
-        LastName = registrationRequest.LastName,
-        UserId = newUser.Id
-    });
-
     await dbContext.SaveChangesAsync();
 
     return Results.Ok(new { Message = "Registration successful." });
@@ -333,7 +311,7 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 }
 
 record LoginRequest(string Email, string Password);
-record RegistrationRequest(string FirstName, string LastName, string Email, string Password);
+record RegistrationRequest(string Email, string Password);
 
 // SmtpSettings class
 public class SmtpSettings
