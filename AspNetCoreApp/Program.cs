@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using AspNetCoreApp.Helpers;
 using AspNetCoreApp.Data;
 using AspNetCoreApp.Models;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders()
 .AddDefaultUI();
+
+builder.Services.AddScoped<JwtTokenHelper>();
 
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, EmailSender>();
 
