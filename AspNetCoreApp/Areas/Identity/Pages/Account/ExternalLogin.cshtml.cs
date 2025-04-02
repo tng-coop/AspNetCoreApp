@@ -10,13 +10,13 @@ using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using AspNetCoreApp.Helpers; // ✅ required clearly for JwtTokenHelper
 
 namespace AspNetCoreApp.Areas.Identity.Pages.Account
 {
@@ -29,13 +29,15 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly JwtTokenHelper _jwtTokenHelper; // ✅ clearly added
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            JwtTokenHelper jwtTokenHelper) // ✅ clearly added here
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -43,6 +45,7 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _logger = logger;
             _emailSender = emailSender;
+            _jwtTokenHelper = jwtTokenHelper; // ✅ clearly assigned here
         }
 
         /// <summary>
@@ -116,6 +119,10 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                
+                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                _jwtTokenHelper.SetJwtCookie(HttpContext, user); // ✅ JWT explicitly added here
+                
                 return LocalRedirect(returnUrl);
             }
             if (result.IsLockedOut)
@@ -170,7 +177,7 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
                         var callbackUrl = Url.Page(
                             "/Account/ConfirmEmail",
                             pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code },
+                            values: new { area = "Identity", userId, code },
                             protocol: Request.Scheme);
 
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
@@ -182,6 +189,8 @@ namespace AspNetCoreApp.Areas.Identity.Pages.Account
                         }
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+                        _jwtTokenHelper.SetJwtCookie(HttpContext, user); // ✅ JWT explicitly added here
+                        
                         return LocalRedirect(returnUrl);
                     }
                 }
