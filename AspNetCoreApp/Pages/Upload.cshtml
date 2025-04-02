@@ -35,6 +35,8 @@
 
         function uploadFileWithJwt() {
             const jwtToken = getCookie('jwtToken');
+            console.log('JWT Token from cookie:', jwtToken);
+
             if (!jwtToken) {
                 alert('JWT Token cookie not found.');
                 return;
@@ -51,9 +53,9 @@
 
             fetch('https://tng.coop/photos/a.php', {
                 method: 'POST',
-                headers: {
+                headers: new Headers({
                     'Authorization': 'Bearer ' + jwtToken
-                },
+                }),
                 body: formData
             })
             .then(response => response.text())
