@@ -64,7 +64,7 @@ done
 cd "$directory" || { echo "Failed to change directory to $directory"; exit 1; }
 
 # Default exclusion pattern
-exclude_pattern='(\.\/git|published|node_module|logs|docs|bin|out|obj|PlaywrightTests|asset|migration|\.sh$|launchSett|\.txt$|\.md$|\.css$|\.mjs$|\.env$|localhost|Dockerfile|package-lock|package.json|\.ps1$)'
+exclude_pattern='(\/.git|published|node_module|logs|docs|bin|out|obj|PlaywrightTests|asset|migration|\.sh$|launchSett|\.txt$|\.md$|\.css$|\.mjs$|\.env$|localhost|Dockerfile|package-lock|package.json|\.ps1$)'
 
 # Extended files (include Identity)
 if [ "$extended" = true ]; then
