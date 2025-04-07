@@ -63,30 +63,68 @@ done
 
 cd "$directory" || { echo "Failed to change directory to $directory"; exit 1; }
 
-# Default exclusion pattern
-exclude_pattern='(\/.git|published|node_module|logs|docs|bin|out|obj|PlaywrightTests|asset|migration|\.sh$|launchSett|\.txt$|\.md$|\.css$|\.mjs$|\.env$|localhost|Dockerfile|package-lock|package.json|\.ps1$)'
+# Define exclusion pattern in readable format
+exclude_pattern='(
+    \/.git|
+    published|
+    node_module|
+    logs|
+    docs|
+    bin|
+    out|
+    obj|
+    PlaywrightTests|
+    asset|
+    migration|
+    \.sh$|
+    launchSett|
+    \.txt$|
+    \.md$|
+    \.css$|
+    \.mjs$|
+    \.env$|
+    localhost|
+    Dockerfile|
+    package-lock|
+    package.json|
+    wwwroot|
+    \.ps1$
+)'
 
+# Remove newlines and spaces for grep compatibility
+exclude_pattern=$(echo "$exclude_pattern" | tr -d '\n ')
+
+# Now use it in grep or other commands
+grep -Ev "$exclude_pattern" your_file
+
+
+# Remove newlines and spaces for grep compatibility
+exclude_pattern=$(echo "$exclude_pattern" | tr -d '\n ')
 # Extended files (include Identity)
 if [ "$extended" = true ]; then
   regex_filter="Member\.cs|ApplicationDbContext\.cs|DbInitializer\.cs|Program\.cs|Members\.cshtml|Members\.cshtml\.cs|_Layout\.cshtml|_LoginPartial\.cshtml|EmailSender\.cs|Identity|Account"
 fi
-
-# Generate file list
+# Generate and safely process file list
 if [[ -n "$regex_filter" ]]; then
-  FILES=$(find . -type f | egrep -vi "$exclude_pattern" | egrep -i "$regex_filter")
+  find . -type f | egrep -vi "$exclude_pattern" | egrep -i "$regex_filter" | while IFS= read -r f; do
+    if [ "$name_only" = true ]; then
+      echo "$f"
+    else
+      echo "$f"
+      echo "----------------"
+      cat "$f"
+      echo "----------------"
+    fi
+  done
 else
-  FILES=$(find . -type f | egrep -vi "$exclude_pattern")
+  find . -type f | egrep -vi "$exclude_pattern" | while IFS= read -r f; do
+    if [ "$name_only" = true ]; then
+      echo "$f"
+    else
+      echo "$f"
+      echo "----------------"
+      cat "$f"
+      echo "----------------"
+    fi
+  done
 fi
-
-# Process files
-for f in $FILES
-do
-  if [ "$name_only" = true ]; then
-    echo "$f"
-  else
-    echo "$f"
-    echo "----------------"
-    cat "$f"
-    echo "----------------"
-  fi
-done

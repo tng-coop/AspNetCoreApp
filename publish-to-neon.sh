@@ -26,7 +26,7 @@ run_psql "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" || {
 
 # --- Apply EF migrations ---
 echo "🔄 Applying EF migrations to Neon..."
-cd "$scriptdir/AspNetCoreApp"
+cd "$scriptdir/BlazorWebApp"
 dotnet ef database update --connection "Host=$NEON_HOST;Database=$NEON_DB;Username=$NEON_USER;Password=$NEON_PASSWORD;Ssl Mode=Require;Trust Server Certificate=true;"
 
 # # --- Verify seeded data ---

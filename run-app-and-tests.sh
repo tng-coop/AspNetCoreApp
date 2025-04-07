@@ -22,7 +22,7 @@ cleanup() {
 # Trap interrupt signals (Ctrl+C and termination)
 trap cleanup SIGINT SIGTERM
 
-cd $scriptdir/AspNetCoreApp
+cd $scriptdir/BlazorWebApp
 for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Development.json; do
   [[ -f "$file" ]] || { echo "❌ Required file '$file' missing."; exit 1; }
 done
@@ -31,7 +31,7 @@ chmod +x "$scriptdir/reset-db.sh"
 "$scriptdir/reset-db.sh"
 
 # Run xUnit tests explicitly before starting the app
-cd $scriptdir/AspNetCoreApp.Tests
+cd $scriptdir/BlazorWebApp.Tests
 if dotnet test; then
     echo "✅ xUnit tests passed."
 else
@@ -39,7 +39,7 @@ else
     cleanup 1
 fi
 
-cd $scriptdir/AspNetCoreApp
+cd $scriptdir/BlazorWebApp
 # Extract port from environment variable (default to 5001 if not set)
 APP_URL="${Kestrel__Endpoints__Https__Url:-https://localhost:5001}"
 APP_PORT=$(echo "$APP_URL" | sed -E 's/.*:([0-9]+)$/\1/')

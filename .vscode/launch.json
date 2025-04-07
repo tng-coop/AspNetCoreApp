@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch and Debug Hosted Blazor WebAssembly App",
+            "type": "blazorwasm",
+            "request": "launch",
+            "hosted": true,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "program": "${workspaceFolder}/BlazorWebApp/bin/Debug/net9.0/BlazorWebApp.dll",
+            "cwd": "${workspaceFolder}/BlazorWebApp",
+            "preLaunchTask": "build",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s"
+            },
+        }
+    ]
+}
