@@ -50,7 +50,11 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Only redirect to HTTPS if NOT in Development:
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseStaticFiles(); // Required if using static assets
 app.UseRouting();
