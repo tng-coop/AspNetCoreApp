@@ -93,11 +93,6 @@ exclude_pattern='(
 
 # Remove newlines and spaces for grep compatibility
 exclude_pattern=$(echo "$exclude_pattern" | tr -d '\n ')
-
-# Now use it in grep or other commands
-grep -Ev "$exclude_pattern" your_file
-
-
 # Remove newlines and spaces for grep compatibility
 exclude_pattern=$(echo "$exclude_pattern" | tr -d '\n ')
 # Extended files (include Identity)
