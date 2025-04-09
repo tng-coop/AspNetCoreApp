@@ -63,7 +63,7 @@ dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
 TIMEOUT=40
-until curl -fsSL --cacert ../AspNetCoreApp/localhost-ca.crt "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
+until curl -fsSL --cacert $scriptdir/cert/localhost-ca.crt "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))
