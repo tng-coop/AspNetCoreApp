@@ -187,7 +187,7 @@ else
             {
                 using (var qrCode = new PngByteQRCode(qrCodeData))
                 {
-                    byte[] qrCodeBytes = qrCode.GetGraphic(20);
+                    byte[] qrCodeBytes = qrCode.GetGraphic(10);
                     qrCodeImageBase64 = Convert.ToBase64String(qrCodeBytes);
                 }
             }
