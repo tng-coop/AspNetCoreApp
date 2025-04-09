@@ -70,9 +70,8 @@ jobs:
 
       - name: setup https certificates
         run: |
-          chmod +x ./generate-ca-and-certs.sh
-          ./generate-ca-and-certs.sh
-        working-directory: cert
+          chmod +x ./cert/generate-ca-and-certs.sh
+          ./cert/generate-ca-and-certs.sh
 
       - name: run tests
         env:
