@@ -92,6 +92,11 @@ builder.Services.AddAuthentication()
             context.RunClaimActions(user.RootElement);
         };
     });    
+    
+builder.Services.Configure<AuthenticationOptions>(opts =>
+{
+    opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
