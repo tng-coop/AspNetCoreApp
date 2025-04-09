@@ -6,6 +6,8 @@
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
 @using BlazorWebApp.Data
+@using QRCoder
+@using System.IO
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityUserAccessor UserAccessor
@@ -38,9 +40,17 @@ else
             </li>
             <li>
                 <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
-                <div></div>
-                <div data-url="@authenticatorUri"></div>
+                <div class="alert alert-info">
+                    Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.
+                </div>
+                @if (!string.IsNullOrWhiteSpace(qrCodeImageBase64))
+                {
+                    <img src="data:image/png;base64,@qrCodeImageBase64" alt="QR Code for Authenticator" />
+                }
+                else
+                {
+                    <p>QR Code not available.</p>
+                }
             </li>
             <li>
                 <p>
@@ -74,6 +84,7 @@ else
     private string? sharedKey;
     private string? authenticatorUri;
     private IEnumerable<string>? recoveryCodes;
+    private string? qrCodeImageBase64;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -84,7 +95,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-
         await LoadSharedKeyAndQrCodeUriAsync(user);
     }
 
@@ -132,6 +142,9 @@ else
 
         var email = await UserManager.GetEmailAsync(user);
         authenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
+
+        // Generate the QR code image after creating the authenticator URI.
+        GenerateQrCode();
     }
 
     private string FormatKey(string unformattedKey)
@@ -159,6 +172,26 @@ else
             UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
             UrlEncoder.Encode(email),
             unformattedKey);
+    }
+
+    private void GenerateQrCode()
+    {
+        if (string.IsNullOrWhiteSpace(authenticatorUri))
+        {
+            return;
+        }
+
+        using (var qrGenerator = new QRCodeGenerator())
+        {
+            using (var qrCodeData = qrGenerator.CreateQrCode(authenticatorUri, QRCodeGenerator.ECCLevel.Q))
+            {
+                using (var qrCode = new PngByteQRCode(qrCodeData))
+                {
+                    byte[] qrCodeBytes = qrCode.GetGraphic(20);
+                    qrCodeImageBase64 = Convert.ToBase64String(qrCodeBytes);
+                }
+            }
+        }
     }
 
     private sealed class InputModel
