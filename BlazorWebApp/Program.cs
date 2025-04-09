@@ -8,7 +8,8 @@ using BlazorWebApp.Services; // <-- Ensure you have this using directive
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using System.Text.Json; // For IEmailSender<T>
+using System.Text.Json;
+using Microsoft.AspNetCore.HttpOverrides; // For IEmailSender<T>
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,13 +92,37 @@ builder.Services.AddAuthentication()
 
             context.RunClaimActions(user.RootElement);
         };
-    });    
-    
+    });
+
+// Forwarded Headers Configuration (only production)
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor;
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+}
+
+
+
+
+
 builder.Services.Configure<AuthenticationOptions>(opts =>
 {
     opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
 });
 var app = builder.Build();
+
+// Use Forwarded Headers only in production (Render)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseForwardedHeaders();
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
