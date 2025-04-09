@@ -18,7 +18,13 @@ export default defineConfig({
       use: { 
         ...devices['Desktop Chrome'],
         channel: 'chrome', // ✅ explicitly uses branded Chrome browser
-      },
+        launchOptions: {
+          args: [
+            '--ozone-platform=wayland',
+            '--enable-features=UseOzonePlatform',
+          ],
+        },
+      },        
     },
   ],
 });

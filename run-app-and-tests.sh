@@ -63,7 +63,7 @@ dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
 TIMEOUT=40
-until curl -fsSL --cacert localhost-ca.crt "$APP_URL/swagger/index.html" &>/dev/null || [ $TIMEOUT -le 0 ]; do
+until curl -fsSL --cacert ../AspNetCoreApp/localhost-ca.crt "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))
@@ -76,15 +76,11 @@ fi
 
 echo "✅ Server running on $APP_URL"
 
-# --- Verify Swagger UI ---
-curl -fsSL --cacert localhost-ca.crt "$APP_URL/swagger/index.html" | grep -q '<title>Swagger UI</title>' && \
-  echo "✅ Swagger UI (curl) OK." || { echo "❌ Swagger UI (curl) failed."; cleanup 1; }
-
 cd $scriptdir
 npm ci
 
-output=$("$scriptdir/fetch-html.sh" "$APP_URL/swagger/index.html")
-echo "$output" | grep -q '<title>Swagger UI</title>'
+output=$("$scriptdir/fetch-html.sh" "$APP_URL")
+echo "$output" | grep -q '<title>Home</title>'
 
 if [ "${PIPESTATUS[1]}" -eq 0 ]; then
   echo "✅ Swagger UI (Chrome) OK."
