@@ -72,7 +72,7 @@ jobs:
         run: |
           chmod +x ./generate-ca-and-certs.sh
           ./generate-ca-and-certs.sh
-        working-directory: AspNetCoreApp/cert
+        working-directory: cert
 
       - name: run tests
         env:
