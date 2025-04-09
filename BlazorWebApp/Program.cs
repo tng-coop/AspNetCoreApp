@@ -110,8 +110,6 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
 app.UseStaticFiles(); // Required if using static assets
 app.UseRouting();
 app.UseAuthentication();
