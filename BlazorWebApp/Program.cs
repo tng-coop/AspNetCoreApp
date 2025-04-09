@@ -1,3 +1,4 @@
+using BlazorWebApp.Helpers;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -106,6 +107,8 @@ if (!builder.Environment.IsDevelopment())
 }
 
 
+// Program.cs
+builder.Services.AddScoped<JwtTokenHelper>();
 
 
 
