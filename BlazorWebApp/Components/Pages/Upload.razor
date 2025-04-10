@@ -1,0 +1,64 @@
+@page "/upload"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http.Headers
+
+
+
+<h3>Upload File</h3>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert alert-info">@Message</div>
+}
+
+<div class="mb-3">
+    <InputFile OnChange="HandleFileSelected" class="form-control" />
+</div>
+<button class="btn btn-primary" @onclick="UploadFileAsync">Upload</button>
+
+@code {
+    [Inject]
+    private IHttpClientFactory HttpClientFactory { get; set; } = default!;
+
+    private IBrowserFile? uploadFile;
+    private string Message = "";
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        uploadFile = e.File;
+        Message = "";
+    }
+
+    private async Task UploadFileAsync()
+    {
+        @inject IJSRuntime JSRuntime
+
+
+            await JSRuntime.InvokeVoidAsync("console.log", "Button clicked");
+        if (uploadFile == null)
+        {
+            Message = "Please select a file to upload.";
+            return;
+        }
+
+        var client = HttpClientFactory.CreateClient();
+
+        using var content = new MultipartFormDataContent();
+        var fileContent = new StreamContent(uploadFile.OpenReadStream(uploadFile.Size));
+        fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(uploadFile.ContentType);
+        content.Add(fileContent, "file", uploadFile.Name);
+
+        var response = await client.PostAsync("https://tng.coop/photos/a.php", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Message = await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            Message = $"Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
+        }
+    }
+}

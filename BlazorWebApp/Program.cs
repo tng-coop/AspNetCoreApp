@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.HttpOverrides; // For IEmailSender<T>
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add these services:
+builder.Services.AddHttpClient(); 
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
