@@ -4,8 +4,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Authorization
 @using System.Net.Http.Headers
-
-
+@inject JwtTokenService JwtService
 
 <h3>Upload File</h3>
 
@@ -32,30 +31,45 @@
         Message = "";
     }
 
-    private async Task UploadFileAsync()
+private async Task UploadFileAsync()
+{
+    if (uploadFile == null)
     {
-        if (uploadFile == null)
-        {
-            Message = "Please select a file to upload.";
-            return;
-        }
-
-        var client = HttpClientFactory.CreateClient();
-
-        using var content = new MultipartFormDataContent();
-        var fileContent = new StreamContent(uploadFile.OpenReadStream(uploadFile.Size));
-        fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(uploadFile.ContentType);
-        content.Add(fileContent, "file", uploadFile.Name);
-
-        var response = await client.PostAsync("https://tng.coop/photos/a.php", content);
-
-        if (response.IsSuccessStatusCode)
-        {
-            Message = await response.Content.ReadAsStringAsync();
-        }
-        else
-        {
-            Message = $"Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
-        }
+        Message = "Please select a file to upload.";
+        return;
     }
+
+    var client = HttpClientFactory.CreateClient();
+
+    var token = JwtService.GenerateToken("user123", "user@example.com");
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+    using var content = new MultipartFormDataContent();
+    
+    // Use a memory stream to ensure file is fully accessible during upload
+    await using var memoryStream = new MemoryStream();
+    await uploadFile.OpenReadStream(uploadFile.Size).CopyToAsync(memoryStream);
+    memoryStream.Position = 0; // Reset stream position to beginning
+
+    var fileContent = new StreamContent(memoryStream);
+    fileContent.Headers.ContentType = new MediaTypeHeaderValue(uploadFile.ContentType);
+    content.Add(fileContent, "file", uploadFile.Name);
+
+    var request = new HttpRequestMessage(HttpMethod.Post, "https://tng.coop/photos/a.php")
+    {
+        Content = content
+    };
+
+    var response = await client.SendAsync(request);
+
+    if (response.IsSuccessStatusCode)
+    {
+        Message = await response.Content.ReadAsStringAsync();
+    }
+    else
+    {
+        Message = $"Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
+    }
+}
+
 }

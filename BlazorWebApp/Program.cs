@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.HttpOverrides; // For IEmailSender<T>
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<JwtTokenService>();
+
 // Add these services:
 builder.Services.AddHttpClient(); 
 
