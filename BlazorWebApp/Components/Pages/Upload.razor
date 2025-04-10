@@ -1,4 +1,5 @@
 @page "/upload"
+@rendermode InteractiveServer
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Authorization
@@ -33,10 +34,6 @@
 
     private async Task UploadFileAsync()
     {
-        @inject IJSRuntime JSRuntime
-
-
-            await JSRuntime.InvokeVoidAsync("console.log", "Button clicked");
         if (uploadFile == null)
         {
             Message = "Please select a file to upload.";

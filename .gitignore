@@ -499,3 +499,5 @@ wwwroot/client/_framework/
 Client.staticwebassets.endpoints.json
 
 /cert/localhost*
+
+jwt_*.pem

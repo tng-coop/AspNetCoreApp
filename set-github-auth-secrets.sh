@@ -8,7 +8,7 @@ required_vars=(
   Authentication__LINE__ClientSecret
   Authentication__Google__ClientId 
   Authentication__Google__ClientSecret
-  JwtSettings__Secret
+  JwtSettings__PrivateKeyBase64
   )
 
 for var in "${required_vars[@]}"; do
@@ -25,6 +25,6 @@ gh secret set AUTH_LINE_CLIENT_ID --body "$Authentication__LINE__ClientId"
 gh secret set AUTH_LINE_CLIENT_SECRET --body "$Authentication__LINE__ClientSecret"
 gh secret set AUTH_GOOGLE_CLIENT_ID --body "$Authentication__Google__ClientId"
 gh secret set AUTH_GOOGLE_CLIENT_SECRET --body "$Authentication__Google__ClientSecret"
-gh secret set JWTSETTINGS_SECRET --body "$JwtSettings__Secret"
+gh secret set JWTSETTINGS_PRIVATE_KEY --body "$JwtSettings__PrivateKeyBase64"
 
 echo "✅ GitHub Actions secrets set successfully!"
