@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
-
+@using System.Globalization
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -7,6 +9,10 @@
 
     <main>
         <div class="top-row px-4">
+            <select class="me-2" style="margin-right:10px;" @onchange="OnCultureChanged">
+                <option value="en-US" selected="@IsSelected("en-US")">English</option>
+                <option value="ja-JP" selected="@IsSelected("ja-JP")">日本語</option>
+            </select>
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
 
@@ -21,3 +27,17 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+@code {
+    private async Task OnCultureChanged(ChangeEventArgs e)
+    {
+        var culture = e.Value!.ToString();
+        if (!string.IsNullOrEmpty(culture))
+        {
+            await JS.InvokeVoidAsync("blazorCulture.set", culture);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+    }
+
+    private bool IsSelected(string culture)
+    => CultureInfo.CurrentCulture.Name.Equals(culture, StringComparison.OrdinalIgnoreCase);
+}
