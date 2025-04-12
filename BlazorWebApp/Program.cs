@@ -26,7 +26,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -119,23 +118,11 @@ if (!builder.Environment.IsDevelopment())
 // Program.cs
 builder.Services.AddScoped<JwtTokenHelper>();
 
+builder.Services.AddScoped<LocalizationService>();
+
 // Localization and HttpContextAccessor for culture management
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
-    var supportedCultures = new[] { new CultureInfo("en"), new CultureInfo("ja") };
-    
-    options.DefaultRequestCulture = new RequestCulture("en");
-    options.SupportedCultures = supportedCultures;
-    options.SupportedUICultures = supportedCultures;
-
-    options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider
-    {
-        CookieName = ".AspNetCore.Culture"
-    });
-});
 
 
 builder.Services.Configure<AuthenticationOptions>(opts =>
@@ -143,8 +130,6 @@ builder.Services.Configure<AuthenticationOptions>(opts =>
     opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
 });
 var app = builder.Build();
-app.UseRequestLocalization();
-
 
 // Use Forwarded Headers only in production (Render)
 if (!app.Environment.IsDevelopment())
@@ -174,6 +159,7 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
 
 app.MapAdditionalIdentityEndpoints();
 

@@ -14,7 +14,19 @@
 </head>
 
 <body>
-    <Routes />
+    <Routes /> <!-- NO rendermode here -->
+
+    <script>
+        window.blazorCulture = {
+            set: function (value) {
+                localStorage.setItem("culture", value);
+            },
+            get: function () {
+                return localStorage.getItem("culture") || "en";
+            },
+        };
+    </script>
+
     <script src="_framework/blazor.web.js"></script>
 </body>
 

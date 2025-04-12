@@ -1,38 +1,37 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
+using Microsoft.JSInterop;
 using BlazorWebApp.Data;
 
 namespace BlazorWebApp.Services;
 
 public class LocalizationService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IJSRuntime _js;
     private readonly AuthenticationStateProvider _authStateProvider;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public event Action? OnChange;
 
     public LocalizationService(
-        IHttpContextAccessor httpContextAccessor,
+        IJSRuntime js,
         AuthenticationStateProvider authStateProvider,
         UserManager<ApplicationUser> userManager)
     {
-        _httpContextAccessor = httpContextAccessor;
+        _js = js;
         _authStateProvider = authStateProvider;
         _userManager = userManager;
     }
 
-    public CultureInfo CurrentCulture => CultureInfo.CurrentCulture;
+    public CultureInfo CurrentCulture { get; private set; } = new("en");
 
-    public async Task InitializeUserCultureAsync()
+    public async Task InitializeAsync()
     {
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        var culture = "en"; // default culture
+        string culture;
 
         if (user.Identity?.IsAuthenticated == true)
         {
@@ -41,12 +40,7 @@ public class LocalizationService
         }
         else
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                var feature = httpContext.Features.Get<IRequestCultureFeature>();
-                culture = feature?.RequestCulture.Culture.Name ?? "en";
-            }
+            culture = await _js.InvokeAsync<string>("blazorCulture.get") ?? "en";
         }
 
         SetThreadCulture(culture);
@@ -58,26 +52,20 @@ public class LocalizationService
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        var httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext is null) return;
-
-        // Set the culture cookie using ASP.NET Core's built-in provider
-        httpContext.Response.Cookies.Append(
-            CookieRequestCultureProvider.DefaultCookieName,
-            CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1), IsEssential = true });
-
         SetThreadCulture(culture);
 
-        // Save to DB if user is authenticated
         if (user.Identity?.IsAuthenticated == true)
         {
             var appUser = await _userManager.GetUserAsync(user);
-            if (appUser != null)
+            if (appUser != null && appUser.PreferredLanguage != culture)
             {
                 appUser.PreferredLanguage = culture;
                 await _userManager.UpdateAsync(appUser);
             }
+        }
+        else
+        {
+            await _js.InvokeVoidAsync("blazorCulture.set", culture);
         }
 
         OnChange?.Invoke();
@@ -88,5 +76,6 @@ public class LocalizationService
         var cultureInfo = new CultureInfo(culture);
         CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
         CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+        CurrentCulture = cultureInfo;
     }
 }
