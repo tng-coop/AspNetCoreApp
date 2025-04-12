@@ -3,11 +3,12 @@
 @implements IDisposable
 @inject LocalizationService Localization
 
-<div class="dropdown">
+<div class="dropdown" style="position: relative;">
     <button class="btn btn-secondary dropdown-toggle" @onclick="ToggleDropdown">
         🌐 @(Localization.CurrentCulture.Name == "en" ? "EN" : "JA")
     </button>
-    <ul class="dropdown-menu @(isDropdownOpen ? "show" : "")">
+    <ul class="dropdown-menu @(isDropdownOpen ? "show" : "")"
+        style="position: absolute; top: 100%; left: 0;">
         <li>
             <a class="dropdown-item @(Localization.CurrentCulture.Name == "en" ? "active" : "")"
                href="#" @onclick="@(() => SetLanguage("en"))" @onclick:preventDefault>
