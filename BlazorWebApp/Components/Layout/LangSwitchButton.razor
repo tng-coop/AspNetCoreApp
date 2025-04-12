@@ -1,44 +1,33 @@
-@rendermode InteractiveServer
 @using BlazorWebApp.Services
 @implements IDisposable
 @inject LocalizationService Localization
+@rendermode InteractiveServer
 
-<div class="dropdown" style="position: relative;">
+
+<div class="dropdown">
     <button class="btn btn-secondary dropdown-toggle" @onclick="ToggleDropdown">
-        🌐 @(Localization.CurrentCulture.Name == "en" ? "EN" : "JA")
+        🌐 @GetCurrentCultureLabel()
     </button>
-    <ul class="dropdown-menu @(isDropdownOpen ? "show" : "")"
-        style="position: absolute; top: 100%; left: 0;">
+    <ul class="dropdown-menu @(GetDropdownMenuClass())">
         <li>
-            <a class="dropdown-item @(Localization.CurrentCulture.Name == "en" ? "active" : "")"
-               href="#" @onclick="@(() => SetLanguage("en"))" @onclick:preventDefault>
-                English @(Localization.CurrentCulture.Name == "en" ? "✔️" : "")
-            </a>
+            <button class="dropdown-item @(GetActiveClass("en"))" @onclick="@(() => SetLanguage("en"))">
+                English @GetCheckmark("en")
+            </button>
         </li>
         <li>
-            <a class="dropdown-item @(Localization.CurrentCulture.Name == "ja" ? "active" : "")"
-               href="#" @onclick="@(() => SetLanguage("ja"))" @onclick:preventDefault>
-                日本語 @(Localization.CurrentCulture.Name == "ja" ? "✔️" : "")
-            </a>
+            <button class="dropdown-item @(GetActiveClass("ja"))" @onclick="@(() => SetLanguage("ja"))">
+                日本語 @GetCheckmark("ja")
+            </button>
         </li>
     </ul>
 </div>
 
 @code {
-    private bool isDropdownOpen = false;
+    private bool isDropdownOpen;
 
     protected override void OnInitialized()
     {
         Localization.OnChange += StateHasChanged;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await Localization.InitializeAsync();
-            StateHasChanged();
-        }
     }
 
     private void ToggleDropdown()
@@ -50,6 +39,34 @@
     {
         isDropdownOpen = false;
         await Localization.SetCultureAsync(culture);
+    }
+
+    private string GetCurrentCultureLabel()
+    {
+        if (Localization.CurrentCulture.Name == "en")
+            return "EN";
+        return "JA";
+    }
+
+    private string GetDropdownMenuClass()
+    {
+        if (isDropdownOpen)
+            return "show";
+        return string.Empty;
+    }
+
+    private string GetActiveClass(string culture)
+    {
+        if (Localization.CurrentCulture.Name == culture)
+            return "active";
+        return string.Empty;
+    }
+
+    private string GetCheckmark(string culture)
+    {
+        if (Localization.CurrentCulture.Name == culture)
+            return "✔️";
+        return string.Empty;
     }
 
     public void Dispose()

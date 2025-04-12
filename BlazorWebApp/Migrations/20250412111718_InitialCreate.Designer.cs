@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250411064521_InitialCreate")]
+    [Migration("20250412111718_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -67,7 +67,7 @@ namespace BlazorWebApp.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("PreferredCulture")
+                    b.Property<string>("PreferredLanguage")
                         .IsRequired()
                         .HasColumnType("text");
 
