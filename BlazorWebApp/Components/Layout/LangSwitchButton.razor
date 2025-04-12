@@ -1,0 +1,26 @@
+@using BlazorWebApp.Services
+@rendermode InteractiveServer
+@inject LocalizationService Localization
+
+<button class="btn btn-secondary ms-2" @onclick="ToggleLanguage">
+    @(Localization.CurrentCulture.Name == "en" ? "日本語" : "English")
+</button>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Localization.OnChange += StateHasChanged;
+        await Localization.InitializeUserCultureAsync();
+    }
+
+    async Task ToggleLanguage()
+    {
+        var newCulture = Localization.CurrentCulture.Name == "en" ? "ja" : "en";
+        await Localization.SetCultureAsync(newCulture);
+    }
+
+    public void Dispose()
+    {
+        Localization.OnChange -= StateHasChanged;
+    }
+}
