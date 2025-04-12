@@ -3,12 +3,28 @@
 @implements IDisposable
 @inject LocalizationService Localization
 
-<button class="btn btn-secondary" @onclick="ToggleLanguage">
-    @(Localization.CurrentCulture.Name == "en" ? "日本語" : "English")
-</button>
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" @onclick="ToggleDropdown">
+        🌐 @(Localization.CurrentCulture.Name == "en" ? "EN" : "JA")
+    </button>
+    <ul class="dropdown-menu @(isDropdownOpen ? "show" : "")">
+        <li>
+            <a class="dropdown-item @(Localization.CurrentCulture.Name == "en" ? "active" : "")"
+               href="#" @onclick="@(() => SetLanguage("en"))" @onclick:preventDefault>
+                English @(Localization.CurrentCulture.Name == "en" ? "✔️" : "")
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item @(Localization.CurrentCulture.Name == "ja" ? "active" : "")"
+               href="#" @onclick="@(() => SetLanguage("ja"))" @onclick:preventDefault>
+                日本語 @(Localization.CurrentCulture.Name == "ja" ? "✔️" : "")
+            </a>
+        </li>
+    </ul>
+</div>
 
 @code {
-    private bool _initialized = false;
+    private bool isDropdownOpen = false;
 
     protected override void OnInitialized()
     {
@@ -17,18 +33,22 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !_initialized)
+        if (firstRender)
         {
             await Localization.InitializeAsync();
-            _initialized = true;
             StateHasChanged();
         }
     }
 
-    private async Task ToggleLanguage()
+    private void ToggleDropdown()
     {
-        var newCulture = Localization.CurrentCulture.Name == "en" ? "ja" : "en";
-        await Localization.SetCultureAsync(newCulture);
+        isDropdownOpen = !isDropdownOpen;
+    }
+
+    private async Task SetLanguage(string culture)
+    {
+        isDropdownOpen = false;
+        await Localization.SetCultureAsync(culture);
     }
 
     public void Dispose()
