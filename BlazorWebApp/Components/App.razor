@@ -19,10 +19,10 @@
     <script>
         window.blazorCulture = {
             set: function (value) {
-                localStorage.setItem("culture", value);
+                localStorage.setItem("blazorCulture", value);
             },
             get: function () {
-                return localStorage.getItem("culture") || "en";
+                return localStorage.getItem("blazorCulture") || "en";
             },
         };
     </script>

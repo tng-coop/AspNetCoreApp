@@ -4,11 +4,11 @@
 @rendermode InteractiveServer
 
 
-<div class="dropdown">
+<div class="dropdown" style="position: relative;">
     <button class="btn btn-secondary dropdown-toggle" @onclick="ToggleDropdown">
         🌐 @GetCurrentCultureLabel()
     </button>
-    <ul class="dropdown-menu @(GetDropdownMenuClass())">
+    <ul class="dropdown-menu @(GetDropdownMenuClass())" style="right: 0; left: auto;">
         <li>
             <button class="dropdown-item @(GetActiveClass("en"))" @onclick="@(() => SetLanguage("en"))">
                 English @GetCheckmark("en")
