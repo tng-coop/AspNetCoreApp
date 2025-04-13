@@ -26,7 +26,7 @@ public class LocalizationService
 
     public CultureInfo CurrentCulture { get; private set; } = new("en");
 
-    public async Task InitializeAsync()
+    public async Task LoadCultureAsync()
     {
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
