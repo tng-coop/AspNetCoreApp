@@ -23,10 +23,17 @@
 
 @code {
     private bool isDropdownOpen;
+    private bool initialized = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Localization.OnChange += StateHasChanged;
+        if (firstRender && !initialized)
+        {
+            await Localization.LoadCultureAsync();
+            Localization.OnChange += StateHasChanged;
+            initialized = true;
+            StateHasChanged();
+        }
     }
 
     private void ToggleDropdown()
