@@ -3,12 +3,11 @@
 @inject LocalizationService Localization
 @rendermode InteractiveServer
 
-
-<div class="dropdown" style="position: relative;">
+<div class="dropdown lang-switch">
     <button class="btn btn-secondary dropdown-toggle" @onclick="ToggleDropdown">
         🌐 @GetCurrentCultureLabel()
     </button>
-    <ul class="dropdown-menu @(GetDropdownMenuClass())" style="right: 0; left: auto;">
+    <ul class="dropdown-menu @(GetDropdownMenuClass())">
         <li>
             <button class="dropdown-item @(GetActiveClass("en"))" @onclick="@(() => SetLanguage("en"))">
                 English @GetCheckmark("en")
@@ -43,30 +42,22 @@
 
     private string GetCurrentCultureLabel()
     {
-        if (Localization.CurrentCulture.Name == "en")
-            return "EN";
-        return "JA";
+        return Localization.CurrentCulture.Name == "en" ? "EN" : "JA";
     }
 
     private string GetDropdownMenuClass()
     {
-        if (isDropdownOpen)
-            return "show";
-        return string.Empty;
+        return isDropdownOpen ? "show" : string.Empty;
     }
 
     private string GetActiveClass(string culture)
     {
-        if (Localization.CurrentCulture.Name == culture)
-            return "active";
-        return string.Empty;
+        return Localization.CurrentCulture.Name == culture ? "active" : string.Empty;
     }
 
     private string GetCheckmark(string culture)
     {
-        if (Localization.CurrentCulture.Name == culture)
-            return "✔️";
-        return string.Empty;
+        return Localization.CurrentCulture.Name == culture ? "✔️" : string.Empty;
     }
 
     public void Dispose()

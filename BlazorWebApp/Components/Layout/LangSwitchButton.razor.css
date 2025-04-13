@@ -1,0 +1,12 @@
+/* Styles specific to LangSwitchButton component */
+
+@media (min-width: 641px) {
+    .lang-switch {
+        position: relative;
+    }
+
+    .lang-switch .dropdown-menu {
+        right: 0;
+        left: auto;
+    }
+}
