@@ -484,7 +484,6 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-/AspNetCoreApp/localhost*
 neon.env
 /out
 
@@ -498,6 +497,6 @@ wwwroot/client/_framework/
 # Static web assets endpoint JSON
 Client.staticwebassets.endpoints.json
 
-/cert/localhost*
+/cert/aspnet*
 
 jwt_*.pem
