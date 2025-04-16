@@ -3,7 +3,7 @@
     "BlazorWebApp": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://aspnet.test:5001;http://aspnet.test:5000",
+      "applicationUrl": "https://aspnet.lan:5001;http://aspnet.lan:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

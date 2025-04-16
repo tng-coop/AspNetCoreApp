@@ -13,7 +13,7 @@
         },
         "serverReadyAction": {
           "action": "openExternally",
-          "pattern": "\\bNow listening on:\\s+(https://aspnet.test:\\d+)",
+          "pattern": "\\bNow listening on:\\s+(https://aspnet.lan:\\d+)",
           "uriFormat": "%s"
         },
         "preLaunchTask": "build"

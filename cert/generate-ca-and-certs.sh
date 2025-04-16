@@ -8,7 +8,7 @@ set -euo pipefail
 # --- Variables ---
 CERT_PASSWORD="yourpassword"
 CA_NAME="AspNetLanDevelopmentCA"
-DOMAIN="aspnet.test"
+DOMAIN="aspnet.lan"
 
 # --- Cleanup existing certificates ---
 rm -f ${DOMAIN}-ca.* ${DOMAIN}.* *.pfx *.pem *.csr *.srl
@@ -28,12 +28,12 @@ sudo cp ${DOMAIN}-ca.crt /usr/local/share/ca-certificates/${CA_NAME}.crt
 sudo update-ca-certificates || true
 certutil -d sql:"$HOME/.pki/nssdb" -A -t "CT,C,C" -n "${CA_NAME}" -i ${DOMAIN}-ca.crt && echo "✅ Root CA trusted."
 
-# --- Generate aspnet.test CSR ---
+# --- Generate aspnet.lan CSR ---
 openssl req -newkey rsa:4096 -nodes \
   -keyout ${DOMAIN}.key -out ${DOMAIN}.csr \
   -subj "/CN=${DOMAIN}"
 
-# --- Sign cert with SAN for aspnet.test ---
+# --- Sign cert with SAN for aspnet.lan ---
 openssl x509 -req -in ${DOMAIN}.csr -CA ${DOMAIN}-ca.crt -CAkey ${DOMAIN}-ca.key \
   -CAcreateserial -out ${DOMAIN}.crt -days 3650 -sha256 \
   -extfile <(echo "subjectAltName=DNS:${DOMAIN}")

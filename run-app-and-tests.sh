@@ -41,7 +41,7 @@ fi
 
 cd $scriptdir/BlazorWebApp
 # Extract port from environment variable (default to 5001 if not set)
-APP_URL="${Kestrel__Endpoints__Https__Url:-https://aspnet.test:5001}"
+APP_URL="${Kestrel__Endpoints__Https__Url:-https://aspnet.lan:5001}"
 APP_PORT=$(echo "$APP_URL" | sed -E 's/.*:([0-9]+)$/\1/')
 
 # Kill existing process on the defined port
@@ -63,7 +63,7 @@ dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
 TIMEOUT=40
-until curl -fsSL --cacert "$scriptdir/cert/aspnet.test-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
+until curl -fsSL --cacert "$scriptdir/cert/aspnet.lan-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))

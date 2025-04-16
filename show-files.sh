@@ -83,7 +83,7 @@ exclude_pattern='(
     \.css$|
     \.mjs$|
     \.env$|
-    aspnet.test|
+    aspnet.lan|
     Dockerfile|
     package-lock|
     package.json|
