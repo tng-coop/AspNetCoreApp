@@ -2,11 +2,11 @@ using System;
 
 namespace BlazorWebApp.Data
 {
-    public class NameUuidRetention
+    public class NameRetention
     {
         public long     Id         { get; set; }      // surrogate PK
         public string   Name       { get; set; } = null!;  // stable key
-        public Guid     Uuid       { get; set; }          // generated GUID
+        public string Value { get; set; } = null!;  // stable value
         public DateTime CreatedAt  { get; set; }          // insertion timestamp
 
         // optional ownership

@@ -6,18 +6,18 @@ using BlazorWebApp.Data;
 
 namespace BlazorWebApp.Services
 {
-    public class NameUuidService : INameUuidService
+    public class NameService : INameService
     {
         private readonly ApplicationDbContext _db;
-        public NameUuidService(ApplicationDbContext db) => _db = db;
+        public NameService(ApplicationDbContext db) => _db = db;
 
-        public async Task<Guid?> GetLatestUuidForNameAsync(string name, string? ownerId = null)
+        public async Task<String?> GetLatestForNameAsync(string name, string? ownerId = null)
         {
-            return await _db.NameUuidRetentions
+            return await _db.NameRetentions
                 .Where(r => r.Name == name
                          && (ownerId == null || r.OwnerId == ownerId))
                 .OrderByDescending(r => r.CreatedAt)
-                .Select(r => r.Uuid)
+                .Select(r => r.Value)
                 .FirstOrDefaultAsync();
         }
     }

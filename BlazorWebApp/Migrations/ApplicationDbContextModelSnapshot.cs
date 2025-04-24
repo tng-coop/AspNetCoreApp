@@ -90,7 +90,7 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.NameUuidRetention", b =>
+            modelBuilder.Entity("BlazorWebApp.Data.NameRetention", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,8 +108,9 @@ namespace BlazorWebApp.Migrations
                     b.Property<string>("OwnerId")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("Uuid")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -117,7 +118,7 @@ namespace BlazorWebApp.Migrations
 
                     b.HasIndex("Name", "CreatedAt");
 
-                    b.ToTable("NameUuidRetentions");
+                    b.ToTable("NameRetentions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -252,10 +253,10 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.NameUuidRetention", b =>
+            modelBuilder.Entity("BlazorWebApp.Data.NameRetention", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.ApplicationUser", "Owner")
-                        .WithMany("NameUuidRetentions")
+                        .WithMany("NameRetentions")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
@@ -314,7 +315,7 @@ namespace BlazorWebApp.Migrations
 
             modelBuilder.Entity("BlazorWebApp.Data.ApplicationUser", b =>
                 {
-                    b.Navigation("NameUuidRetentions");
+                    b.Navigation("NameRetentions");
                 });
 #pragma warning restore 612, 618
         }
