@@ -21,6 +21,7 @@ builder.Services.AddScoped<JwtTokenService>();
 
 // Add these services:
 builder.Services.AddHttpClient(); 
+    builder.Services.AddScoped<INameUuidService, NameUuidService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
