@@ -158,6 +158,27 @@ namespace BlazorWebApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "NameUuidRetentions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    OwnerId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NameUuidRetentions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NameUuidRetentions_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -194,6 +215,16 @@ namespace BlazorWebApp.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NameUuidRetentions_Name_CreatedAt",
+                table: "NameUuidRetentions",
+                columns: new[] { "Name", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NameUuidRetentions_OwnerId",
+                table: "NameUuidRetentions",
+                column: "OwnerId");
         }
 
         /// <inheritdoc />
@@ -213,6 +244,9 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "NameUuidRetentions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
