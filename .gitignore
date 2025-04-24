@@ -500,3 +500,5 @@ Client.staticwebassets.endpoints.json
 /cert/aspnet*
 
 jwt_*.pem
+
+Uploader/images/*.png

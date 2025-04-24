@@ -1,4 +1,3 @@
-using BlazorWebApp.Helpers;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +10,6 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides; // For IEmailSender<T>
-using Microsoft.AspNetCore.Localization;
-using System.Globalization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -117,8 +114,6 @@ if (!builder.Environment.IsDevelopment())
 
 
 // Program.cs
-builder.Services.AddScoped<JwtTokenHelper>();
-
 builder.Services.AddScoped<LocalizationService>();
 
 // Localization and HttpContextAccessor for culture management
