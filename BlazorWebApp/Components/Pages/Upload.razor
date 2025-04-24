@@ -1,12 +1,16 @@
 @page "/upload"
 @rendermode InteractiveServer
 @attribute [Authorize]
+
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Authorization
 @using System.Net.Http.Headers
 @using System.Security.Claims
-@inject JwtTokenService JwtService
-@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@inject JwtTokenService                JwtService
+@inject AuthenticationStateProvider    AuthenticationStateProvider
+@inject IHttpClientFactory             HttpClientFactory
+@inject IConfiguration                 Configuration
 
 <h3>Upload File</h3>
 
@@ -21,9 +25,6 @@
 <button class="btn btn-primary" @onclick="UploadFileAsync">Upload</button>
 
 @code {
-    [Inject]
-    private IHttpClientFactory HttpClientFactory { get; set; } = default!;
-
     private IBrowserFile? uploadFile;
     private string Message = "";
 
@@ -51,30 +52,27 @@
         }
 
         var realName = user.Identity?.Name ?? "unknown";
-        var email = user.FindFirst(ClaimTypes.Email)?.Value ?? "unknown@example.com";
+        var email    = user.FindFirst(ClaimTypes.Email)?.Value ?? "unknown@example.com";
 
-
+        // generate JWT
         var client = HttpClientFactory.CreateClient();
-
-        var token = JwtService.GenerateToken(realName, email);
+        var token  = JwtService.GenerateToken(realName, email);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+        // prepare multipart content
         using var content = new MultipartFormDataContent();
-
-        await using var memoryStream = new MemoryStream();
-        await uploadFile.OpenReadStream(uploadFile.Size).CopyToAsync(memoryStream);
-        memoryStream.Position = 0;
-
-        var fileContent = new StreamContent(memoryStream);
+        await using var ms = new MemoryStream();
+        await uploadFile.OpenReadStream(uploadFile.Size).CopyToAsync(ms);
+        ms.Position = 0;
+        var fileContent = new StreamContent(ms);
         fileContent.Headers.ContentType = new MediaTypeHeaderValue(uploadFile.ContentType);
         content.Add(fileContent, "file", uploadFile.Name);
 
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://tng.coop/photos/a.php")
-        {
-            Content = content
-        };
+        // read the upload URL from configuration
+        var uploadUrl = Configuration["UploadSettings:Endpoint"]
+                     ?? throw new InvalidOperationException("UploadSettings:Endpoint not set in configuration");
 
-        var response = await client.SendAsync(request);
+        var response = await client.PostAsync(uploadUrl, content);
 
         if (response.IsSuccessStatusCode)
         {
