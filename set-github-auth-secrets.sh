@@ -26,5 +26,7 @@ gh secret set AUTH_LINE_CLIENT_SECRET --body "$Authentication__LINE__ClientSecre
 gh secret set AUTH_GOOGLE_CLIENT_ID --body "$Authentication__Google__ClientId"
 gh secret set AUTH_GOOGLE_CLIENT_SECRET --body "$Authentication__Google__ClientSecret"
 gh secret set JWTSETTINGS_PRIVATE_KEY --body "$JwtSettings__PrivateKeyBase64"
+gh secret set UPLOADSETTINGS_ENDPOINT --body "$UploadSettings__Endpoint"
+gh secret set DOWNLOADSETTINGS_ENDPOINT --body "$DownloadSettings__Endpoint"
 
 echo "✅ GitHub Actions secrets set successfully!"

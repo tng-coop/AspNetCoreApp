@@ -85,6 +85,10 @@ jobs:
           Authentication__GOOGLE__ClientId: ${{ secrets.AUTH_GOOGLE_CLIENT_ID }}
           Authentication__GOOGLE__ClientSecret: ${{ secrets.AUTH_GOOGLE_CLIENT_SECRET }}
           JwtSettings__PrivateKeyBase64: ${{ secrets.JWTSETTINGS_PRIVATE_KEY }}
+          UploadSettings__Endpoint: ${{ secrets.UPLOADSETTINGS_ENDPOINT }}  
+          DownloadSettings__Endpoint: ${{ secrets.DOWNLOADSETTINGS_ENDPOINT }}
+          
+          
         run: |
           chmod +x ./run-app-and-tests.sh
           bash -vx ./run-app-and-tests.sh
