@@ -502,3 +502,4 @@ Client.staticwebassets.endpoints.json
 jwt_*.pem
 
 Uploader/images/*.png
+Uploader/images/*.mp4
