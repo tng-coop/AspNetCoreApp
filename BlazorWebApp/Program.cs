@@ -207,8 +207,9 @@ app.MapPut("/api/name/{key}", async (
         ClaimsPrincipal user,
         INameService svc) =>
 {
-    var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    await svc.SetNameAsync(key, dto.Value, ownerId);
+    // var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    // no OwnerId → always null
+    await svc.SetNameAsync(key, dto.Value, null);
     return Results.NoContent();
 })
 .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);

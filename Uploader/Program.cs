@@ -6,7 +6,8 @@ using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BlazorWebApp.Services;    // for JwtTokenService
+using BlazorWebApp.Services;
+using System.IdentityModel.Tokens.Jwt;    // for JwtTokenService
 
 namespace Uploader
 {
@@ -19,6 +20,7 @@ namespace Uploader
                 Console.WriteLine("Usage:");
                 Console.WriteLine("  dotnet Uploader.dll upload <file-path>");
                 Console.WriteLine("  dotnet Uploader.dll register <key> <value>");
+                Console.WriteLine("  dotnet Uploader.dll token");
             }
 
             if (args.Length == 0)
@@ -28,7 +30,7 @@ namespace Uploader
             }
 
             var mode = args[0].ToLowerInvariant();
-            if (mode != "upload" && mode != "register")
+            if (mode != "upload" && mode != "register" && mode != "token")
             {
                 Console.Error.WriteLine($"Unknown command: {args[0]}");
                 ShowUsage();
@@ -48,24 +50,42 @@ namespace Uploader
                 })
                 .Build();
 
-            var config  = host.Services.GetRequiredService<IConfiguration>();
-            var jwtSvc  = host.Services.GetRequiredService<JwtTokenService>();
+            var config = host.Services.GetRequiredService<IConfiguration>();
+            var jwtSvc = host.Services.GetRequiredService<JwtTokenService>();
             var factory = host.Services.GetRequiredService<IHttpClientFactory>();
 
-            var uploadUrl  = config["UploadSettings:Endpoint"]
+            var uploadUrl = config["UploadSettings:Endpoint"]
                              ?? throw new InvalidOperationException("UploadSettings:Endpoint not configured.");
             var nameSvcUrl = config["NameSettings:Endpoint"]
                              ?? throw new InvalidOperationException("NameSettings:Endpoint not configured.");
 
             // Generate JWT for all operations
             var userId = config["UserSettings:UserId"]!;
-            var email  = config["UserSettings:Email"]!;
-            var token  = jwtSvc.GenerateToken(userId, email);
+            var email = config["UserSettings:Email"]!;
+            var token = jwtSvc.GenerateToken(userId, email);
+
+// … after var token = jwtSvc.GenerateToken(userId, email);
+var handler = new JwtSecurityTokenHandler();
+var jwtToken = handler.ReadJwtToken(token);
+
+// Dump the raw token and its claims so you can see exactly what’s in it:
+Console.WriteLine("=== JWT DUMP ===");
+Console.WriteLine(token);
+Console.WriteLine("=== CLAIMS ===");
+foreach (var c in jwtToken.Claims)
+{
+    Console.WriteLine($"  {c.Type} = {c.Value}");
+}
+Console.WriteLine("===============");
 
             var client = factory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            if (mode == "upload")
+            if (mode == "token")
+            {
+                Console.WriteLine(token);
+                return;
+            }
+            else if (mode == "upload")
             {
                 if (args.Length != 2)
                 {
@@ -79,7 +99,7 @@ namespace Uploader
                     return;
                 }
 
-                using var fs      = File.OpenRead(filePath);
+                using var fs = File.OpenRead(filePath);
                 using var content = new MultipartFormDataContent();
                 content.Add(new StreamContent(fs), "file", Path.GetFileName(filePath));
 
@@ -95,7 +115,7 @@ namespace Uploader
                     Console.Error.WriteLine("Usage: dotnet Uploader.dll register <key> <value>");
                     return;
                 }
-                var key   = args[1];
+                var key = args[1];
                 var value = args[2];
 
                 var dtoJson = JsonSerializer.Serialize(new { value });
