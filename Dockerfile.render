@@ -10,7 +10,17 @@ RUN dotnet publish -c Release -o out
 # Runtime Stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
+
+# Copy published app
 COPY --from=build /app/out .
+
+# Copy and make entrypoint executable
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
+# Expose and configure
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
-ENTRYPOINT ["dotnet", "BlazorWebApp.dll"]
+
+# Use our script as entrypoint
+ENTRYPOINT ["./entrypoint.sh"]
