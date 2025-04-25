@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-# Start the Blazor app in background
-dotnet BlazorWebApp.dll &  
+# 1) start your Blazor app in the background
+dotnet BlazorWebApp.dll &
 app_pid=$!
 
-# Wait until port 8080 is open
 echo "Waiting for server on port 8080…"
-while ! nc -z localhost 8080; do
+
+# 2) loop until /dev/tcp/localhost:8080 responds
+until bash -c ">/dev/tcp/localhost/8080" >/dev/null 2>&1; do
   sleep 1
 done
 
-# Once it’s up:
+# 3) once it’s up, echo
 echo "hello"
 
-# Now hand control back to the server process
+# 4) keep the container alive
 wait $app_pid
