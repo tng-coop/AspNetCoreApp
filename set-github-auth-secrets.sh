@@ -9,6 +9,8 @@ required_vars=(
   Authentication__Google__ClientId 
   Authentication__Google__ClientSecret
   JwtSettings__PrivateKeyBase64
+  UploadSettings__Endpoint
+  DownloadSettings__Endpoint
   )
 
 for var in "${required_vars[@]}"; do
