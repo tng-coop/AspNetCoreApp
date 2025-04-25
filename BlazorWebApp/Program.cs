@@ -192,8 +192,9 @@ app.MapGet("/api/name/{key}", async (
         ClaimsPrincipal user,
         INameService svc) =>
 {
-    var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    var value = await svc.GetLatestForNameAsync(key, ownerId);
+    // var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var value = await svc.GetLatestForNameAsync(key /*ownerId*/);
+    Console.WriteLine($"GET /api/name/{key} → {value}");
     return value is not null
         ? Results.Ok(value)
         : Results.NotFound();
@@ -217,7 +218,8 @@ app.MapPut("/api/name/{key}", async (
 
 
 
-
+app.MapGet("/api/hello", () => Results.Ok("Hello from API!"))
+.RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
 
 
 

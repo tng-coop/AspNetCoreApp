@@ -21,6 +21,7 @@ namespace Uploader
                 Console.WriteLine("  dotnet Uploader.dll upload <file-path>");
                 Console.WriteLine("  dotnet Uploader.dll register <key> <value>");
                 Console.WriteLine("  dotnet Uploader.dll token");
+                Console.WriteLine("  dotnet Uploader.dll get <key>");
             }
 
             if (args.Length == 0)
@@ -30,7 +31,7 @@ namespace Uploader
             }
 
             var mode = args[0].ToLowerInvariant();
-            if (mode != "upload" && mode != "register" && mode != "token")
+            if (mode != "upload" && mode != "register" && mode != "token" && mode != "get")
             {
                 Console.Error.WriteLine($"Unknown command: {args[0]}");
                 ShowUsage();
@@ -64,19 +65,19 @@ namespace Uploader
             var email = config["UserSettings:Email"]!;
             var token = jwtSvc.GenerateToken(userId, email);
 
-// … after var token = jwtSvc.GenerateToken(userId, email);
-var handler = new JwtSecurityTokenHandler();
-var jwtToken = handler.ReadJwtToken(token);
+            // … after var token = jwtSvc.GenerateToken(userId, email);
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
 
-// Dump the raw token and its claims so you can see exactly what’s in it:
-Console.WriteLine("=== JWT DUMP ===");
-Console.WriteLine(token);
-Console.WriteLine("=== CLAIMS ===");
-foreach (var c in jwtToken.Claims)
-{
-    Console.WriteLine($"  {c.Type} = {c.Value}");
-}
-Console.WriteLine("===============");
+            // // Dump the raw token and its claims so you can see exactly what’s in it:
+            // Console.WriteLine("=== JWT DUMP ===");
+            // Console.WriteLine(token);
+            // Console.WriteLine("=== CLAIMS ===");
+            // foreach (var c in jwtToken.Claims)
+            // {
+            //     Console.WriteLine($"  {c.Type} = {c.Value}");
+            // }
+            // Console.WriteLine("===============");
 
             var client = factory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -84,6 +85,19 @@ Console.WriteLine("===============");
             {
                 Console.WriteLine(token);
                 return;
+            }
+            else if (mode == "get")
+            {
+                if (args.Length != 2)
+                {
+                    Console.Error.WriteLine("Usage: dotnet Uploader.dll get <key>");
+                    return;
+                }
+                var key   = args[1];
+                var resp  = await client.GetAsync($"{nameSvcUrl}/{Uri.EscapeDataString(key)}");
+                var body  = await resp.Content.ReadAsStringAsync();
+                Console.WriteLine($"Get      → {(int)resp.StatusCode} {resp.ReasonPhrase}");
+                Console.WriteLine(body);
             }
             else if (mode == "upload")
             {
