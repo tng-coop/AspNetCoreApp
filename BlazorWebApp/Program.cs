@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides; // For IEmailSender<T>
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -99,7 +102,23 @@ builder.Services.AddAuthentication()
 
             context.RunClaimActions(user.RootElement);
         };
-    });
+    }).AddJwtBearer(options =>
+    {
+        var jwt = builder.Configuration.GetSection("JwtSettings");
+        var key = Convert.FromBase64String(jwt["PrivateKeyBase64"]!);
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey         = new SymmetricSecurityKey(key),
+            ValidateIssuer           = true,
+            ValidIssuer              = jwt["Issuer"],
+            ValidateAudience         = true,
+            ValidAudience            = jwt["Audience"],
+            ValidateLifetime         = true
+        };
+    })
+    
+    ;
 
 // Forwarded Headers Configuration (only production)
 if (!builder.Environment.IsDevelopment())
