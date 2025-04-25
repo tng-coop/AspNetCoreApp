@@ -63,6 +63,7 @@ jobs:
       - name: Reset database and apply migrations
         env:
           JwtSettings__Secret: ${{ secrets.JWTSETTINGS_SECRET }}
+          JwtSettings__PrivateKeyBase64: ${{ secrets.JWTSETTINGS_PRIVATE_KEY }}
         run: ./reset-db.sh
 
       - name: Set up Google Chrome
