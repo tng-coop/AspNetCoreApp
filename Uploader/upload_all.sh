@@ -31,5 +31,6 @@ fi
 for img in "${files[@]}"; do
   echo
   echo "👉  Uploading: $img"
-  dotnet "$PROJECT_DLL" "$img"
+  # ** now explicitly call the 'upload' command **
+  dotnet "$PROJECT_DLL" upload "$img"
 done

@@ -12,16 +12,24 @@ using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides; // For IEmailSender<T>
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-
-
+using System.Text;
+using System.Security.Cryptography;
+using BlazorWebApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Prepare RSA key for JWT validation
+var privateKeyPem = Encoding.UTF8.GetString(Convert.FromBase64String(
+    builder.Configuration["JwtSettings:PrivateKeyBase64"]!));
+var rsa = RSA.Create();
+rsa.ImportFromPem(privateKeyPem);
+var rsaKey = new RsaSecurityKey(rsa);
 
 builder.Services.AddScoped<JwtTokenService>();
 
 // Add these services:
-builder.Services.AddHttpClient(); 
-    builder.Services.AddScoped<INameService, NameService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<INameService, NameService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -58,7 +66,6 @@ builder.Services.AddAuthentication()
         options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"]!;
         options.Scope.Add("user:email");
-        // options.CallbackPath = "/signin-github"; // Optional (this is the default)
     }).AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
@@ -104,22 +111,27 @@ builder.Services.AddAuthentication()
         };
     }).AddJwtBearer(options =>
     {
-        var jwt = builder.Configuration.GetSection("JwtSettings");
-        var key = Convert.FromBase64String(jwt["PrivateKeyBase64"]!);
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey         = new SymmetricSecurityKey(key),
-            ValidateIssuer           = true,
-            ValidIssuer              = jwt["Issuer"],
-            ValidateAudience         = true,
-            ValidAudience            = jwt["Audience"],
-            ValidateLifetime         = true
+            IssuerSigningKey = rsaKey,
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            ValidateLifetime = true
         };
-    })
-    
-    ;
-
+    });
+    // Define the "Bearer" policy so .RequireAuthorization("Bearer") works
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy(
+            JwtBearerDefaults.AuthenticationScheme,
+            policy => policy
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+        );
+    });
 // Forwarded Headers Configuration (only production)
 if (!builder.Environment.IsDevelopment())
 {
@@ -130,7 +142,6 @@ if (!builder.Environment.IsDevelopment())
         options.KnownProxies.Clear();
     });
 }
-
 
 // Program.cs
 builder.Services.AddScoped<LocalizationService>();
@@ -171,6 +182,43 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
+
+
+
+
+// GET /api/name/{key}  → 200 OK or 404
+app.MapGet("/api/name/{key}", async (
+        string key,
+        ClaimsPrincipal user,
+        INameService svc) =>
+{
+    var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var value = await svc.GetLatestForNameAsync(key, ownerId);
+    return value is not null
+        ? Results.Ok(value)
+        : Results.NotFound();
+})
+.RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+
+// PUT /api/name/{key}  { "value":"…"}  → 204 No Content
+app.MapPut("/api/name/{key}", async (
+        string key,
+        NameWriteDto dto,
+        ClaimsPrincipal user,
+        INameService svc) =>
+{
+    var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    await svc.SetNameAsync(key, dto.Value, ownerId);
+    return Results.NoContent();
+})
+.RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+
+
+
+
+
+
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
