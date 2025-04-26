@@ -122,16 +122,16 @@ builder.Services.AddAuthentication()
             ValidateLifetime = true
         };
     });
-    // Define the "Bearer" policy so .RequireAuthorization("Bearer") works
-    builder.Services.AddAuthorization(options =>
-    {
-        options.AddPolicy(
-            JwtBearerDefaults.AuthenticationScheme,
-            policy => policy
-                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                .RequireAuthenticatedUser()
-        );
-    });
+// Define the "Bearer" policy so .RequireAuthorization("Bearer") works
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        JwtBearerDefaults.AuthenticationScheme,
+        policy => policy
+            .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+            .RequireAuthenticatedUser()
+    );
+});
 // Forwarded Headers Configuration (only production)
 if (!builder.Environment.IsDevelopment())
 {
@@ -231,15 +231,24 @@ app.MapAdditionalIdentityEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db        = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var nameSvc   = scope.ServiceProvider.GetRequiredService<INameService>();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var nameSvc = scope.ServiceProvider.GetRequiredService<INameService>();
     // ensure database is up-to-date
     db.Database.Migrate();
-    
+
     // only seed if it doesn’t already exist
     if (await nameSvc.GetLatestForNameAsync("hello") == null)
     {
-        await nameSvc.SetNameAsync("hello", "world", ownerId: null);
+        await nameSvc.SetNameAsync("video1", "https://vimeo.com/1078878884", ownerId: null);
+        await nameSvc.SetNameAsync("video2", "https://vimeo.com/1078878886", ownerId: null);
+        await nameSvc.SetNameAsync("video3", "https://vimeo.com/1078878889", ownerId: null);
+        await nameSvc.SetNameAsync("video4", "https://vimeo.com/1078878893", ownerId: null);
+        await nameSvc.SetNameAsync("video5", "https://vimeo.com/1078878899", ownerId: null);
+        await nameSvc.SetNameAsync("video6", "https://vimeo.com/1078878852", ownerId: null);
+        await nameSvc.SetNameAsync("video7", "https://vimeo.com/1078878865", ownerId: null);
+        await nameSvc.SetNameAsync("video8", "https://vimeo.com/1078878869", ownerId: null);
+        await nameSvc.SetNameAsync("video9", "https://vimeo.com/1078878875", ownerId: null);
+        await nameSvc.SetNameAsync("video10", "https://vimeo.com/1078878880", ownerId: null);
     }
 }
 
