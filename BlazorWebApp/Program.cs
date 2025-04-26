@@ -236,19 +236,28 @@ using (var scope = app.Services.CreateScope())
     // ensure database is up-to-date
     db.Database.Migrate();
 
-    // only seed if it doesn’t already exist
-    if (await nameSvc.GetLatestForNameAsync("hello") == null)
+    // define your video seeds
+    var videoSeeds = new Dictionary<string, string>
     {
-        await nameSvc.SetNameAsync("video1", "https://vimeo.com/1078878884", ownerId: null);
-        await nameSvc.SetNameAsync("video2", "https://vimeo.com/1078878886", ownerId: null);
-        await nameSvc.SetNameAsync("video3", "https://vimeo.com/1078878889", ownerId: null);
-        await nameSvc.SetNameAsync("video4", "https://vimeo.com/1078878893", ownerId: null);
-        await nameSvc.SetNameAsync("video5", "https://vimeo.com/1078878899", ownerId: null);
-        await nameSvc.SetNameAsync("video6", "https://vimeo.com/1078878852", ownerId: null);
-        await nameSvc.SetNameAsync("video7", "https://vimeo.com/1078878865", ownerId: null);
-        await nameSvc.SetNameAsync("video8", "https://vimeo.com/1078878869", ownerId: null);
-        await nameSvc.SetNameAsync("video9", "https://vimeo.com/1078878875", ownerId: null);
-        await nameSvc.SetNameAsync("video10", "https://vimeo.com/1078878880", ownerId: null);
+        ["video1"] = "https://vimeo.com/1078878884",
+        ["video2"] = "https://vimeo.com/1078878886",
+        ["video3"] = "https://vimeo.com/1078878889",
+        ["video4"] = "https://vimeo.com/1078878893",
+        ["video5"] = "https://vimeo.com/1078878899",
+        ["video6"] = "https://vimeo.com/1078878852",
+        ["video7"] = "https://vimeo.com/1078878865",
+        ["video8"] = "https://vimeo.com/1078878869",
+        ["video9"] = "https://vimeo.com/1078878875",
+        ["video10"] = "https://vimeo.com/1078878880",
+    };
+
+    foreach (var (key, url) in videoSeeds)
+    {
+        // only insert if there's no existing entry for this key
+        if (await nameSvc.GetLatestForNameAsync(key) is null)
+        {
+            await nameSvc.SetNameAsync(key, url, ownerId: null);
+        }
     }
 }
 
