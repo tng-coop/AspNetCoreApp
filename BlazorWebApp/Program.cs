@@ -229,4 +229,18 @@ app.MapRazorComponents<App>()
 
 app.MapAdditionalIdentityEndpoints();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db        = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var nameSvc   = scope.ServiceProvider.GetRequiredService<INameService>();
+    // ensure database is up-to-date
+    db.Database.Migrate();
+    
+    // only seed if it doesn’t already exist
+    if (await nameSvc.GetLatestForNameAsync("hello") == null)
+    {
+        await nameSvc.SetNameAsync("hello", "world", ownerId: null);
+    }
+}
+
 app.Run();
