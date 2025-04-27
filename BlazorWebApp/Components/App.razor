@@ -26,6 +26,19 @@
             },
         };
     </script>
+    <!-- 1a) Vimeo Player SDK -->
+    <script src="https://player.vimeo.com/api/player.js"></script>
+
+    <!-- 1b) your init function, globally -->
+    <script>
+        window.initVimeoPlayer = function (iframe) {
+            const player = new Vimeo.Player(iframe);
+            player.setVolume(0.5);
+            player.on('play', () => console.log('▶️ Video started'));
+            player.on('pause', () => console.log('⏸️ Video paused'));
+            player.on('ended', () => console.log('🏁 Video ended'));
+        };
+    </script>
 
     <script src="_framework/blazor.web.js"></script>
 </body>

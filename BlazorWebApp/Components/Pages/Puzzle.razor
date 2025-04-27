@@ -3,6 +3,8 @@
 
 @inject IConfiguration Configuration
 @inject BlazorWebApp.Services.INameService NameService
+@inject IJSRuntime JS
+
 @using System.Linq
 
 <PageTitle>Fractal Puzzle (2×3 grid)</PageTitle>
@@ -36,97 +38,117 @@
 
 @if (!string.IsNullOrEmpty(_currentVideoUrl))
 {
-  <div class="mt-4">
-    <iframe src="@_currentVideoUrl"
-            width="640" height="360"
-            frameborder="0"
-            allow="autoplay; fullscreen"
-            allowfullscreen>
-    </iframe>
-  </div>
+  <iframe
+    @ref="_vimeoFrame"
+    src="@_currentVideoUrl"
+    class="floating-video"
+    frameborder="0"
+    allow="autoplay; fullscreen"
+    allowfullscreen>
+  </iframe>
 }
 
 @code {
   private string _downloadEndpoint = "";
   private List<PuzzlePiece> _pieces = new();
   private string? _currentVideoUrl;
+  private ElementReference _vimeoFrame;
 
   protected override void OnInitialized()
   {
-      _downloadEndpoint = Configuration["DownloadSettings:Endpoint"]
-          ?? throw new InvalidOperationException("DownloadSettings:Endpoint not configured");
+    _downloadEndpoint = Configuration["DownloadSettings:Endpoint"]
+      ?? throw new InvalidOperationException("DownloadSettings:Endpoint not configured");
 
-      var piecePaths = new[]
+    var piecePaths = new[]
+    {
+      "M0,0 L120,20 Q140,40 120,60 L100,100 L20,80 Q-10,40 0,0 Z",
+      "M0,10 L120,0 Q150,40 110,70 L20,90 Q-10,60 0,10 Z"
+    };
+    var aspects = new[]
+    {
+      "xMidYMid slice",
+      "xMinYMid slice"
+    };
+
+    const int columns = 2;
+    const double xSpacing = 160, ySpacing = 120;
+
+    _pieces = Enumerable.Range(0, 6)
+      .Select(i =>
       {
-          "M0,0 L120,20 Q140,40 120,60 L100,100 L20,80 Q-10,40 0,0 Z",
-          "M0,10 L120,0 Q150,40 110,70 L20,90 Q-10,60 0,10 Z"
-      };
-      var aspects = new[]
-      {
-          "xMidYMid slice",
-          "xMinYMid slice"
-      };
-
-      const int columns = 2;
-      const double xSpacing = 160, ySpacing = 120;
-
-      _pieces = Enumerable.Range(0, 6)
-          .Select(i =>
-          {
-              var row = i / columns;
-              var col = i % columns;
-              return new PuzzlePiece(
-                  Index:          i + 1,
-                  ShapeId:        $"shape{i+1}",
-                  PathData:       piecePaths[i % piecePaths.Length],
-                  TranslateX:     col * xSpacing + 30,
-                  TranslateY:     row * ySpacing,
-                  XOffset:        -30,
-                  YOffset:        0,
-                  PreserveAspect: aspects[i % aspects.Length]
-              );
-          })
-          .ToList();
+        var row = i / columns;
+        var col = i % columns;
+        return new PuzzlePiece(
+          Index:          i + 1,
+          ShapeId:        $"shape{i+1}",
+          PathData:       piecePaths[i % piecePaths.Length],
+          TranslateX:     col * xSpacing + 30,
+          TranslateY:     row * ySpacing,
+          XOffset:        -30,
+          YOffset:        0,
+          PreserveAspect: aspects[i % aspects.Length]
+        );
+      })
+      .ToList();
   }
 
-  private string Url(int i) => $"{_downloadEndpoint}/colorful_{i}.png";
-
-  private record PuzzlePiece(
-      int    Index,
-      string ShapeId,
-      string PathData,
-      double TranslateX,
-      double TranslateY,
-      int    XOffset,
-      int    YOffset,
-      string PreserveAspect
-  )
+  protected override async Task OnAfterRenderAsync(bool firstRender)
   {
-      public string ClipId => $"clip_{ShapeId}";
+    if (firstRender && !string.IsNullOrEmpty(_currentVideoUrl))
+    {
+      // Call the global init function you added in _Host.cshtml
+      await JS.InvokeVoidAsync("initVimeoPlayer", _vimeoFrame);
+    }
   }
 
   private async Task PlayPieceAsync(int index)
   {
-      var key = $"video{index}";
-      var rawUrl = await NameService.GetLatestForNameAsync(key);
+    var key = $"video{index}";
+    var rawUrl = await NameService.GetLatestForNameAsync(key);
+    if (string.IsNullOrEmpty(rawUrl))
+    {
+      Console.WriteLine($"No video found for {key}");
+      return;
+    }
 
-      if (string.IsNullOrEmpty(rawUrl))
-      {
-          Console.WriteLine($"No video found for {key}");
-          return;
-      }
-
-      _currentVideoUrl = ToVimeoEmbedUrl(rawUrl);
+    _currentVideoUrl = ToVimeoEmbedUrl(rawUrl);
+    StateHasChanged();
   }
 
-  private static string ToVimeoEmbedUrl(string url)
-  {
-      // already an embed link?
-      if (url.Contains("player.vimeo.com"))
-          return url;
+private static string ToVimeoEmbedUrl(string url)
+{
+    // already an embed link?
+    if (url.Contains("player.vimeo.com"))
+    {
+        return AppendAutoplay(url);
+    }
 
-      var uri = new Uri(url);
-      var id  = uri.Segments.Last().Trim('/');
-      return $"https://player.vimeo.com/video/{id}";
+    var uri = new Uri(url);
+    var id  = uri.Segments.Last().Trim('/');
+    var embed = $"https://player.vimeo.com/video/{id}";
+    return AppendAutoplay(embed);
+}
+
+private static string AppendAutoplay(string embedUrl)
+{
+    return embedUrl.Contains('?')
+        ? embedUrl + "&autoplay=1"
+        : embedUrl + "?autoplay=1";
+}
+
+  private string Url(int i) => $"{_downloadEndpoint}/colorful_{i}.png";
+
+  private record PuzzlePiece(
+    int    Index,
+    string ShapeId,
+    string PathData,
+    double TranslateX,
+    double TranslateY,
+    int    XOffset,
+    int    YOffset,
+    string PreserveAspect
+  )
+  {
+    public string ClipId => $"clip_{ShapeId}";
   }
 }
