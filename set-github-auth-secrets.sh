@@ -11,6 +11,7 @@ required_vars=(
   JwtSettings__PrivateKeyBase64
   UploadSettings__Endpoint
   DownloadSettings__Endpoint
+  DefaultUser__Password
   )
 
 for var in "${required_vars[@]}"; do
@@ -30,5 +31,6 @@ gh secret set AUTH_GOOGLE_CLIENT_SECRET --body "$Authentication__Google__ClientS
 gh secret set JWTSETTINGS_PRIVATE_KEY --body "$JwtSettings__PrivateKeyBase64"
 gh secret set UPLOADSETTINGS_ENDPOINT --body "$UploadSettings__Endpoint"
 gh secret set DOWNLOADSETTINGS_ENDPOINT --body "$DownloadSettings__Endpoint"
+gh secret set DEFAULTUSER_PASSWORD --body "$DefaultUser__Password"
 
 echo "✅ GitHub Actions secrets set successfully!"

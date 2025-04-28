@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using BlazorWebApp.Components;
 using BlazorWebApp.Components.Account;
 using BlazorWebApp.Data;
-using BlazorWebApp.Services; // <-- Ensure you have this using directive
+using BlazorWebApp.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
-using Microsoft.AspNetCore.HttpOverrides; // For IEmailSender<T>
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -28,15 +28,14 @@ var rsaKey = new RsaSecurityKey(rsa);
 
 builder.Services.AddScoped<JwtTokenService>();
 
-// Add these services:
+// Add HTTP and application services
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<INameService, NameService>();
 builder.Services.AddScoped<INoteService, NoteService>();
 
-// Add services to the container.
+// Add Razor Components and Authentication State
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -45,10 +44,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 // Configure PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Identity setup with Default UI and Token Providers
@@ -59,27 +56,27 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultUI();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
-// Add GitHub Authentication HERE
+// Authentication configuration
 builder.Services.AddAuthentication()
     .AddGitHub(options =>
     {
         options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"]!;
         options.Scope.Add("user:email");
-    }).AddGoogle(options =>
+    })
+    .AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
         options.Scope.Add("email");
         options.Scope.Add("profile");
-
         options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
         options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
         options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
         options.ClaimActions.MapJsonKey("urn:google:picture", "picture");
-
         options.SaveTokens = true;
-    }).AddOAuth("LINE", options =>
+    })
+    .AddOAuth("LINE", options =>
     {
         options.ClientId = builder.Configuration["Authentication:LINE:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:LINE:ClientSecret"]!;
@@ -106,10 +103,10 @@ builder.Services.AddAuthentication()
             response.EnsureSuccessStatusCode();
 
             using var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-
             context.RunClaimActions(user.RootElement);
         };
-    }).AddJwtBearer(options =>
+    })
+    .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -122,7 +119,8 @@ builder.Services.AddAuthentication()
             ValidateLifetime = true
         };
     });
-// Define the "Bearer" policy so .RequireAuthorization("Bearer") works
+
+// Define the Bearer policy for JWT
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(
@@ -132,7 +130,8 @@ builder.Services.AddAuthorization(options =>
             .RequireAuthenticatedUser()
     );
 });
-// Forwarded Headers Configuration (only production)
+
+// Forwarded Headers in production
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -143,20 +142,20 @@ if (!builder.Environment.IsDevelopment())
     });
 }
 
-// Program.cs
+// Localization and HttpContextAccessor
 builder.Services.AddScoped<LocalizationService>();
-
-// Localization and HttpContextAccessor for culture management
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddHttpContextAccessor();
 
+// Configure custom AuthenticationOptions display names
 builder.Services.Configure<AuthenticationOptions>(opts =>
 {
     opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
 });
+
 var app = builder.Build();
 
-// Use Forwarded Headers only in production (Render)
+// Use Forwarded Headers and HSTS in production
 if (!app.Environment.IsDevelopment())
 {
     app.UseForwardedHeaders();
@@ -165,7 +164,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Configure the HTTP request pipeline.
+// Migrations and error handling
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -176,37 +175,31 @@ else
     app.UseHsts();
 }
 
-app.UseStaticFiles(); // Required if using static assets
+app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
-
-// GET /api/name/{key}  → 200 OK or 404
+// API endpoints
 app.MapGet("/api/name/{key}", async (
         string key,
         ClaimsPrincipal user,
         INameService svc) =>
 {
-    // var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    var value = await svc.GetLatestForNameAsync(key /*ownerId*/);
-    Console.WriteLine($"GET /api/name/{key} → {value}");
+    var value = await svc.GetLatestForNameAsync(key);
     return value is not null
         ? Results.Ok(value)
         : Results.NotFound();
 })
 .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
 
-// PUT /api/name/{key}  { "value":"…"}  → 204 No Content
 app.MapPut("/api/name/{key}", async (
         string key,
         NameWriteDto dto,
         ClaimsPrincipal user,
         INameService svc) =>
 {
-    // var ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    // no OwnerId → always null
     await svc.SetNameAsync(key, dto.Value, null);
     return Results.NoContent();
 })
@@ -215,50 +208,66 @@ app.MapPut("/api/name/{key}", async (
 app.MapGet("/api/hello", () => Results.Ok("Hello from API!"))
 .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
 
+// Blazor render
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapAdditionalIdentityEndpoints();
 
+// Data seeding
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var nameSvc = scope.ServiceProvider.GetRequiredService<INameService>();
+    var db          = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var nameSvc     = scope.ServiceProvider.GetRequiredService<INameService>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    // ensure database is up-to-date
+
+    // Apply migrations
     db.Database.Migrate();
 
-    // seed Member/Admin roles
+    // Seed roles
     foreach (var role in new[] { "Member", "Admin" })
     {
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole(role));
     }
 
-    // seed default Admin user
-    const string adminEmail    = "admin@yourdomain.com";
-    const string adminPassword = "SecureP@ssword123!";
+    // Pull default password from env-var
+    var defaultPassword = builder.Configuration["DefaultUser:Password"]
+                          ?? throw new InvalidOperationException(
+                                "DefaultUser__Password environment variable is not set");
+
+    // Seed default Admin user
+    const string adminEmail = "admin@yourdomain.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
     {
-        adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
-        if ((await userManager.CreateAsync(adminUser, adminPassword)).Succeeded)
+        adminUser = new ApplicationUser
+        {
+            UserName       = adminEmail,
+            Email          = adminEmail,
+            EmailConfirmed = true
+        };
+        if ((await userManager.CreateAsync(adminUser, defaultPassword)).Succeeded)
             await userManager.AddToRoleAsync(adminUser, "Admin");
     }
 
-    // seed default Member user
-    const string memberEmail    = "member@yourdomain.com";
-    const string memberPassword = "SecureP@ssword123!";
+    // Seed default Member user
+    const string memberEmail = "member@yourdomain.com";
     var memberUser = await userManager.FindByEmailAsync(memberEmail);
     if (memberUser == null)
     {
-        memberUser = new ApplicationUser { UserName = memberEmail, Email = memberEmail, EmailConfirmed = true };
-        if ((await userManager.CreateAsync(memberUser, memberPassword)).Succeeded)
+        memberUser = new ApplicationUser
+        {
+            UserName       = memberEmail,
+            Email          = memberEmail,
+            EmailConfirmed = true
+        };
+        if ((await userManager.CreateAsync(memberUser, defaultPassword)).Succeeded)
             await userManager.AddToRoleAsync(memberUser, "Member");
     }
 
-    // define your video seeds
+    // Seed video links
     var videoSeeds = new Dictionary<string, string>
     {
         ["video1"] = "https://vimeo.com/1078878884",
@@ -271,15 +280,12 @@ using (var scope = app.Services.CreateScope())
         ["video8"] = "https://vimeo.com/1078878869",
         ["video9"] = "https://vimeo.com/1078878875",
         ["video10"] = "https://vimeo.com/1078878880",
-    };
+    };  
 
     foreach (var (key, url) in videoSeeds)
     {
-        // only insert if there's no existing entry for this key
         if (await nameSvc.GetLatestForNameAsync(key) is null)
-        {
             await nameSvc.SetNameAsync(key, url, ownerId: null);
-        }
     }
 }
 

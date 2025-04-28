@@ -62,7 +62,7 @@ else
     @foreach (var note in _notes)
     {
         <li class="mb-2">
-            <NavLink href=$"/notes/{note.Id}"><strong>@note.Title</strong></NavLink>
+            <NavLink href="@($"/notes/{note.Id}")"><strong>@note.Title</strong></NavLink>
             <br />
             <small class="text-muted">
               @note.CreatedAt.ToLocalTime():g
