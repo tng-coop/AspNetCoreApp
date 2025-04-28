@@ -26,12 +26,12 @@ namespace BlazorWebApp.Services
 
             var note = new Note
             {
-                Id        = Guid.NewGuid(),
-                Title     = title,
-                Content   = content!,    // suppress null-warning
-                IsPublic  = isPublic,
+                Id = Guid.NewGuid(),
+                Title = title,
+                Content = content!,    // suppress null-warning
+                IsPublic = isPublic,
                 CreatedAt = DateTime.UtcNow,
-                OwnerId   = ownerId
+                OwnerId = ownerId
             };
 
             _db.Notes.Add(note);
@@ -59,6 +59,24 @@ namespace BlazorWebApp.Services
                 .Where(n => n.IsPublic || n.OwnerId == ownerId)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
+        }
+
+        public async Task UpdateNoteAsync(Guid id, string title, string content, bool isPublic)
+        {
+            _logger.LogInformation("NoteService.UpdateNoteAsync starting: Id={Id}, Title='{Title}', isPublic={Pub}",
+                id, title, isPublic);
+
+            var note = await _db.Notes.FindAsync(id);
+            if (note == null)
+                throw new KeyNotFoundException($"Note {id} not found");
+
+            note.Title = title;
+            note.Content = content;
+            note.IsPublic = isPublic;
+
+            await _db.SaveChangesAsync();
+
+            _logger.LogInformation("NoteService.UpdateNoteAsync saved changes for Id={Id}", id);
         }
     }
 }

@@ -267,6 +267,21 @@ using (var scope = app.Services.CreateScope())
             await userManager.AddToRoleAsync(memberUser, "Member");
     }
 
+        // Seed second default Member user
+    const string secondMemberEmail = "member2@yourdomain.com";
+    var secondMemberUser = await userManager.FindByEmailAsync(secondMemberEmail);
+    if (secondMemberUser == null)
+    {
+        secondMemberUser = new ApplicationUser
+        {
+            UserName       = secondMemberEmail,
+            Email          = secondMemberEmail,
+            EmailConfirmed = true
+        };
+        if ((await userManager.CreateAsync(secondMemberUser, defaultPassword)).Succeeded)
+            await userManager.AddToRoleAsync(secondMemberUser, "Member");
+    }
+
     // Seed video links
     var videoSeeds = new Dictionary<string, string>
     {

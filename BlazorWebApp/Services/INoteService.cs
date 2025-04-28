@@ -1,3 +1,4 @@
+// Services/INoteService.cs
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,5 +11,8 @@ namespace BlazorWebApp.Services
         Task<Guid>               CreateNoteAsync(string title, string content, bool isPublic, string? ownerId = null);
         Task<Note?>              GetNoteAsync(Guid id, string? ownerId = null);
         Task<List<Note>>         GetPublicNotesAsync(string? ownerId = null);
+
+        // ← NEW: update an existing note
+        Task                     UpdateNoteAsync(Guid id, string title, string content, bool isPublic);
     }
 }
