@@ -31,7 +31,7 @@ builder.Services.AddScoped<JwtTokenService>();
 // Add these services:
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<INameService, NameService>();
-    builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddScoped<INoteService, NoteService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -41,7 +41,6 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
 
 // Configure PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -58,7 +57,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
     .AddDefaultUI();
-// Register the actual email sender service
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Add GitHub Authentication HERE
@@ -152,7 +150,6 @@ builder.Services.AddScoped<LocalizationService>();
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddHttpContextAccessor();
 
-
 builder.Services.Configure<AuthenticationOptions>(opts =>
 {
     opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
@@ -186,8 +183,6 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 
-
-
 // GET /api/name/{key}  → 200 OK or 404
 app.MapGet("/api/name/{key}", async (
         string key,
@@ -217,17 +212,11 @@ app.MapPut("/api/name/{key}", async (
 })
 .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
 
-
-
-
 app.MapGet("/api/hello", () => Results.Ok("Hello from API!"))
 .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
 
-
-
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
 
 app.MapAdditionalIdentityEndpoints();
 
@@ -235,8 +224,39 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var nameSvc = scope.ServiceProvider.GetRequiredService<INameService>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     // ensure database is up-to-date
     db.Database.Migrate();
+
+    // seed Member/Admin roles
+    foreach (var role in new[] { "Member", "Admin" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+
+    // seed default Admin user
+    const string adminEmail    = "admin@yourdomain.com";
+    const string adminPassword = "SecureP@ssword123!";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+        if ((await userManager.CreateAsync(adminUser, adminPassword)).Succeeded)
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+
+    // seed default Member user
+    const string memberEmail    = "member@yourdomain.com";
+    const string memberPassword = "SecureP@ssword123!";
+    var memberUser = await userManager.FindByEmailAsync(memberEmail);
+    if (memberUser == null)
+    {
+        memberUser = new ApplicationUser { UserName = memberEmail, Email = memberEmail, EmailConfirmed = true };
+        if ((await userManager.CreateAsync(memberUser, memberPassword)).Succeeded)
+            await userManager.AddToRoleAsync(memberUser, "Member");
+    }
 
     // define your video seeds
     var videoSeeds = new Dictionary<string, string>
