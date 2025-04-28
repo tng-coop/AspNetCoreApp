@@ -1,14 +1,16 @@
 @page "/notes/{Id:guid}"
 @rendermode InteractiveServer
+
 @using System.Security.Claims
-@using BlazorWebApp.Models
 @using Microsoft.AspNetCore.Components.Forms
+@using BlazorWebApp.Data
+@using BlazorWebApp.Models
 @using BlazorWebApp.Services
-@using BlazorWebApp.Data 
+
 @inject INoteService NoteService
 @inject NavigationManager Nav
 @inject AuthenticationStateProvider AuthStateProvider
-
+@inject ILogger<NoteDetails> Logger   
 @if (_note is null)
 {
     <p><em>Note not found.</em></p>
@@ -48,25 +50,27 @@ else
 
     @if (_canEdit)
     {
-        <button class="btn btn-secondary" @onclick="BeginEdit">Edit</button>
+        <button type="button"
+                class="btn btn-secondary"
+                @onclick="BeginEdit">
+            Edit
+        </button>
     }
 }
 
 @code {
     [Parameter] public Guid Id { get; set; }
 
-    private Note?         _note;
-    private NoteWriteDto  editDto    = new();
-    private bool          _isEditing;
-    private bool          _canEdit;
-    private string?       _ownerId;
+    private Note?        _note;
+    private NoteWriteDto editDto   = new();
+    private bool         _isEditing;
+    private bool         _canEdit;
+    private string?      _ownerId;
 
     protected override async Task OnInitializedAsync()
     {
-        // get current user id & roles
         var auth = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = auth.User;
-        _ownerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _ownerId = auth.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
 
     protected override async Task OnParametersSetAsync()
@@ -78,13 +82,11 @@ else
             return;
         }
 
-        // only the owner or an admin can edit
-        var auth = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = auth.User;
+        var auth    = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user    = auth.User;
         var isAdmin = user.IsInRole("Admin");
-        _canEdit = _note.OwnerId == _ownerId || isAdmin;
+        _canEdit    = (_note.OwnerId == _ownerId) || isAdmin;
 
-        // prep the DTO for editing
         if (_canEdit)
         {
             editDto.Title    = _note.Title;
@@ -94,21 +96,23 @@ else
     }
 
     private void BeginEdit()
-        => _isEditing = true;
+    {
+                Logger.LogInformation("🔔 BeginEdit fired for Note {NoteId}", Id);
+
+        _isEditing = true;
+        StateHasChanged();
+    }
 
     private async Task SaveEdit()
     {
         await NoteService.UpdateNoteAsync(Id, editDto.Title, editDto.Content, editDto.IsPublic);
         _isEditing = false;
-
-        // reload so we see any computed changes (timestamps, etc)
-        _note = await NoteService.GetNoteAsync(Id, _ownerId);
+        _note      = await NoteService.GetNoteAsync(Id, _ownerId);
     }
 
     private void CancelEdit()
     {
         _isEditing = false;
-        // revert DTO
         if (_note != null)
         {
             editDto.Title    = _note.Title;
