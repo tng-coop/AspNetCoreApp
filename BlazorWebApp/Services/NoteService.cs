@@ -41,14 +41,22 @@ namespace BlazorWebApp.Services
             return note.Id;
         }
 
-        public async Task<Note?> GetNoteAsync(Guid id, string? ownerId = null)
+        public async Task<Note?> GetNoteAsync(Guid id, string? ownerId = null, bool isAdmin = false)
         {
-            _logger.LogInformation("NoteService.GetNoteAsync loading Id={Id} for ownerId={OwnerId}", id, ownerId);
-            return await _db.Notes
-                .FirstOrDefaultAsync(n =>
-                    n.Id == id
-                    && (n.IsPublic || n.OwnerId == ownerId)
-                );
+        _logger.LogInformation(
+            "NoteService.GetNoteAsync loading Id={Id} for ownerId={OwnerId}, isAdmin={IsAdmin}",
+            id, ownerId, isAdmin);
+
+        // Base query
+        var query = _db.Notes.AsQueryable();
+
+        // If not an admin, only return public notes or those owned by the user
+        if (!isAdmin)
+        {
+            query = query.Where(n => n.IsPublic || n.OwnerId == ownerId);
+        }
+
+        return await query.FirstOrDefaultAsync(n => n.Id == id);
         }
 
         public async Task<List<Note>> GetPublicNotesAsync(string? ownerId = null)

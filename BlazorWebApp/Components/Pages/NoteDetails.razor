@@ -3,6 +3,7 @@
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging
 @using BlazorWebApp.Data
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
@@ -10,7 +11,8 @@
 @inject INoteService NoteService
 @inject NavigationManager Nav
 @inject AuthenticationStateProvider AuthStateProvider
-@inject ILogger<NoteDetails> Logger   
+@inject ILogger<NoteDetails> Logger
+
 @if (_note is null)
 {
     <p><em>Note not found.</em></p>
@@ -44,6 +46,7 @@ else if (_isEditing)
 }
 else
 {
+    <!-- **HERE** is your display — make sure these lines are present! -->
     <h1>@_note.Title</h1>
     <article>@((MarkupString)_note.Content)</article>
     <p><small>Created: @_note.CreatedAt.ToLocalTime():f</small></p>
@@ -75,17 +78,21 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        _note = await NoteService.GetNoteAsync(Id, _ownerId);
+        var auth    = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user    = auth.User;
+        var isAdmin = user.IsInRole("Admin");
+
+        // load unconditionally if admin, otherwise only public/own
+        _note = await NoteService.GetNoteAsync(Id, _ownerId, isAdmin);
+
         if (_note is null)
         {
             Nav.NavigateTo("/notes");
             return;
         }
 
-        var auth    = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user    = auth.User;
-        var isAdmin = user.IsInRole("Admin");
-        _canEdit    = (_note.OwnerId == _ownerId) || isAdmin;
+        // can edit if admin or owner
+        _canEdit = isAdmin || _note.OwnerId == _ownerId;
 
         if (_canEdit)
         {
@@ -97,23 +104,26 @@ else
 
     private void BeginEdit()
     {
-                Logger.LogInformation("🔔 BeginEdit fired for Note {NoteId}", Id);
-
+        Logger.LogInformation("🔔 BeginEdit fired for Note {NoteId}", Id);
         _isEditing = true;
-        StateHasChanged();
     }
 
     private async Task SaveEdit()
     {
+        var auth    = await AuthStateProvider.GetAuthenticationStateAsync();
+        var isAdmin = auth.User.IsInRole("Admin");
+
         await NoteService.UpdateNoteAsync(Id, editDto.Title, editDto.Content, editDto.IsPublic);
         _isEditing = false;
-        _note      = await NoteService.GetNoteAsync(Id, _ownerId);
+
+        // reload (admins can now see private if they flipped it)
+        _note = await NoteService.GetNoteAsync(Id, _ownerId, isAdmin);
     }
 
     private void CancelEdit()
     {
         _isEditing = false;
-        if (_note != null)
+        if (_note is not null)
         {
             editDto.Title    = _note.Title;
             editDto.Content  = _note.Content;
