@@ -121,6 +121,38 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("NameRetentions");
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.Note", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Notes");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -262,6 +294,15 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.Note", b =>
+                {
+                    b.HasOne("BlazorWebApp.Data.ApplicationUser", "Owner")
+                        .WithMany("Notes")
+                        .HasForeignKey("OwnerId");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -316,6 +357,8 @@ namespace BlazorWebApp.Migrations
             modelBuilder.Entity("BlazorWebApp.Data.ApplicationUser", b =>
                 {
                     b.Navigation("NameRetentions");
+
+                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }

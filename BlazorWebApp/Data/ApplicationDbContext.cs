@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     // ← NEW: your retention table
     public DbSet<NameRetention> NameRetentions { get; set; }
+    public DbSet<Note> Notes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -24,5 +25,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         // index for “latest per name” lookups
         builder.Entity<NameRetention>()
             .HasIndex(r => new { r.Name, r.CreatedAt });
+        // ← NEW: model config for Note
+        builder.Entity<Note>()
+            .HasKey(n => n.Id);
+        builder.Entity<Note>()
+            .HasOne(n => n.Owner)
+            .WithMany(u => u.Notes)
+            .HasForeignKey(n => n.OwnerId)
+            .IsRequired(false);
+        builder.Entity<Note>()
+            .HasIndex(n => n.CreatedAt);
     }
 }

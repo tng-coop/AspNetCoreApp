@@ -1,0 +1,27 @@
+@page "/notes/{Id:guid}"
+@using BlazorWebApp.Data
+@using BlazorWebApp.Services
+@inject INoteService      NoteService
+@inject NavigationManager Nav
+
+@if (_note is null)
+{
+    <p><em>Note not found.</em></p>
+}
+else
+{
+    <h1>@_note.Title</h1>
+    <article>@((MarkupString)_note.Content)</article>
+    <p><small>Created: @_note.CreatedAt.ToLocalTime():f</small></p>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    private Note? _note;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _note = await NoteService.GetNoteAsync(Id);
+        if (_note is null) Nav.NavigateTo("/notes");
+    }
+}

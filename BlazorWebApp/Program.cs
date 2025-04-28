@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ builder.Services.AddScoped<JwtTokenService>();
 // Add these services:
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<INameService, NameService>();
+    builder.Services.AddScoped<INoteService, NoteService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
