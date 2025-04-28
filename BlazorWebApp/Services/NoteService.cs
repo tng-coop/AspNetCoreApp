@@ -21,13 +21,14 @@ namespace BlazorWebApp.Services
 
         public async Task<Guid> CreateNoteAsync(string title, string content, bool isPublic, string? ownerId = null)
         {
-            _logger.LogInformation("NoteService.CreateNoteAsync starting: Title='{Title}', contentLength={Len}, isPublic={Pub}", 
+            _logger.LogInformation("NoteService.CreateNoteAsync starting: Title='{Title}', contentLength={Len}, isPublic={Pub}",
                 title, content?.Length, isPublic);
 
-            var note = new Note {
+            var note = new Note
+            {
                 Id        = Guid.NewGuid(),
                 Title     = title,
-                Content   = content,
+                Content   = content!,    // suppress null-warning
                 IsPublic  = isPublic,
                 CreatedAt = DateTime.UtcNow,
                 OwnerId   = ownerId
@@ -39,11 +40,14 @@ namespace BlazorWebApp.Services
             return note.Id;
         }
 
-        public async Task<Note?> GetNoteAsync(Guid id)
+        public async Task<Note?> GetNoteAsync(Guid id, string? ownerId = null)
         {
-            _logger.LogInformation("NoteService.GetNoteAsync loading Id={Id}", id);
-            return await _db.Notes.FirstOrDefaultAsync(n =>
-                n.Id == id && (n.IsPublic || n.OwnerId != null));
+            _logger.LogInformation("NoteService.GetNoteAsync loading Id={Id} for ownerId={OwnerId}", id, ownerId);
+            return await _db.Notes
+                .FirstOrDefaultAsync(n =>
+                    n.Id == id
+                    && (n.IsPublic || n.OwnerId == ownerId)    // only show private if ownerId matches
+                );
         }
 
         public async Task<List<Note>> GetPublicNotesAsync()

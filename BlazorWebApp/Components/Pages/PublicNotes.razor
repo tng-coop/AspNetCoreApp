@@ -1,12 +1,14 @@
 @page "/notes"
 @rendermode InteractiveServer 
+@using System.Security.Claims
 @using BlazorWebApp.Data
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 
-@inject INoteService       NoteService
-@inject NavigationManager  Nav
-@inject ILogger<PublicNotes> Logger
+@inject INoteService              NoteService
+@inject NavigationManager         Nav
+@inject ILogger<PublicNotes>      Logger
+@inject AuthenticationStateProvider AuthStateProvider
 
 <h1>Public Notes</h1>
 
@@ -18,7 +20,6 @@
 
     <div class="mb-3">
         <label class="form-label">Title</label>
-        <!-- plain <input> with @bind -->
         <input class="form-control"
                @bind="_newNote.Title"
                @bind:event="oninput" />
@@ -27,7 +28,6 @@
 
     <div class="mb-3">
         <label class="form-label">Content</label>
-        <!-- plain <textarea> with @bind -->
         <textarea class="form-control"
                   rows="5"
                   @bind="_newNote.Content"
@@ -88,11 +88,15 @@ else
         Logger.LogInformation("Create() called with Title='{Title}', ContentLen={Len}",
                               _newNote.Title, _newNote.Content?.Length);
 
+        // get the current user ID:
+        var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+        var ownerId = auth.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         var id = await NoteService.CreateNoteAsync(
             _newNote.Title,
             _newNote.Content!,
             _newNote.IsPublic,
-            ownerId: null
+            ownerId
         );
 
         Logger.LogInformation("Saved new note {Id}", id);

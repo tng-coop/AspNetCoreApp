@@ -1,8 +1,10 @@
 @page "/notes/{Id:guid}"
 @using BlazorWebApp.Data
 @using BlazorWebApp.Services
-@inject INoteService      NoteService
+@using System.Security.Claims
+@inject INoteService NoteService
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
 
 @if (_note is null)
 {
@@ -16,12 +18,19 @@ else
 }
 
 @code {
-    [Parameter] public Guid Id { get; set; }
+    [Parameter]
+    public Guid Id { get; set; }
+
     private Note? _note;
 
     protected override async Task OnParametersSetAsync()
     {
-        _note = await NoteService.GetNoteAsync(Id);
-        if (_note is null) Nav.NavigateTo("/notes");
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var ownerId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _note = await NoteService.GetNoteAsync(Id, ownerId);
+        if (_note is null)
+        {
+            Nav.NavigateTo("/notes");
+        }
     }
 }
