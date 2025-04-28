@@ -1,7 +1,7 @@
 @page "/notes/{Id:guid}"
+@using System.Security.Claims
 @using BlazorWebApp.Data
 @using BlazorWebApp.Services
-@using System.Security.Claims
 @inject INoteService NoteService
 @inject NavigationManager Nav
 @inject AuthenticationStateProvider AuthStateProvider
@@ -18,19 +18,20 @@ else
 }
 
 @code {
-    [Parameter]
-    public Guid Id { get; set; }
-
+    [Parameter] public Guid Id { get; set; }
     private Note? _note;
+    private string? _ownerId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _ownerId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    }
 
     protected override async Task OnParametersSetAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var ownerId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        _note = await NoteService.GetNoteAsync(Id, ownerId);
+        _note = await NoteService.GetNoteAsync(Id, _ownerId);
         if (_note is null)
-        {
             Nav.NavigateTo("/notes");
-        }
     }
 }

@@ -33,6 +33,7 @@ namespace BlazorWebApp.Services
                 CreatedAt = DateTime.UtcNow,
                 OwnerId   = ownerId
             };
+
             _db.Notes.Add(note);
             await _db.SaveChangesAsync();
 
@@ -46,19 +47,18 @@ namespace BlazorWebApp.Services
             return await _db.Notes
                 .FirstOrDefaultAsync(n =>
                     n.Id == id
-                    && (n.IsPublic || n.OwnerId == ownerId)    // only show private if ownerId matches
+                    && (n.IsPublic || n.OwnerId == ownerId)
                 );
         }
 
-        public async Task<List<Note>> GetPublicNotesAsync()
+        public async Task<List<Note>> GetPublicNotesAsync(string? ownerId = null)
         {
-            _logger.LogInformation("NoteService.GetPublicNotesAsync loading all public notes");
-            var list = await _db.Notes
-                                .Where(n => n.IsPublic)
-                                .OrderByDescending(n => n.CreatedAt)
-                                .ToListAsync();
-            _logger.LogInformation("NoteService.GetPublicNotesAsync found {Count} notes", list.Count);
-            return list;
+            _logger.LogInformation("NoteService.GetPublicNotesAsync loading all notes for ownerId={OwnerId}", ownerId);
+
+            return await _db.Notes
+                .Where(n => n.IsPublic || n.OwnerId == ownerId)
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
         }
     }
 }

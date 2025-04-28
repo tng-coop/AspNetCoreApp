@@ -10,7 +10,7 @@
 @inject ILogger<PublicNotes>      Logger
 @inject AuthenticationStateProvider AuthStateProvider
 
-<h1>Public Notes</h1>
+<h1>My Notes</h1>
 
 <EditForm Model="_newNote"
           OnValidSubmit="Create"
@@ -54,7 +54,7 @@
 }
 else if (!_notes.Any())
 {
-    <p><em>No public notes yet.</em></p>
+    <p><em>No notes yet.</em></p>
 }
 else
 {
@@ -62,9 +62,11 @@ else
     @foreach (var note in _notes)
     {
         <li class="mb-2">
-            <strong>@note.Title</strong><br />
+            <NavLink href=$"/notes/{note.Id}"><strong>@note.Title</strong></NavLink>
+            <br />
             <small class="text-muted">
-              @note.CreatedAt.ToLocalTime().ToString("g")
+              @note.CreatedAt.ToLocalTime():g
+              @if (!note.IsPublic) { <em>(private)</em> }
             </small>
             <p>@note.Content</p>
         </li>
@@ -75,11 +77,15 @@ else
 @code {
     private List<Note>?   _notes;
     private NoteWriteDto  _newNote = new();
+    private string?       _ownerId;
 
     protected override async Task OnInitializedAsync()
     {
         Logger.LogInformation("Loading notes");
-        _notes = await NoteService.GetPublicNotesAsync();
+        var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+        _ownerId = auth.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        _notes = await NoteService.GetPublicNotesAsync(_ownerId);
         Logger.LogInformation("Loaded {Count} notes", _notes.Count);
     }
 
@@ -88,20 +94,16 @@ else
         Logger.LogInformation("Create() called with Title='{Title}', ContentLen={Len}",
                               _newNote.Title, _newNote.Content?.Length);
 
-        // get the current user ID:
-        var auth = await AuthStateProvider.GetAuthenticationStateAsync();
-        var ownerId = auth.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
         var id = await NoteService.CreateNoteAsync(
             _newNote.Title,
             _newNote.Content!,
             _newNote.IsPublic,
-            ownerId
+            _ownerId
         );
 
         Logger.LogInformation("Saved new note {Id}", id);
 
-        _notes   = await NoteService.GetPublicNotesAsync();
+        _notes = await NoteService.GetPublicNotesAsync(_ownerId);
         _newNote = new();
     }
 }
