@@ -24,9 +24,10 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
   -keyout "${DOMAIN}-ca.key" -out "${DOMAIN}-ca.crt" \
   -subj "/CN=${CA_NAME}" \
   -addext "basicConstraints=critical,CA:true" \
-  -addext "keyUsage=critical,keyCertSign,cRLSign"
+  -addext "keyUsage=critical,keyCertSign,cRLSign" \
+  && echo "✅ Root CA generated."
 
-# --- Trust CA system‑wide & in NSS DB ---
+# --- Trust CA system-wide & in NSS DB ---
 sudo cp "${DOMAIN}-ca.crt" /usr/local/share/ca-certificates/"${CA_NAME}".crt
 sudo update-ca-certificates || true
 certutil -d sql:"$HOME/.pki/nssdb" \
@@ -36,28 +37,39 @@ certutil -d sql:"$HOME/.pki/nssdb" \
 # --- Generate CSR for the leaf cert ---
 openssl req -newkey rsa:4096 -nodes \
   -keyout "${DOMAIN}.key" -out "${DOMAIN}.csr" \
-  -subj "/CN=${DOMAIN}"
+  -subj "/CN=${DOMAIN}" \
+  && echo "✅ Leaf CSR and key generated."
 
 # --- Create an extensions file for the leaf cert ---
 cat > "${DOMAIN}.ext" <<EOF
 basicConstraints=CA:FALSE
-subjectAltName=DNS:${DOMAIN}
+subjectAltName=DNS:${DOMAIN},DNS:localhost,IP:127.0.0.1,IP:::1
 keyUsage=digitalSignature,keyEncipherment
 extendedKeyUsage=serverAuth
 EOF
+echo "✅ Extensions file (${DOMAIN}.ext) written:"
+cat "${DOMAIN}.ext"
 
-# --- Sign leaf cert with CA (≤ 825 days for iOS compliance) ---
+# --- Sign leaf cert with CA (≤ 825 days for iOS/macOS compliance) ---
 openssl x509 -req -in "${DOMAIN}.csr" \
   -CA "${DOMAIN}-ca.crt" -CAkey "${DOMAIN}-ca.key" \
   -CAcreateserial -out "${DOMAIN}.crt" \
   -days 825 -sha256 \
-  -extfile "${DOMAIN}.ext"
+  -extfile "${DOMAIN}.ext" \
+  && echo "✅ Leaf certificate signed (${DOMAIN}.crt)."
 
 # --- Bundle into PFX & PEM for ease of use elsewhere ---
 openssl pkcs12 -export -out "${DOMAIN}.pfx" \
   -inkey "${DOMAIN}.key" -in "${DOMAIN}.crt" \
-  -passout pass:"${CERT_PASSWORD}"
-openssl pkcs12 -in "${DOMAIN}.pfx" -out "${DOMAIN}.pem" \
-  -nodes -passin pass:"${CERT_PASSWORD}"
+  -passout pass:"${CERT_PASSWORD}" \
+  && echo "✅ PFX bundle created (${DOMAIN}.pfx)."
 
-echo "✅ iOS‑compatible certificates for ${DOMAIN} generated."
+openssl pkcs12 -in "${DOMAIN}.pfx" -out "${DOMAIN}.pem" \
+  -nodes -passin pass:"${CERT_PASSWORD}" \
+  && echo "✅ PEM bundle created (${DOMAIN}.pem)."
+
+echo
+echo "✅ iOS-compatible certificates generated for:"
+echo "   • DNS: ${DOMAIN}"
+echo "   • DNS: localhost"
+echo "   • IP: 127.0.0.1 and ::1"

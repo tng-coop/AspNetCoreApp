@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Cryptography;
 using BlazorWebApp.Models;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -160,9 +161,23 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseForwardedHeaders();
     app.UseHsts();
+    app.UseHttpsRedirection();
+}
+else
+{
+    var certPath = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "cert"));
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(certPath),
+        RequestPath  = "/cert"
+    });    
+    app.UseDirectoryBrowser(new DirectoryBrowserOptions
+    {
+        FileProvider = new PhysicalFileProvider(certPath),
+        RequestPath = "/cert"
+    });
 }
 
-app.UseHttpsRedirection();
 
 // Migrations and error handling
 if (app.Environment.IsDevelopment())
@@ -217,8 +232,8 @@ app.MapAdditionalIdentityEndpoints();
 // Data seeding
 using (var scope = app.Services.CreateScope())
 {
-    var db          = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var nameSvc     = scope.ServiceProvider.GetRequiredService<INameService>();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var nameSvc = scope.ServiceProvider.GetRequiredService<INameService>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -244,8 +259,8 @@ using (var scope = app.Services.CreateScope())
     {
         adminUser = new ApplicationUser
         {
-            UserName       = adminEmail,
-            Email          = adminEmail,
+            UserName = adminEmail,
+            Email = adminEmail,
             EmailConfirmed = true
         };
         if ((await userManager.CreateAsync(adminUser, defaultPassword)).Succeeded)
@@ -259,23 +274,23 @@ using (var scope = app.Services.CreateScope())
     {
         memberUser = new ApplicationUser
         {
-            UserName       = memberEmail,
-            Email          = memberEmail,
+            UserName = memberEmail,
+            Email = memberEmail,
             EmailConfirmed = true
         };
         if ((await userManager.CreateAsync(memberUser, defaultPassword)).Succeeded)
             await userManager.AddToRoleAsync(memberUser, "Member");
     }
 
-        // Seed second default Member user
+    // Seed second default Member user
     const string secondMemberEmail = "member2@yourdomain.com";
     var secondMemberUser = await userManager.FindByEmailAsync(secondMemberEmail);
     if (secondMemberUser == null)
     {
         secondMemberUser = new ApplicationUser
         {
-            UserName       = secondMemberEmail,
-            Email          = secondMemberEmail,
+            UserName = secondMemberEmail,
+            Email = secondMemberEmail,
             EmailConfirmed = true
         };
         if ((await userManager.CreateAsync(secondMemberUser, defaultPassword)).Succeeded)
@@ -295,7 +310,7 @@ using (var scope = app.Services.CreateScope())
         ["video8"] = "https://vimeo.com/1078878869",
         ["video9"] = "https://vimeo.com/1078878875",
         ["video10"] = "https://vimeo.com/1078878880",
-    };  
+    };
 
     foreach (var (key, url) in videoSeeds)
     {
