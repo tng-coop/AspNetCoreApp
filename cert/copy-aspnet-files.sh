@@ -1,24 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Source cert folder on yasu’s account
 SRC_DIR="/home/yasu/co/AspNetCoreApp/cert"
-
-# Destination is wherever you run this script
 DEST_DIR="$(pwd)"
-
-# Only files beginning with "aspnet" in the root of SRC_DIR
 PATTERN="aspnet*"
 
-# Sanity check
-if [ ! -d "$SRC_DIR" ]; then
-  echo "❌ Source directory '$SRC_DIR' not found!" >&2
+# Check via sudo if the source directory exists
+if ! sudo test -d "$SRC_DIR"; then
+  echo "❌ Source directory '$SRC_DIR' not found or inaccessible!" >&2
   exit 1
 fi
 
-# Gather matching files
-shopt -s nullglob
-files=( "$SRC_DIR"/$PATTERN )
+# Get the list of matching files via sudo+find
+mapfile -t files < <(sudo find "$SRC_DIR" -maxdepth 1 -type f -name "$PATTERN")
 
 if [ ${#files[@]} -eq 0 ]; then
   echo "⚠️  No files matching '$PATTERN' in '$SRC_DIR'." >&2
