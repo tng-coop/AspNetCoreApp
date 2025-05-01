@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['list'], ['html']],  // ✅ includes both list and html reporters
   use: {
-    baseURL: process.env.Kestrel__Endpoints__Https__Url || 'https://aspnet.lan:5001', // recommended best practice
+    baseURL: process.env.Kestrel__Endpoints__Https__Url || 'process.env.Kestrel__Endpoints__Https__Url NOT SET', // recommended best practice
     ignoreHTTPSErrors: true, // enables self-signed HTTPS
     trace: 'on',
   },

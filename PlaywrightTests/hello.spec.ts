@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('Hello John', async ({ page }) => {
+test('Weather page', async ({ page }) => {
   await page.goto('/weather');
   await expect(page.getByText('This component demonstrates')).toHaveCount(1)
 });

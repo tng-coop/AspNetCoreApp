@@ -40,11 +40,22 @@ else
 fi
 
 cd $scriptdir/BlazorWebApp
-# Extract port from environment variable (default to 5001 if not set)
-APP_URL="${Kestrel__Endpoints__Https__Url:-https://aspnet.lan:5001}"
-APP_PORT=$(echo "$APP_URL" | sed -E 's/.*:([0-9]+)$/\1/')
 
-# Kill existing process on the defined port
+# ─── Require the HTTPS URL secret and export it as the ASP.NET nested env var ───
+SECRET_LINE=$(dotnet user-secrets list | grep '^Kestrel:Endpoints:Https:Url ' || true)
+if [ -z "$SECRET_LINE" ]; then
+    echo "❌ Secret 'Kestrel:Endpoints:Https:Url' is not set in user-secrets."
+    exit 1
+fi
+
+# parse "Key = Value"
+APP_URL=$(printf "%s" "$SECRET_LINE" | cut -d '=' -f2- | sed 's/^ *//')
+APP_PORT=${APP_URL##*:}
+
+# this tells ASP.NET Core (and any child process) to use that URL
+export Kestrel__Endpoints__Https__Url="$APP_URL"
+
+# Kill any existing process on that port
 existing_pid=$(lsof -t -i:$APP_PORT || true)
 if [ -n "$existing_pid" ]; then
     kill -SIGTERM "$existing_pid"
@@ -58,7 +69,7 @@ if [ -n "$existing_pid" ]; then
     echo "✅ Existing server terminated."
 fi
 
-# Start ASP.NET Core app, logs only to file, NOT console
+# Start ASP.NET Core app, logging only to file
 dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
@@ -89,7 +100,7 @@ else
   cleanup 1
 fi
 
-# --- Run Playwright tests ---
+# --- Run Playwright tests (now sees Kestrel__Endpoints__Https__Url) ---
 cd PlaywrightTests 
 # npx playwright install chromium --with-deps
 

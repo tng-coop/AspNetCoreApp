@@ -1,7 +1,8 @@
 #!/bin/bash
 
 scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "${scriptdir}" || exit 1
+mkdir -p "${scriptdir}/cert"
+cd "${scriptdir}/cert" || exit 1
 
 set -euo pipefail
 
@@ -9,6 +10,8 @@ set -euo pipefail
 CERT_PASSWORD="yourpassword"
 CA_NAME="AspNetLanDevelopmentCA"
 DOMAIN="aspnet.lan"
+SHARED_CERT_DIR="/srv/shared/aspnet/cert"
+SHARE_GROUP="aspnet"
 
 # --- Cleanup existing certificates ---
 rm -f "${DOMAIN}-ca."* "${DOMAIN}."* *.pfx *.pem *.csr *.srl *.ext
@@ -26,6 +29,16 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
   -addext "basicConstraints=critical,CA:true" \
   -addext "keyUsage=critical,keyCertSign,cRLSign" \
   && echo "✅ Root CA generated."
+
+# --- Ensure the share group exists ---
+sudo groupadd -f "${SHARE_GROUP}"
+
+# --- Prepare shared directory and publish CA cert ---
+sudo mkdir -p "${SHARED_CERT_DIR}"
+sudo chown root:"${SHARE_GROUP}" "${SHARED_CERT_DIR}"
+sudo chmod 2770 "${SHARED_CERT_DIR}"
+sudo cp "${DOMAIN}-ca.crt" "${SHARED_CERT_DIR}/${DOMAIN}-ca.crt"
+echo "✅ Root CA certificate copied to ${SHARED_CERT_DIR} (group: ${SHARE_GROUP})"
 
 # --- Trust CA system-wide & in NSS DB ---
 sudo cp "${DOMAIN}-ca.crt" /usr/local/share/ca-certificates/"${CA_NAME}".crt

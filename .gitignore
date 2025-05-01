@@ -497,7 +497,7 @@ wwwroot/client/_framework/
 # Static web assets endpoint JSON
 Client.staticwebassets.endpoints.json
 
-/cert/aspnet*
+cert/aspnet*
 
 jwt_*.pem
 
