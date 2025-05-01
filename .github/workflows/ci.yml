@@ -79,6 +79,7 @@ jobs:
 
       - name: run tests
         env:
+          Kestrel__Endpoints__Https__Url: "https://aspnet.lan:5001"
           Authentication__GitHub__ClientId: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
           Authentication__GitHub__ClientSecret: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
           Authentication__LINE__ClientId: ${{ secrets.AUTH_LINE_CLIENT_ID }}

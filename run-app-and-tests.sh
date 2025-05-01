@@ -22,16 +22,18 @@ cleanup() {
 # Trap interrupt signals (Ctrl+C and termination)
 trap cleanup SIGINT SIGTERM
 
-cd $scriptdir/BlazorWebApp
+# Validate required files
+cd "$scriptdir/BlazorWebApp"
 for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Development.json; do
   [[ -f "$file" ]] || { echo "❌ Required file '$file' missing."; exit 1; }
 done
 
+# Reset the database
 chmod +x "$scriptdir/reset-db.sh"
 "$scriptdir/reset-db.sh"
 
 # Run xUnit tests explicitly before starting the app
-cd $scriptdir/BlazorWebApp.Tests
+cd "$scriptdir/BlazorWebApp.Tests"
 if dotnet test; then
     echo "✅ xUnit tests passed."
 else
@@ -39,24 +41,29 @@ else
     cleanup 1
 fi
 
-cd $scriptdir/BlazorWebApp
+cd "$scriptdir/BlazorWebApp"
 
-# ─── Require the HTTPS URL secret and export it as the ASP.NET nested env var ───
-SECRET_LINE=$(dotnet user-secrets list | grep '^Kestrel:Endpoints:Https:Url ' || true)
-if [ -z "$SECRET_LINE" ]; then
-    echo "❌ Secret 'Kestrel:Endpoints:Https:Url' is not set in user-secrets."
+# ─── Determine APP_URL from env-var or user-secrets (or fail) ───
+if [ -n "$Kestrel__Endpoints__Https__Url" ]; then
+    # env-var takes precedence
+    APP_URL="$Kestrel__Endpoints__Https__Url"
+elif SECRET_LINE=$(dotnet user-secrets list | grep '^Kestrel:Endpoints:Https:Url ' || true) && [ -n "$SECRET_LINE" ]; then
+    # parse "Key = Value" from user-secrets
+    APP_URL=$(printf "%s" "$SECRET_LINE" | cut -d '=' -f2- | sed 's/^ *//')
+else
+    echo "❌ Neither env-var Kestrel__Endpoints__Https__Url nor user-secret Kestrel:Endpoints:Https:Url is set."
     exit 1
 fi
 
-# parse "Key = Value"
-APP_URL=$(printf "%s" "$SECRET_LINE" | cut -d '=' -f2- | sed 's/^ *//')
+# Extract port number
 APP_PORT=${APP_URL##*:}
 
-# this tells ASP.NET Core (and any child process) to use that URL
+# Export for ASP.NET Core and Playwright
 export Kestrel__Endpoints__Https__Url="$APP_URL"
+export PLAYWRIGHT_BASE_URL="$APP_URL"
 
-# Kill any existing process on that port
-existing_pid=$(lsof -t -i:$APP_PORT || true)
+# Kill any existing process listening on that port
+existing_pid=$(lsof -t -i:"$APP_PORT" || true)
 if [ -n "$existing_pid" ]; then
     kill -SIGTERM "$existing_pid"
     TIMEOUT=10
@@ -69,10 +76,11 @@ if [ -n "$existing_pid" ]; then
     echo "✅ Existing server terminated."
 fi
 
-# Start ASP.NET Core app, logging only to file
+# Start ASP.NET Core app (logs only to file)
 dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
+# Wait for server to be ready
 TIMEOUT=40
 until curl -fsSL --cacert "$scriptdir/cert/aspnet.lan-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
@@ -87,9 +95,11 @@ fi
 
 echo "✅ Server running on $APP_URL"
 
-cd $scriptdir
+# Install frontend dependencies
+cd "$scriptdir"
 npm ci
 
+# Smoke-test the Swagger UI
 output=$("$scriptdir/fetch-html.sh" "$APP_URL")
 echo "$output" | grep -q '<title>Home</title>'
 
@@ -100,8 +110,8 @@ else
   cleanup 1
 fi
 
-# --- Run Playwright tests (now sees Kestrel__Endpoints__Https__Url) ---
-cd PlaywrightTests 
+# --- Run Playwright tests ---
+cd "$scriptdir/PlaywrightTests"
 # npx playwright install chromium --with-deps
 
 if npx playwright test; then
