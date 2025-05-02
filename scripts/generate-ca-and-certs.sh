@@ -85,11 +85,6 @@ sudo chmod 2770 "${SHARED_CERT_DIR}"
 sudo cp \
   "${DOMAIN}-ca."* \
   "${DOMAIN}."* \
-  *.key \
-  *.csr \
-  *.ext \
-  *.pfx \
-  *.pem \
   "${SHARED_CERT_DIR}/"
 
 echo "✅ All certificate files copied to ${SHARED_CERT_DIR} (group: ${SHARE_GROUP})"
