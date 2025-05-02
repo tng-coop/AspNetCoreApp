@@ -29,15 +29,4 @@ echo "🔄 Applying EF migrations to Neon..."
 cd "$scriptdir/BlazorWebApp"
 dotnet ef database update --connection "Host=$NEON_HOST;Database=$NEON_DB;Username=$NEON_USER;Password=$NEON_PASSWORD;Ssl Mode=Require;Trust Server Certificate=true;"
 
-# # --- Verify seeded data ---
-# EXPECTED_EMAIL="simon.peter@example.com"
-# ACTUAL_EMAIL=$(run_psql 'SELECT "Email" FROM "Members" WHERE "Id"=1;')
-
-# if [ "$ACTUAL_EMAIL" = "$EXPECTED_EMAIL" ]; then
-#     echo "✅ Seed data verification passed (Member with email $EXPECTED_EMAIL exists)."
-# else
-#     echo "❌ Seed data verification failed (Expected: $EXPECTED_EMAIL, Got: $ACTUAL_EMAIL)."
-#     exit 1
-# fi
-
 echo "🚀 Neon database published and seeded successfully!"
