@@ -56,8 +56,8 @@
 
   protected override void OnInitialized()
   {
-    _downloadEndpoint = Configuration["DownloadSettings:Endpoint"]
-      ?? throw new InvalidOperationException("DownloadSettings:Endpoint not configured");
+    _downloadEndpoint = Configuration["PublicImages:Endpoint"]
+      ?? throw new InvalidOperationException("PublicImages:Endpoint not configured");
 
     var piecePaths = new[]
     {
