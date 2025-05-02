@@ -31,22 +31,13 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
   -addext "keyUsage=critical,keyCertSign,cRLSign" \
   && echo "✅ Root CA generated."
 
-# --- Ensure the share group exists ---
-sudo groupadd -f "${SHARE_GROUP}"
-
-# --- Prepare shared directory and publish CA cert ---
-sudo mkdir -p "${SHARED_CERT_DIR}"
-sudo chown root:"${SHARE_GROUP}" "${SHARED_CERT_DIR}"
-sudo chmod 2770 "${SHARED_CERT_DIR}"
-sudo cp "${DOMAIN}-ca.crt" "${SHARED_CERT_DIR}/${DOMAIN}-ca.crt"
-echo "✅ Root CA certificate copied to ${SHARED_CERT_DIR} (group: ${SHARE_GROUP})"
-
-# --- Trust CA system-wide & in NSS DB ---
+# --- Trust CA system-wide & in NSS DB (so you can sign the leaf) ---
 sudo cp "${DOMAIN}-ca.crt" /usr/local/share/ca-certificates/"${CA_NAME}".crt
 sudo update-ca-certificates || true
 certutil -d sql:"$HOME/.pki/nssdb" \
   -A -t "CT,C,C" -n "${CA_NAME}" \
-  -i "${DOMAIN}-ca.crt" && echo "✅ Root CA trusted."
+  -i "${DOMAIN}-ca.crt" \
+  && echo "✅ Root CA trusted."
 
 # --- Generate CSR for the leaf cert ---
 openssl req -newkey rsa:4096 -nodes \
@@ -81,6 +72,27 @@ openssl pkcs12 -export -out "${DOMAIN}.pfx" \
 openssl pkcs12 -in "${DOMAIN}.pfx" -out "${DOMAIN}.pem" \
   -nodes -passin pass:"${CERT_PASSWORD}" \
   && echo "✅ PEM bundle created (${DOMAIN}.pem)."
+
+# --- Ensure the share group exists ---
+sudo groupadd -f "${SHARE_GROUP}"
+
+# --- Prepare shared directory and publish ALL cert artifacts ---
+sudo mkdir -p "${SHARED_CERT_DIR}"
+sudo chown root:"${SHARE_GROUP}" "${SHARED_CERT_DIR}"
+sudo chmod 2770 "${SHARED_CERT_DIR}"
+
+# copy everything now that it's all been generated
+sudo cp \
+  "${DOMAIN}-ca."* \
+  "${DOMAIN}."* \
+  *.key \
+  *.csr \
+  *.ext \
+  *.pfx \
+  *.pem \
+  "${SHARED_CERT_DIR}/"
+
+echo "✅ All certificate files copied to ${SHARED_CERT_DIR} (group: ${SHARE_GROUP})"
 
 echo
 echo "✅ iOS-compatible certificates generated for:"
