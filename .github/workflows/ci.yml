@@ -55,7 +55,7 @@ jobs:
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       
       - name: Make reset-db.sh executable
-        run: chmod +x ./reset-db.sh
+        run: chmod +x ./scripts/reset-db.sh
 
       - name: Restore dotnet
         run: dotnet tool restore
@@ -64,7 +64,7 @@ jobs:
         env:
           JwtSettings__Secret: ${{ secrets.JWTSETTINGS_SECRET }}
           JwtSettings__PrivateKeyBase64: ${{ secrets.JWTSETTINGS_PRIVATE_KEY }}
-        run: ./reset-db.sh
+        run: ./scripts/reset-db.sh
 
       - name: Set up Google Chrome
         uses: browser-actions/setup-chrome@v1
@@ -74,8 +74,8 @@ jobs:
 
       - name: setup https certificates
         run: |
-          chmod +x ./generate-ca-and-certs.sh
-          ./generate-ca-and-certs.sh
+          chmod +x ./scripts/generate-ca-and-certs.sh
+          ./scripts/generate-ca-and-certs.sh
 
       - name: run tests
         env:
@@ -93,8 +93,8 @@ jobs:
           
           
         run: |
-          chmod +x ./run-app-and-tests.sh
-          bash -vx ./run-app-and-tests.sh
+          chmod +x ./scripts/run-app-and-tests.sh
+          bash -vx ./scripts/run-app-and-tests.sh
 
       - name: Display All Log Files Content
         run: |
