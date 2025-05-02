@@ -1,9 +1,6 @@
-using Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using BlazorWebApp.Services;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace BlazorWebApp.Tests.Services;
 
