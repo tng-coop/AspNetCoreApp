@@ -82,8 +82,8 @@ SERVER_PID=$!
 
 # Wait for server to be ready
 TIMEOUT=40
-#until curl -fsSL --cacert "/srv/shared/aspnet/cert/aspnet.lan-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
-until curl -fsSL -k "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
+until curl -fsSL --cacert "/srv/shared/aspnet/cert/aspnet.lan-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
+#until curl -fsSL -k "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))
