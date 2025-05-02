@@ -82,6 +82,10 @@ jobs:
           sudo chown -R $USER:$USER /srv
           sudo chmod -R 666 /srv
 
+      - name: Check cert file is readable
+        run: |
+          cat /srv/shared/aspnet/cert/aspnet.lan-ca.crt
+
       - name: run tests
         env:
           Kestrel__Endpoints__Https__Url: "https://aspnet.lan:5001"
