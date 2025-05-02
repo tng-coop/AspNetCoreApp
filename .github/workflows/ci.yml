@@ -76,6 +76,11 @@ jobs:
         run: |
           chmod +x ./scripts/generate-ca-and-certs.sh
           ./scripts/generate-ca-and-certs.sh
+      
+      - name: Fix permissions for certs
+        run: |
+          sudo chown -R $USER:$USER ./srv
+          sudo chmod -R 666 ./srv
 
       - name: run tests
         env:
