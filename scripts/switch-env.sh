@@ -4,7 +4,7 @@
 
 # Navigate to the script directory and into the BlazorWebApp project
 scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$scriptdir/BlazorWebApp" || exit 1
+cd "$scriptdir/../BlazorWebApp" || exit 1
 
 usage() {
   echo "Usage: $0 <env-number 0–9>"

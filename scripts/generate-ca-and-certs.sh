@@ -1,8 +1,9 @@
 #!/bin/bash
 
 scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-mkdir -p "${scriptdir}/cert"
-cd "${scriptdir}/cert" || exit 1
+certdir="${scriptdir}/../cert"
+mkdir -p "${certdir}"
+cd "${certdir}" || exit 1
 
 set -euo pipefail
 

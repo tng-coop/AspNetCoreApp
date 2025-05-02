@@ -6,7 +6,7 @@ set -e
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
-LOGFILE="$scriptdir/logs/aspnet-server-log-$(date +"%Y%m%d-%H%M%S").log"
+LOGFILE="$scriptdir/../logs/aspnet-server-log-$(date +"%Y%m%d-%H%M%S").log"
 
 cleanup() {
     EXIT_CODE=${1:-0}
@@ -23,7 +23,7 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 # Validate required files
-cd "$scriptdir/BlazorWebApp"
+cd "$scriptdir/../BlazorWebApp"
 for file in Program.cs *.csproj Properties/launchSettings.json appsettings.Development.json; do
   [[ -f "$file" ]] || { echo "❌ Required file '$file' missing."; exit 1; }
 done
@@ -33,7 +33,7 @@ chmod +x "$scriptdir/reset-db.sh"
 "$scriptdir/reset-db.sh"
 
 # Run xUnit tests explicitly before starting the app
-cd "$scriptdir/BlazorWebApp.Tests"
+cd "$scriptdir/../BlazorWebApp.Tests"
 if dotnet test; then
     echo "✅ xUnit tests passed."
 else
@@ -41,7 +41,7 @@ else
     cleanup 1
 fi
 
-cd "$scriptdir/BlazorWebApp"
+cd "$scriptdir/../BlazorWebApp"
 
 # ─── Determine APP_URL from env-var or user-secrets (or fail) ───
 if [ -n "$Kestrel__Endpoints__Https__Url" ]; then
@@ -82,7 +82,7 @@ SERVER_PID=$!
 
 # Wait for server to be ready
 TIMEOUT=40
-until curl -fsSL --cacert "$scriptdir/cert/aspnet.lan-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
+until curl -fsSL --cacert "$scriptdir/../cert/aspnet.lan-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))
@@ -111,7 +111,7 @@ else
 fi
 
 # --- Run Playwright tests ---
-cd "$scriptdir/PlaywrightTests"
+cd "$scriptdir/../PlaywrightTests"
 # npx playwright install chromium --with-deps
 
 if npx playwright test; then
