@@ -9,6 +9,7 @@ required_vars=(
   Authentication__Google__ClientId 
   Authentication__Google__ClientSecret
   JwtSettings__PrivateKeyBase64
+  PublicImages__Endpoint
   UploadSettings__Endpoint
   DownloadSettings__Endpoint
   DefaultUser__Password
@@ -29,6 +30,7 @@ gh secret set AUTH_LINE_CLIENT_SECRET --body "$Authentication__LINE__ClientSecre
 gh secret set AUTH_GOOGLE_CLIENT_ID --body "$Authentication__Google__ClientId"
 gh secret set AUTH_GOOGLE_CLIENT_SECRET --body "$Authentication__Google__ClientSecret"
 gh secret set JWTSETTINGS_PRIVATE_KEY --body "$JwtSettings__PrivateKeyBase64"
+gh secret set PUBLICIMAGES_ENDPOINT --body "$PublicImages__Endpoint"
 gh secret set UPLOADSETTINGS_ENDPOINT --body "$UploadSettings__Endpoint"
 gh secret set DOWNLOADSETTINGS_ENDPOINT --body "$DownloadSettings__Endpoint"
 gh secret set DEFAULTUSER_PASSWORD --body "$DefaultUser__Password"
