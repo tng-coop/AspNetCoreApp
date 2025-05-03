@@ -2,17 +2,13 @@
 set -euo pipefail
 
 # db.sh: Dump or restore PostgreSQL databases for local and Neon environments.
+# Files are stored under a centralized dump directory with timestamps for uniqueness.
 # Supports environment numbering (0-9) for local only.
 # Usage:
 #   ./db.sh dump   local  [<env_num>] [<dump_file>]
 #   ./db.sh restore local [<env_num>] [<dump_file>]
 #   ./db.sh dump   neon   [<dump_file>]
 #   ./db.sh restore neon  [<dump_file>]
-#
-# env_num: integer [0-9] selects local database suffix "asp-members-yasu-<env_num>";
-#          if omitted, uses ConnectionStrings:DefaultConnection from user-secrets
-# dump_file: optional SQL file name; defaults to <DB_NAME>_dump.sql or asp-members_neon_dump.sql
-# neon.sh: should define NEON_HOST, NEON_DB, NEON_USER, NEON_PASSWORD at ~/co/tng-admin/passwords/projects/AspNetCoreApp/neon.sh
 
 function usage() {
   cat <<EOF >&2
@@ -23,17 +19,31 @@ Usage:
   $0 restore neon   [<dump_file>]
 
 Examples:
-  ./db.sh dump local               # uses default from user-secrets
-  ./db.sh dump local 2 custom.sql  # env 2 local DB to custom.sql
-  ./db.sh dump neon                # sources neon.sh, writes asp-members_neon_dump.sql
-  ./db.sh restore neon restore.sql # loads into Neon from restore.sql
+  ./db.sh dump local               # default from user-secrets, timestamped
+  ./db.sh dump local 2 custom.sql  # env 2 local DB, custom base name, timestamped
+  ./db.sh dump neon                # neon, writes to dumps/<name>_timestamp.sql
+  ./db.sh restore neon restore.sql # loads Neon from dumps/<given>_timestamp.sql
 EOF
   exit 1
 }
-# set scriptdir
+
+# ----------------------------------------------------------------------------
+# Setup
+# ----------------------------------------------------------------------------
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/../BlazorWebApp" || exit 1
-# Validate arg count
+# Root of BlazorWebApp assumed one level up
+APP_DIR="$SCRIPT_DIR/../BlazorWebApp"
+cd "$APP_DIR" || exit 1
+
+# Create dump directory if missing
+DUMP_DIR="$SCRIPT_DIR/../dumps"
+mkdir -p "$DUMP_DIR"
+
+# ----------------------------------------------------------------------------
+# Parse arguments
+# ----------------------------------------------------------------------------
+
 if [[ $# -lt 2 || $# -gt 4 ]]; then
   usage
 fi
@@ -43,29 +53,26 @@ TARGET=$2   # local or neon
 shift 2
 
 ENV_NUM=""
-FILE=""
+FILE_BASE=""
 
-# Parse optional ENV_NUM and FILE
 if [[ "$TARGET" == "local" ]]; then
-  # parse env_num if given
+  # local may have env number
   if [[ $# -ge 1 && "$1" =~ ^[0-9]$ ]]; then
-    ENV_NUM=$1
-    shift
+    ENV_NUM=$1; shift
   fi
-  # parse file name if given
-  if [[ $# -ge 1 ]]; then
-    FILE=$1
-  fi
+  [[ $# -ge 1 ]] && FILE_BASE=$1
 elif [[ "$TARGET" == "neon" ]]; then
-  # parse file name if given
-  if [[ $# -ge 1 ]]; then
-    FILE=$1
-  fi
+  [[ $# -ge 1 ]] && FILE_BASE=$1
 else
   usage
 fi
 
-# Setup based on target
+# ----------------------------------------------------------------------------
+# Determine DB connection and default file name
+# ----------------------------------------------------------------------------
+
+time_stamp=$(date +"%Y%m%d_%H%M%S")
+
 case "$TARGET" in
   local)
     if [[ -n "$ENV_NUM" ]]; then
@@ -74,47 +81,58 @@ case "$TARGET" in
       LOCAL_PASS="postgres"
       DB_NAME="asp-members-yasu-$ENV_NUM"
     else
-      CONN_STR=$(dotnet user-secrets list | \
-        grep '^ConnectionStrings:DefaultConnection' | \
-        sed 's/^ConnectionStrings:DefaultConnection = //')
-      IFS=';' read -ra KV <<< "$CONN_STR"
-      for kv in "${KV[@]}"; do
-        IFS='=' read -r key val <<< "$kv"
+      # Pull from dotnet user-secrets
+      conn=$(dotnet user-secrets list | grep '^ConnectionStrings:DefaultConnection' | sed 's/^.*= //')
+      IFS=';' read -ra kv <<< "$conn"
+      for pair in "${kv[@]}"; do
+        IFS='=' read -r key val <<< "$pair"
         case "$key" in
-          Host) LOCAL_HOST="$val";;
+          Host)     LOCAL_HOST="$val";;
           Database) DB_NAME="$val";;
           Username) LOCAL_USER="$val";;
           Password) LOCAL_PASS="$val";;
         esac
       done
     fi
-    : ${FILE:="${DB_NAME}_dump.sql"}
-    DUMP_FILE="$FILE"
+    : ${FILE_BASE:="${DB_NAME}_dump"}
     export PGPASSWORD="$LOCAL_PASS"
     ;;
 
   neon)
-    NEON_FILE="~/co/tng-admin/passwords/projects/AspNetCoreApp/neon.sh"
-    NEON_FILE=$(eval echo $NEON_FILE)
-    if [[ ! -f "$NEON_FILE" ]]; then
-      echo "Error: neon.sh not found at expected path ($NEON_FILE)" >&2
+    # Load Neon credentials
+    neon_sh="$HOME/co/tng-admin/passwords/projects/AspNetCoreApp/neon.sh"
+    if [[ ! -f "$neon_sh" ]]; then
+      echo "Error: neon.sh not found at '$neon_sh'" >&2
       exit 2
     fi
-    source "$NEON_FILE"
+    source "$neon_sh"
     export PGPASSWORD="$NEON_PASSWORD"
     export PGSSLMODE=require
     DB_NAME="$NEON_DB"
-    : ${FILE:="asp-members_neon_dump.sql"}
-    DUMP_FILE="$FILE"
+    : ${FILE_BASE:="asp-members_neon_dump"}
     ;;
 
   *) usage ;;
 esac
 
-# Execute dump or restore
+# Final file path (with timestamp and .sql extension)
+DUMP_FILE="$DUMP_DIR/${FILE_BASE}_${time_stamp}.sql"
+
+# ----------------------------------------------------------------------------
+# Run dump or restore
+# ----------------------------------------------------------------------------
+
+echo "----------------------------------------"
+echo "Action:   $CMD"
+echo "Target:   $TARGET"
+echo "Database: $DB_NAME"
+echo "File:     $DUMP_FILE"
+echo "Timestamp: $time_stamp"
+echo "----------------------------------------"
+
 case "$CMD" in
   dump)
-    echo "Dumping '$TARGET' [$DB_NAME] -> $DUMP_FILE"
+    echo "Starting dump..."
     if [[ "$TARGET" == "local" ]]; then
       pg_dump -h "$LOCAL_HOST" -U "$LOCAL_USER" -d "$DB_NAME" -F p -v > "$DUMP_FILE"
     else
@@ -124,16 +142,15 @@ case "$CMD" in
     ;;
 
   restore)
-    echo "Restoring '$TARGET' [$DB_NAME] <- $DUMP_FILE"
+    echo "Starting restore..."
     if [[ "$TARGET" == "local" ]]; then
       dropdb -h "$LOCAL_HOST" -U "$LOCAL_USER" "$DB_NAME" || true
       createdb -h "$LOCAL_HOST" -U "$LOCAL_USER" "$DB_NAME"
       psql -h "$LOCAL_HOST" -U "$LOCAL_USER" -d "$DB_NAME" < "$DUMP_FILE"
     else
-      psql "postgresql://$NEON_USER:$NEON_PASSWORD@$NEON_HOST/$NEON_DB?sslmode=require" \
-        -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
-      psql "postgresql://$NEON_USER:$NEON_PASSWORD@$NEON_HOST/$NEON_DB?sslmode=require" \
-        < "$DUMP_FILE"
+      conn="postgresql://$NEON_USER:$NEON_PASSWORD@$NEON_HOST/$NEON_DB?sslmode=require"
+      psql "$conn" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+      psql "$conn" < "$DUMP_FILE"
     fi
     echo "Restore complete: $DB_NAME"
     ;;

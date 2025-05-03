@@ -503,3 +503,5 @@ jwt_*.pem
 
 Uploader/images/*.png
 Uploader/images/*.mp4
+
+/dumps/*.sql
