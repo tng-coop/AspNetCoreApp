@@ -1,0 +1,55 @@
+# scripts/db.sh-completion
+# Bash completion for db.sh (dump|restore local|neon [env_num] [dump_file])
+# Shows filenames sorted newest-first by timestamp in the name.
+
+_db_sh() {
+    local cur cword cmd target dump_dir files
+    COMPREPLY=()
+    cword=$COMP_CWORD
+    cur="${COMP_WORDS[cword]}"
+    cmd="${COMP_WORDS[1]}"
+    target="${COMP_WORDS[2]}"
+
+    # 1st arg: dump|restore
+    if (( cword == 1 )); then
+        COMPREPLY=( $(compgen -W "dump restore" -- "$cur") )
+        return
+    fi
+
+    # 2nd arg: local|neon
+    if (( cword == 2 )); then
+        COMPREPLY=( $(compgen -W "local neon" -- "$cur") )
+        return
+    fi
+
+    # Only complete filenames at the right word index
+    if [[ "$cmd" =~ ^(dump|restore)$ && "$target" =~ ^(local|neon)$ ]]; then
+        if [[ "$target" == "neon" ]]; then
+            (( cword != 3 )) && return
+        else
+            if [[ "${COMP_WORDS[3]:-}" =~ ^[0-9]$ ]]; then
+                (( cword != 4 )) && return
+            else
+                (( cword != 3 )) && return
+            fi
+        fi
+
+        # find dumps/ next to this completion file
+        dump_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../dumps" && pwd)"
+        files=()
+        for f in "$dump_dir"/*.sql; do
+            [[ -e "$f" ]] || continue
+            files+=( "$(basename "$f")" )
+        done
+        # reverse-lex sort so YYYYMMDD_HHMMSS names newest-first
+        IFS=$'\n' files=( $(printf "%s\n" "${files[@]}" | sort -r) )
+        unset IFS
+
+        COMPREPLY=( $(compgen -W "${files[*]}" -- "$cur") )
+    fi
+}
+
+# register for all common invocation patterns:
+complete -F _db_sh db.sh
+complete -F _db_sh scripts/db.sh
+complete -F _db_sh ./scripts/db.sh

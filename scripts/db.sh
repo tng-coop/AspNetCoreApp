@@ -3,12 +3,23 @@ set -euo pipefail
 
 # db.sh: Dump or restore PostgreSQL databases for local and Neon environments.
 # Files are stored under a centralized dump directory with timestamps for uniqueness.
+# Dumps exclude ownership and privilege statements for consistent restores.
 # Supports environment numbering (0-9) for local only.
 # Usage:
 #   ./db.sh dump   local  [<env_num>] [<dump_file>]
 #   ./db.sh restore local [<env_num>] [<dump_file>]
 #   ./db.sh dump   neon   [<dump_file>]
 #   ./db.sh restore neon  [<dump_file>]
+#
+
+# ────────────────────────────────────────────────────────────────
+# Bail out if any required ENV VARs aren’t set
+# ────────────────────────────────────────────────────────────────
+  : "${NEON_HOST:?Error: NEON_HOST must be set}"
+  : "${NEON_DB:?Error: NEON_DB must be set}"
+  : "${NEON_USER:?Error: NEON_USER must be set}"
+  : "${NEON_PASSWORD:?Error: NEON_PASSWORD must be set}"
+
 
 function usage() {
   cat <<EOF >&2
@@ -19,10 +30,10 @@ Usage:
   $0 restore neon   [<dump_file>]
 
 Examples:
-  ./db.sh dump local               # default from user-secrets, timestamped
-  ./db.sh dump local 2 custom.sql  # env 2 local DB, custom base name, timestamped
-  ./db.sh dump neon                # neon, writes to dumps/<name>_timestamp.sql
-  ./db.sh restore neon restore.sql # loads Neon from dumps/<given>_timestamp.sql
+  ./db.sh dump local               # default from user-secrets
+  ./db.sh dump local 2 custom      # env 2 local DB, strips owner/privileges
+  ./db.sh dump neon                # neon, strips owner/privileges
+  ./db.sh restore neon restore.sql # loads into Neon
 EOF
   exit 1
 }
@@ -32,7 +43,6 @@ EOF
 # ----------------------------------------------------------------------------
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Root of BlazorWebApp assumed one level up
 APP_DIR="$SCRIPT_DIR/../BlazorWebApp"
 cd "$APP_DIR" || exit 1
 
@@ -48,15 +58,14 @@ if [[ $# -lt 2 || $# -gt 4 ]]; then
   usage
 fi
 
-CMD=$1      # dump or restore
-TARGET=$2   # local or neon
+CMD=$1
+TARGET=$2
 shift 2
 
 ENV_NUM=""
 FILE_BASE=""
 
 if [[ "$TARGET" == "local" ]]; then
-  # local may have env number
   if [[ $# -ge 1 && "$1" =~ ^[0-9]$ ]]; then
     ENV_NUM=$1; shift
   fi
@@ -68,7 +77,7 @@ else
 fi
 
 # ----------------------------------------------------------------------------
-# Determine DB connection and default file name
+# Determine connection parameters and default FILE_BASE
 # ----------------------------------------------------------------------------
 
 time_stamp=$(date +"%Y%m%d_%H%M%S")
@@ -79,9 +88,8 @@ case "$TARGET" in
       LOCAL_HOST="localhost"
       LOCAL_USER="postgres"
       LOCAL_PASS="postgres"
-      DB_NAME="asp-members-yasu-$ENV_NUM"
+      DB_NAME="asp-members-${USER}-$ENV_NUM"
     else
-      # Pull from dotnet user-secrets
       conn=$(dotnet user-secrets list | grep '^ConnectionStrings:DefaultConnection' | sed 's/^.*= //')
       IFS=';' read -ra kv <<< "$conn"
       for pair in "${kv[@]}"; do
@@ -97,50 +105,64 @@ case "$TARGET" in
     : ${FILE_BASE:="${DB_NAME}_dump"}
     export PGPASSWORD="$LOCAL_PASS"
     ;;
-
   neon)
-    # Load Neon credentials
-    neon_sh="$HOME/co/tng-admin/passwords/projects/AspNetCoreApp/neon.sh"
-    if [[ ! -f "$neon_sh" ]]; then
-      echo "Error: neon.sh not found at '$neon_sh'" >&2
-      exit 2
-    fi
-    source "$neon_sh"
     export PGPASSWORD="$NEON_PASSWORD"
     export PGSSLMODE=require
     DB_NAME="$NEON_DB"
     : ${FILE_BASE:="asp-members_neon_dump"}
     ;;
-
-  *) usage ;;
+  *)
+    usage
+    ;;
 esac
 
-# Final file path (with timestamp and .sql extension)
-DUMP_FILE="$DUMP_DIR/${FILE_BASE}_${time_stamp}.sql"
+# ----------------------------------------------------------------------------
+# Determine dump‐file path (split dump vs. restore)
+# ----------------------------------------------------------------------------
+
+if [[ "$CMD" == "dump" ]]; then
+  # for dumps, always create a new timestamped file
+  DUMP_FILE="$DUMP_DIR/${FILE_BASE}_${time_stamp}.sql"
+
+elif [[ "$CMD" == "restore" ]]; then
+  # for restores, use exactly what the user passed (assume .sql)
+  if [[ "$FILE_BASE" == *.sql ]]; then
+    DUMP_FILE="$DUMP_DIR/$FILE_BASE"
+  else
+    # add .sql if omitted
+    DUMP_FILE="$DUMP_DIR/${FILE_BASE}.sql"
+  fi
+
+else
+  usage
+fi
 
 # ----------------------------------------------------------------------------
-# Run dump or restore
+# Summary
 # ----------------------------------------------------------------------------
 
 echo "----------------------------------------"
-echo "Action:   $CMD"
-echo "Target:   $TARGET"
-echo "Database: $DB_NAME"
-echo "File:     $DUMP_FILE"
+echo "Action:    $CMD"
+echo "Target:    $TARGET"
+echo "Database:  $DB_NAME"
+echo "File:      $DUMP_FILE"
 echo "Timestamp: $time_stamp"
 echo "----------------------------------------"
+
+# ----------------------------------------------------------------------------
+# Execute dump or restore
+# ----------------------------------------------------------------------------
 
 case "$CMD" in
   dump)
     echo "Starting dump..."
     if [[ "$TARGET" == "local" ]]; then
-      pg_dump -h "$LOCAL_HOST" -U "$LOCAL_USER" -d "$DB_NAME" -F p -v > "$DUMP_FILE"
+      pg_dump -h "$LOCAL_HOST" -U "$LOCAL_USER" -d "$DB_NAME" -F p -v -O -x > "$DUMP_FILE"
     else
-      pg_dump -h "$NEON_HOST" -U "$NEON_USER" -d "$DB_NAME" -F p -v > "$DUMP_FILE"
+      pg_dump -h "$NEON_HOST" -U "$NEON_USER" -d "$DB_NAME" -F p -v -O -x > "$DUMP_FILE"
     fi
     echo "Dump complete: $DUMP_FILE"
     ;;
-
   restore)
     echo "Starting restore..."
     if [[ "$TARGET" == "local" ]]; then
@@ -154,6 +176,7 @@ case "$CMD" in
     fi
     echo "Restore complete: $DB_NAME"
     ;;
-
-  *) usage ;;
+  *)
+    usage
+    ;;
 esac
