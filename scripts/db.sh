@@ -5,7 +5,7 @@ set -euo pipefail
 # Supports environment numbering (0-9) for local only.
 # Usage:
 #   ./db.sh dump   local  [<env_num>] [<dump_file>]
-#   ./db.sh restore local  [<env_num>] [<dump_file>]
+#   ./db.sh restore local [<env_num>] [<dump_file>]
 #   ./db.sh dump   neon   [<dump_file>]
 #   ./db.sh restore neon  [<dump_file>]
 #
@@ -30,7 +30,9 @@ Examples:
 EOF
   exit 1
 }
-
+# set scriptdir
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/../BlazorWebApp" || exit 1
 # Validate arg count
 if [[ $# -lt 2 || $# -gt 4 ]]; then
   usage
@@ -45,15 +47,18 @@ FILE=""
 
 # Parse optional ENV_NUM and FILE
 if [[ "$TARGET" == "local" ]]; then
-  if [[ -n $1 && $1 =~ ^[0-9]$ ]]; then
+  # parse env_num if given
+  if [[ $# -ge 1 && "$1" =~ ^[0-9]$ ]]; then
     ENV_NUM=$1
     shift
   fi
-  if [[ -n $1 ]]; then
+  # parse file name if given
+  if [[ $# -ge 1 ]]; then
     FILE=$1
   fi
 elif [[ "$TARGET" == "neon" ]]; then
-  if [[ -n $1 ]]; then
+  # parse file name if given
+  if [[ $# -ge 1 ]]; then
     FILE=$1
   fi
 else
