@@ -4,7 +4,7 @@
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
 
-<h3>Quill Editor Test (v2.0.3) with Table Support (Debug)</h3>
+<h3>Quill Editor Test (v2.0.3) with Table Support</h3>
 
 <div class="form-group">
     <label for="editor">Content</label>
@@ -32,85 +32,74 @@
 
         var loader = @"
 (function() {
-  var head = document.head;
-  function loadCSS(href) {
-    var link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = href;
-    head.appendChild(link);
-  }
-  function loadScript(src) {
-    return new Promise(function(resolve, reject) {
-      var s = document.createElement('script');
-      s.src = src;
-      s.onload = resolve;
-      s.onerror = reject;
-      head.appendChild(s);
-    });
-  }
+    var head = document.head;
+    function loadCSS(href) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        head.appendChild(link);
+    }
+    function loadScript(src) {
+        return new Promise(function(resolve, reject) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            head.appendChild(script);
+        });
+    }
 
-  console.log('Loading Quill + table‐better assets…');
-  // Quill Snow theme
-  loadCSS('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css');
-  // Table plugin CSS
-  loadCSS('https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.css');
+    // Quill core styles
+    loadCSS('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css');
+    // quill-table-better styles
+    loadCSS('https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.css');
 
-  // Load Quill core, then plugin
-  return loadScript('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js')
-    .then(function() {
-      console.log('Quill loaded:', !!window.Quill);
-      return loadScript('https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.js');
-    })
-    .then(function() {
-      console.log('quill-table-better loaded:', !!window.QuillTableBetter);
-    });
+    // Load Quill itself, then the plugin
+    return loadScript('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js')
+      .then(function() {
+          return loadScript('https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.js');
+      });
 })()
 .then(function() {
-  // Register plugin
-  Quill.register({ 'modules/table-better': QuillTableBetter }, true);
-  console.log('Registered table-better module.');
+    // Register the plugin under modules/table-better
+    Quill.register({'modules/table-better': QuillTableBetter}, true);
 
-  // Initialize editor
-  window.quill = new Quill('#editor', {
-    theme: 'snow',
-    modules: {
-      table: false,  // disable core table
-      'table-better': {
-        language: 'en_US',
-        toolbarTable: true, // enable plugin toolbar dropdown
-        menus: ['table', 'row', 'column', 'cell', 'merge', 'delete', 'copy']
-      },
-      keyboard: {
-        bindings: QuillTableBetter.keyboardBindings
-      },
-      toolbar: {
-        container: [
-          [{ header: [1, 2, 3, false] }],
-          ['bold', 'italic', 'underline', 'strike'],
-          ['blockquote', 'code-block'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          ['link', 'image', 'video'],
-          ['table-better'],  // table icon
-          ['clean']
-        ],
-        handlers: {
-          // manual insert so you can see it working
-          'table-better': function() {
-            console.log('table-better button clicked');
-            this.quill.getModule('table-better').insertTable(3, 3);
-          }
-        }
-      }
-    },
-    placeholder: 'Type here...'
-  });
-
-  console.log('Editor initialized. Table module:', window.quill.getModule('table-better'));
+    // Initialize Quill, using toolbar.handlers to wire up the table button
+    window.quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            table: false,           // disable core table
+            'table-better': {},     // enable plugin
+            keyboard: {
+                bindings: QuillTableBetter.keyboardBindings
+            },
+            toolbar: {
+                container: [
+                    [{ header: [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['link', 'image', 'video'],
+                    ['table-better'],  // our table icon
+                    ['clean']
+                ],
+                handlers: {
+                    // when clicked, insert a 3×3 table
+                    'table-better': function() {
+                        var table = this.quill.getModule('table-better');
+                        table.insertTable(3, 3);
+                    }
+                }
+            }
+        },
+        placeholder: 'Type here...'
+    });
 })
 .catch(function(err) {
-  console.error('Failed to load Quill or plugin:', err);
+    console.error('Failed to load Quill + table plugin:', err);
 });
 ";
+
         await JS.InvokeVoidAsync("eval", loader);
     }
 
