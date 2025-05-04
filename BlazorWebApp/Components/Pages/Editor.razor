@@ -1,38 +1,51 @@
-@page "/editor"
-@rendermode InteractiveServer
-
-@using Microsoft.JSInterop
+@page "/editor/{Id:guid?}"
+@using BlazorWebApp.Models
+@using System.Net.Http.Json
 @inject IJSRuntime JS
+@inject HttpClient Http
 
-<h3>Quill Editor</h3>
-<div id="editor" style="height:200px; background:white;"></div>
+<h3>@(Id == null ? "New Post" : "Edit Post")</h3>
+<input class="form-control mb-2" placeholder="Title" @bind="dto.Title" />
 
-<button class="btn btn-primary" @onclick="ShowPayloadSize">
-  Show Payload Size
-</button>
+<div id="editor" style="height:300px; background:#fff;"></div>
 
-@if (payloadSize >= 0)
-{
-  <div class="mt-2">
-    <strong>Total payload:</strong> @payloadSize bytes
-  </div>
-}
+<button class="btn btn-primary" @onclick="Save">Save Draft</button>
+<button class="btn btn-success ms-2" @onclick="Publish" disabled="@(!canPublish)">Publish</button>
 
 @code {
-  private int payloadSize = -1;
-  private IJSObjectReference? module;
+    [Parameter] public Guid? Id { get; set; }
+    private PublicationWriteDto dto = new();
+    private IJSObjectReference? mod;
+    private bool canPublish => !string.IsNullOrWhiteSpace(dto.Title) && dto.DeltaJson != null;
 
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (!firstRender) return;
-    module ??= await JS.InvokeAsync<IJSObjectReference>(
-      "import", "./js/quillInterop.js");
-    await module.InvokeVoidAsync("initializeQuill", "#editor");
-  }
+    protected override async Task OnAfterRenderAsync(bool first)
+    {
+        if (first)
+        {
+            mod = await JS.InvokeAsync<IJSObjectReference>("import", "./js/quillInterop.js");
+            await mod.InvokeVoidAsync("initializeQuill", "#editor");
+            if (Id.HasValue)
+            {
+                var existing = await Http.GetFromJsonAsync<PublicationReadDto>($"api/publications/{Id}");
+                if (existing is not null)
+                {
+                    dto.Title = existing.Title;
+                    // assume quillInterop.js has setContents extension
+                    await mod.InvokeVoidAsync("setContents", existing.DeltaJson);
+                }
+            }
+        }
+    }
 
-  private async Task ShowPayloadSize()
-  {
-    payloadSize = await module!.InvokeAsync<int>("getPayloadSize");
-    StateHasChanged();
-  }
+    private async Task Save()
+    {
+        dto.DeltaJson = await mod!.InvokeAsync<string>("getDeltaJson");
+        await Http.PostAsJsonAsync("api/publications", dto);
+    }
+
+    private async Task Publish()
+    {
+        await Save();
+        await Http.PostAsync($"api/publications/{Id}/publish", null);
+    }
 }

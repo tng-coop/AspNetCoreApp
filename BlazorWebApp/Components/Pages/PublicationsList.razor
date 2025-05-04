@@ -1,0 +1,25 @@
+@page "/publications"
+@using BlazorWebApp.Models
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<h3>All Publications</h3>
+<ul class="list-unstyled">
+@foreach (var p in pubs)
+{
+    <li>
+        <a href="/publications/@p.Id"><strong>@p.Title</strong></a>
+        <small class="text-muted ms-2">@p.Status</small>
+    </li>
+}
+</ul>
+
+@code {
+    private List<PublicationReadDto> pubs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        pubs = await Http.GetFromJsonAsync<List<PublicationReadDto>>("api/publications")
+               ?? new List<PublicationReadDto>();
+    }
+}
