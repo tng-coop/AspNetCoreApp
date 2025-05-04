@@ -20,6 +20,7 @@ namespace BlazorWebApp.Services
                 Id = Guid.NewGuid(),
                 Title = dto.Title,
                 DeltaJson = dto.DeltaJson,
+                Html = dto.Html,   
                 CreatedAt = DateTimeOffset.UtcNow
             };
             _db.Publications.Add(pub);

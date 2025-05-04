@@ -1,51 +1,78 @@
 @page "/editor/{Id:guid?}"
+@rendermode InteractiveServer
+
 @using BlazorWebApp.Models
 @using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components
+
 @inject IJSRuntime JS
 @inject HttpClient Http
+@inject NavigationManager Nav
 
-<h3>@(Id == null ? "New Post" : "Edit Post")</h3>
+<h3>@(Id == null ? "New Publication" : "Edit Publication")</h3>
 <input class="form-control mb-2" placeholder="Title" @bind="dto.Title" />
 
-<div id="editor" style="height:300px; background:#fff;"></div>
+<div id="editor" style="height:300px; background:white;"></div>
 
 <button class="btn btn-primary" @onclick="Save">Save Draft</button>
 <button class="btn btn-success ms-2" @onclick="Publish" disabled="@(!canPublish)">Publish</button>
 
 @code {
     [Parameter] public Guid? Id { get; set; }
+
     private PublicationWriteDto dto = new();
-    private IJSObjectReference? mod;
+    private IJSObjectReference? module;
     private bool canPublish => !string.IsNullOrWhiteSpace(dto.Title) && dto.DeltaJson != null;
 
     protected override async Task OnAfterRenderAsync(bool first)
     {
-        if (first)
+        if (!first) return;
+
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/quillInterop.js");
+        await module.InvokeVoidAsync("initializeQuill", "#editor");
+
+        if (Id.HasValue)
         {
-            mod = await JS.InvokeAsync<IJSObjectReference>("import", "./js/quillInterop.js");
-            await mod.InvokeVoidAsync("initializeQuill", "#editor");
-            if (Id.HasValue)
+            var existing = await Http.GetFromJsonAsync<PublicationReadDto>(
+                $"{Nav.BaseUri}api/publications/{Id}");
+            if (existing != null && !string.IsNullOrWhiteSpace(existing.DeltaJson))
             {
-                var existing = await Http.GetFromJsonAsync<PublicationReadDto>($"api/publications/{Id}");
-                if (existing is not null)
-                {
-                    dto.Title = existing.Title;
-                    // assume quillInterop.js has setContents extension
-                    await mod.InvokeVoidAsync("setContents", existing.DeltaJson);
-                }
+                dto.Title = existing.Title;
+                await module.InvokeVoidAsync("setContents", existing.DeltaJson);
             }
         }
     }
 
     private async Task Save()
     {
-        dto.DeltaJson = await mod!.InvokeAsync<string>("getDeltaJson");
-        await Http.PostAsJsonAsync("api/publications", dto);
+        dto.DeltaJson = await module!.InvokeAsync<string>("getDeltaJson");
+        dto.Html      = await module.InvokeAsync<string>("getHtml");
+
+        var baseUri = Nav.BaseUri.TrimEnd('/');
+        if (Id.HasValue)
+        {
+            // PUT /api/publications/{Id}
+            await Http.PutAsJsonAsync(
+                $"{baseUri}/api/publications/{Id}", dto);
+        }
+        else
+        {
+            // POST /api/publications
+            var created = await Http.PostAsJsonAsync(
+                $"{baseUri}/api/publications", dto);
+            if (created.IsSuccessStatusCode)
+            {
+                var read = await created.Content
+                                      .ReadFromJsonAsync<PublicationReadDto>();
+                Id = read?.Id;
+            }
+        }
     }
 
     private async Task Publish()
     {
         await Save();
-        await Http.PostAsync($"api/publications/{Id}/publish", null);
+        var baseUri = Nav.BaseUri.TrimEnd('/');
+        await Http.PostAsync($"{baseUri}/api/publications/{Id}/publish", null);
     }
 }

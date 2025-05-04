@@ -9,5 +9,8 @@ namespace BlazorWebApp.Models
 
         [Required]
         public string DeltaJson { get; set; } = string.Empty;
+
+        // capture rendered HTML
+        public string Html { get; set; } = string.Empty;
     }
 }

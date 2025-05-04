@@ -6,6 +6,7 @@ namespace BlazorWebApp.Models
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
+        public string DeltaJson { get; set; } = string.Empty;
         public string Html { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public DateTimeOffset CreatedAt { get; set; }

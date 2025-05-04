@@ -53,6 +53,23 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Publications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    DeltaJson = table.Column<string>(type: "text", nullable: false),
+                    Html = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
+                    Status = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
+                    PublishedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Publications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -256,6 +273,11 @@ namespace BlazorWebApp.Migrations
                 name: "IX_Notes_OwnerId",
                 table: "Notes",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_CreatedAt",
+                table: "Publications",
+                column: "CreatedAt");
         }
 
         /// <inheritdoc />
@@ -281,6 +303,9 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Notes");
+
+            migrationBuilder.DropTable(
+                name: "Publications");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
