@@ -5,16 +5,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+
+    <!-- Bootstrap, app and Blazor styles -->
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["BlazorWebApp.styles.css"]" />
+
+    <!-- Quill editor styles -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.css" />
+
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
 
 <body>
-    <Routes /> <!-- NO rendermode here -->
+    <!-- Your Blazor routing outlet -->
+    <Routes />
 
     <script>
         window.blazorCulture = {
@@ -26,10 +36,9 @@
             },
         };
     </script>
-    <!-- 1a) Vimeo Player SDK -->
-    <script src="https://player.vimeo.com/api/player.js"></script>
 
-    <!-- 1b) your init function, globally -->
+    <!-- Vimeo Player SDK + init -->
+    <script src="https://player.vimeo.com/api/player.js"></script>
     <script>
         window.initVimeoPlayer = function (iframe) {
             const player = new Vimeo.Player(iframe);
@@ -40,7 +49,8 @@
         };
     </script>
 
-<script src="_framework/blazor.web.js"></script>
+    <!-- Blazor framework -->
+    <script src="_framework/blazor.web.js"></script>
 </body>
 
 </html>
