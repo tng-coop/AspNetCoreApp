@@ -5,93 +5,45 @@
 @inject IJSRuntime JS
 
 <h3>Quill Editor Test (v2.0.3) with Table Support</h3>
-
 <div class="form-group">
-    <label for="editor">Content</label>
-    <div id="editor" style="height:200px; background-color:white;"></div>
+  <label for="editor">Content</label>
+  <div id="editor" style="height:200px; background-color:white;"></div>
 </div>
 
 <button class="btn btn-primary" @onclick="ShowContentSize">
-    Show Content Size
+  Show Content Size
 </button>
 
 @if (contentSize >= 0)
 {
-    <div class="mt-2">
-        <strong>Content length:</strong> @contentSize characters
-    </div>
+  <div class="mt-2">
+    <strong>Content length:</strong> @contentSize characters
+  </div>
 }
 
 @code {
-    private int contentSize = -1;
+  private int contentSize = -1;
+  private IJSObjectReference? quillModule;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-            return;
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender)
+      return;
 
-        // JS loader: only loads the Quill scripts, CSS is now in app.razor's <head>
-        var loader = @"
-(function() {
-    function loadScript(src) {
-        return new Promise(function(resolve, reject) {
-            var s = document.createElement('script');
-            s.src = src;
-            s.onload = resolve;
-            s.onerror = reject;
-            document.head.appendChild(s);
-        });
-    }
+    // import our JS module (once)
+    quillModule ??= await JS.InvokeAsync<IJSObjectReference>(
+      "import", "./js/quillInterop.js");
 
-    // Load Quill core, then the table plugin
-    return loadScript('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js')
-        .then(function() {
-            return loadScript('https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.js');
-        });
-})()
-.then(function() {
-    // Register plugin and initialize editor
-    Quill.register({'modules/table-better': QuillTableBetter}, true);
+    // call its initializeQuill() function
+    await quillModule.InvokeVoidAsync("initializeQuill", "#editor");
+  }
 
-    window.quill = new Quill('#editor', {
-        theme: 'snow',
-        modules: {
-            table: false,           // disable core table support
-            'table-better': {},     // enable plugin
-            keyboard: {
-                bindings: QuillTableBetter.keyboardBindings
-            },
-            toolbar: {
-                container: [
-                    [{ header: [1,2,3,false] }],
-                    ['bold','italic','underline','strike'],
-                    ['blockquote','code-block'],
-                    [{ list:'ordered' }, { list:'bullet' }],
-                    ['link','image','video'],
-                    ['table-better'],
-                    ['clean']
-                ],
-                handlers: {
-                    'table-better': function() {
-                        this.quill.getModule('table-better').insertTable(3,3);
-                    }
-                }
-            }
-        },
-        placeholder: 'Type here...'
-    });
-})
-.catch(function(err) {
-    console.error('Failed to load Quill + table plugin:', err);
-});
-";
-
-        await JS.InvokeVoidAsync("eval", loader);
-    }
-
-    private async Task ShowContentSize()
-    {
-        contentSize = await JS.InvokeAsync<int>("eval", "window.quill.getText().trim().length");
-        StateHasChanged();
-    }
+  private async Task ShowContentSize()
+  {
+    contentSize = await JS.InvokeAsync<int>(
+      "eval",        // still the quickest way to grab window.quill
+      "window.quill.getText().trim().length"
+    );
+    StateHasChanged();
+  }
 }
