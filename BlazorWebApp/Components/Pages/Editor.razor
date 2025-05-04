@@ -4,46 +4,35 @@
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
 
-<h3>Quill Editor Test (v2.0.3) with Table Support</h3>
-<div class="form-group">
-  <label for="editor">Content</label>
-  <div id="editor" style="height:200px; background-color:white;"></div>
-</div>
+<h3>Quill Editor</h3>
+<div id="editor" style="height:200px; background:white;"></div>
 
-<button class="btn btn-primary" @onclick="ShowContentSize">
-  Show Content Size
+<button class="btn btn-primary" @onclick="ShowPayloadSize">
+  Show Payload Size
 </button>
 
-@if (contentSize >= 0)
+@if (payloadSize >= 0)
 {
   <div class="mt-2">
-    <strong>Content length:</strong> @contentSize characters
+    <strong>Total payload:</strong> @payloadSize bytes
   </div>
 }
 
 @code {
-  private int contentSize = -1;
-  private IJSObjectReference? quillModule;
+  private int payloadSize = -1;
+  private IJSObjectReference? module;
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
-    if (!firstRender)
-      return;
-
-    // import our JS module (once)
-    quillModule ??= await JS.InvokeAsync<IJSObjectReference>(
+    if (!firstRender) return;
+    module ??= await JS.InvokeAsync<IJSObjectReference>(
       "import", "./js/quillInterop.js");
-
-    // call its initializeQuill() function
-    await quillModule.InvokeVoidAsync("initializeQuill", "#editor");
+    await module.InvokeVoidAsync("initializeQuill", "#editor");
   }
 
-  private async Task ShowContentSize()
+  private async Task ShowPayloadSize()
   {
-    contentSize = await JS.InvokeAsync<int>(
-      "eval",        // still the quickest way to grab window.quill
-      "window.quill.getText().trim().length"
-    );
+    payloadSize = await module!.InvokeAsync<int>("getPayloadSize");
     StateHasChanged();
   }
 }
