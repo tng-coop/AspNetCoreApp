@@ -3,13 +3,24 @@
 @using BlazorWebApp.Services
 @inject IPublicationService PublicationService
 
-<h3>All Publications</h3>
+<h3>Drafts</h3>
 <ul class="list-unstyled">
-@foreach (var p in pubs)
+@foreach (var p in pubs.Where(p => p.Status == "Draft"))
+{
+    <li>
+        <a href="/editor/@p.Id"><strong>@p.Title</strong></a>
+        <small class="text-muted ms-2">@p.CreatedAt:g</small>
+    </li>
+}
+</ul>
+
+<h3>Published</h3>
+<ul class="list-unstyled">
+@foreach (var p in pubs.Where(p => p.Status == "Published"))
 {
     <li>
         <a href="/publications/@p.Id"><strong>@p.Title</strong></a>
-        <small class="text-muted ms-2">@p.Status</small>
+        <small class="text-muted ms-2">@p.PublishedAt.Value:g</small>
     </li>
 }
 </ul>
