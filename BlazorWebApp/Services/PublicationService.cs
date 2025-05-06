@@ -55,6 +55,7 @@ namespace BlazorWebApp.Services
         {
             Id = p.Id,
             Title = p.Title,
+DeltaJson = p.DeltaJson,
             Html = p.Html,
             Status = p.Status.ToString(),
             CreatedAt = p.CreatedAt,
