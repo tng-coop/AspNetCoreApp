@@ -505,3 +505,5 @@ Uploader/images/*.png
 Uploader/images/*.mp4
 
 /dumps/*.sql
+
+/a.sh
