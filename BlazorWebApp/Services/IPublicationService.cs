@@ -11,5 +11,6 @@ namespace BlazorWebApp.Services
         Task<List<PublicationReadDto>> ListAsync();
         Task<PublicationReadDto?> GetAsync(Guid id);
         Task PublishAsync(Guid id);
+        Task UpdateAsync(Guid id, PublicationWriteDto dto);
     }
 }

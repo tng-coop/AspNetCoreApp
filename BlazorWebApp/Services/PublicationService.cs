@@ -60,5 +60,16 @@ namespace BlazorWebApp.Services
             CreatedAt = p.CreatedAt,
             PublishedAt = p.PublishedAt
         };
+
+    // ← NEW: allow updating an existing draft
+    public async Task UpdateAsync(Guid id, PublicationWriteDto dto)
+    {
+        var pub = await _db.Publications.FindAsync(id);
+        if (pub == null) throw new KeyNotFoundException($"Publication {id} not found");
+        pub.Title     = dto.Title;
+        pub.DeltaJson = dto.DeltaJson;
+        pub.Html      = dto.Html;
+        await _db.SaveChangesAsync();
+    }
     }
 }
