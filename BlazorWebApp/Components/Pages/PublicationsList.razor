@@ -1,7 +1,7 @@
 @page "/publications"
 @using BlazorWebApp.Models
-@using System.Net.Http.Json
-@inject HttpClient Http
+@using BlazorWebApp.Services
+@inject IPublicationService PublicationService
 
 <h3>All Publications</h3>
 <ul class="list-unstyled">
@@ -19,7 +19,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        pubs = await Http.GetFromJsonAsync<List<PublicationReadDto>>("api/publications")
-               ?? new List<PublicationReadDto>();
+        pubs = await PublicationService.ListAsync();
     }
 }
