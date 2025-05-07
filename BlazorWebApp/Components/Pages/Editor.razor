@@ -8,7 +8,7 @@
 @inject NavigationManager Nav
 @inject IPublicationService PublicationService
 
-<h3>@(Id == null ? "New Publication" : "Edit Publication")</h3>
+<h3>@(Id == null ? "New Publication" : (loadedExisting ? "Edit Publication" : "Unknown Publication – creating new"))</h3>
 
 <EditForm EditContext="editContext" OnSubmit="HandleSubmit">
     <DataAnnotationsValidator />
@@ -26,7 +26,12 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Save Draft</button>
-    <button type="button" class="btn btn-success ms-2" @onclick="PublishAsync" disabled="@(!canPublish)">Publish</button>
+    <button type="button"
+            class="btn btn-success ms-2"
+            @onclick="PublishAsync"
+            disabled="@(!canPublish)">
+        Publish
+    </button>
 </EditForm>
 
 @code {
@@ -35,7 +40,10 @@
     private PublicationWriteDto dto = new();
     private EditContext editContext;
     private IJSObjectReference? module;
-    private bool canPublish => !string.IsNullOrWhiteSpace(dto.Title) && !string.IsNullOrWhiteSpace(dto.DeltaJson);
+    private bool loadedExisting;
+    private bool canPublish =>
+        !string.IsNullOrWhiteSpace(dto.Title) &&
+        !string.IsNullOrWhiteSpace(dto.DeltaJson);
 
     protected override void OnInitialized()
     {
@@ -46,7 +54,8 @@
     {
         if (!first) return;
 
-        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/quillInterop.js");
+        module ??= await JS.InvokeAsync<IJSObjectReference>(
+            "import", "/js/quillInterop.js");
         await module.InvokeVoidAsync("initializeQuill", "#editor");
 
         if (Id.HasValue)
@@ -54,10 +63,10 @@
             var existing = await PublicationService.GetAsync(Id.Value);
             if (existing != null)
             {
+                loadedExisting = true;
                 dto.Title     = existing.Title;
                 dto.DeltaJson = existing.DeltaJson;
                 dto.Html      = existing.Html;
-                // use the correct interop method name from quillInterop.js
                 await module.InvokeVoidAsync("setContents", existing.DeltaJson);
                 editContext.NotifyValidationStateChanged();
                 StateHasChanged();
@@ -67,33 +76,37 @@
 
     private async Task HandleSubmit(EditContext context)
     {
-        // Pull Quill content before validation using correct interop names
+        // grab the latest from Quill
         dto.DeltaJson = await module!.InvokeAsync<string>("getDeltaJson");
         dto.Html      = await module.InvokeAsync<string>("getHtml");
 
-        // Re-validate now that DeltaJson is populated
         if (!context.Validate())
             return;
 
-        // Save draft
-        if (Id.HasValue)
+        if (loadedExisting && Id.HasValue)
         {
+            // update the existing draft
             await PublicationService.UpdateAsync(Id.Value, dto);
         }
         else
         {
+            // create a new one
             var created = await PublicationService.CreateAsync(dto);
             Id = created.Id;
-        }
+            loadedExisting = true;
 
-        // After save, allow publishing
+            // rewrite the URL to reflect the new Id
+            Nav.NavigateTo($"/editor/{Id}", replace: true);
+            return;
+        }
     }
 
     private async Task PublishAsync()
     {
-        // Ensure draft is saved and valid
+        // ensure it's saved first
         await HandleSubmit(editContext);
-        if (Id.HasValue)
+
+        if (loadedExisting && Id.HasValue)
         {
             await PublicationService.PublishAsync(Id.Value);
             Nav.NavigateTo($"/publications/{Id}");
