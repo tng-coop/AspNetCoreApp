@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 name_only=false
 directory="."
 include_regex=""
 exclude_regex=""
+all=false
 
 # Function to display help message
 display_help() {
@@ -26,76 +28,65 @@ EOF
 # Parse args
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -n|--name-only)   name_only=true; shift ;;
-    -r|--regex)       include_regex="$2"; shift 2 ;;
-    -v|--invert)      exclude_regex="$2"; shift 2 ;;
-    -a|--all)         all=true; shift ;;
-    -h|--help)        display_help ;;
-    -*)
-      echo "Unknown option: $1" >&2
-      exit 1
-      ;;
-    *)
-      directory="$1"; shift ;;
+    -n|--name-only) name_only=true; shift ;;
+    -r|--regex)      include_regex="$2"; shift 2 ;;
+    -v|--invert)     exclude_regex="$2"; shift 2 ;;
+    -a|--all)        all=true; shift ;;
+    -h|--help)       display_help ;;
+    --)              shift; break ;;
+    -*) echo "Unknown option: $1" >&2; exit 1 ;;
+    *)  directory="$1"; shift ;;
   esac
 done
 
-cd "${directory}" || { echo "Cannot cd to ${directory}"; exit 1; }
+cd "$directory" || { echo "Cannot cd to $directory"; exit 1; }
 
-if [[ $all ]]; then
-  base_find=( find . -type f )
+# build the base find command as an array
+if $all; then
+  find_cmd=(find . -type f)
 else
-  # explicit paths to skip
-  skip_dirs=(
-    .git published node_module logs docs
-    BlazorWebApp/obj BlazorWebApp.Tests
-    Uploader/obj Uploader/bin
-    BlazorWebApp/bin node_modules bin out obj
-    PlaywrightTests asset migration launchSett wwwroot
-  )
-  # extensions to drop
-  skip_exts=( sh txt md css mjs env ps1 )
+  # directories to prune
+  skip_dirs=(.git published node_modules logs docs \
+             BlazorWebApp.Tests \
+             Migrations \
+             bin out obj PlaywrightTests asset migration wwwroot)
 
-  # build the grouped-prune clause
-  prune_args=()
+  prune_clause=()
   for d in "${skip_dirs[@]}"; do
-    prune_args+=( -path "./$d" -o )
+    prune_clause+=( -path "./$d" -o )
   done
-  # ← new: prune any directory named "dist"
-  prune_args+=( -type d -name dist -o )
-  # remove trailing -o
-  prune_args=( "${prune_args[@]:0:${#prune_args[@]}-1}" )
+  prune_clause+=( -type d -name dist )  # drop “dist” dirs too
 
-  # assemble find: prune-clause OR file-clause
-  base_find=( find . '\(' "${prune_args[@]}" '\)' -prune -o -type f )
+  # extensions to skip
+  skip_exts=(sh txt md css mjs env ps1)
 
-  # drop unwanted extensions
+  find_cmd=( find . "(" "${prune_clause[@]}" ")" -prune -o -type f )
+
   for ext in "${skip_exts[@]}"; do
-    base_find+=( ! -name "*.$ext" )
+    find_cmd+=( ! -name "*.$ext" )
   done
 
-  # only print from the file-branch
-  base_find+=( -print )
+  find_cmd+=( -print )
 fi
 
-# build the rest of the pipeline
-pipeline="${base_find[@]}"
+# now actually run find, piping into egrep if requested
 if [[ -n $include_regex ]]; then
-  pipeline+=" | egrep -i '${include_regex}'"
-fi
-if [[ -n $exclude_regex ]]; then
-  pipeline+=" | egrep -vi '${exclude_regex}'"
-fi
-
-if $name_only; then
-  pipeline+=" | while IFS= read -r f; do echo \"\$f\"; done"
+  # quote the regex properly
+  "${find_cmd[@]}" | egrep -i -- "$include_regex"
 else
-  pipeline+=" | while IFS= read -r f; do
-    echo \"\$f\"
-    echo '----------------'
-    cat \"\$f\"
-    echo '----------------'
-  done"
-fi
-
-eval "$pipeline"
+  "${find_cmd[@]}"
+fi | {
+  # final name-only vs. full-content loop
+  if $name_only; then
+    while IFS= read -r f; do
+      echo "$f"
+    done
+  else
+    while IFS= read -r f; do
+      echo "$f"
+      echo "----------------"
+      cat "$f"
+      echo "----------------"
+    done
+  fi
+}
