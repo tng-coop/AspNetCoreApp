@@ -53,6 +53,15 @@ jobs:
 
       - name: Add dotnet tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Add dotnet tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Install LibMan CLI
+        run: dotnet tool install --global Microsoft.Web.LibraryManager.Cli
+
+      - name: Restore client-side libraries
+        run: libman restore --verbosity detailed
       
       - name: Make reset-db.sh executable
         run: chmod +x ./scripts/reset-db.sh
