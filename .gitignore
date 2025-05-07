@@ -506,6 +506,9 @@ Uploader/images/*.mp4
 
 /dumps/*.sql
 
+
 BlazorWebApp/a.sh
 
 imgcache
+
+/BlazorWebApp/wwwroot/dist/*
