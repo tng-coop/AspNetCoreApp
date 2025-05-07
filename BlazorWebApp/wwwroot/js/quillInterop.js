@@ -29,7 +29,7 @@ export async function initializeQuill(selector) {
   // Register the table-better plugin
   Quill.register({'modules/table-better': QuillTableBetter}, true);
 
-  // Initialize Quill with toolbar and table handler
+  // Initialize Quill with toolbar (including color pickers) and table handler
   quill = new Quill(selector, {
     theme: 'snow',
     modules: {
@@ -44,6 +44,8 @@ export async function initializeQuill(selector) {
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['link', 'image', 'video'],
           ['table-better'],
+          // ← Add color and background pickers here:
+          [{ 'color': [] }, { 'background': [] }],
           ['clean']
         ],
         handlers: {
@@ -58,7 +60,6 @@ export async function initializeQuill(selector) {
 export function setContents(deltaJson) {
   try {
     const delta = JSON.parse(deltaJson);
-    // use updateContents to properly re-create table blots
     quill.updateContents(delta, Quill.sources.USER);
     // move cursor to end
     const length = delta.ops.reduce((sum, op) => {
