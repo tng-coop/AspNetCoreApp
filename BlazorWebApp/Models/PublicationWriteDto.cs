@@ -12,5 +12,7 @@ namespace BlazorWebApp.Models
 
         // capture rendered HTML
         public string Html { get; set; } = string.Empty;
+        // Category mapping 
+        public Guid? CategoryId { get; set; }
     }
 }

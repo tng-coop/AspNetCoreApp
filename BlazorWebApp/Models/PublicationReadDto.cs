@@ -11,5 +11,8 @@ namespace BlazorWebApp.Models
         public string Status { get; set; } = string.Empty;
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? PublishedAt { get; set; }
+        // Category info 
+        public Guid? CategoryId { get; set; } 
+        public string? CategoryName { get; set; }
     }
 }
