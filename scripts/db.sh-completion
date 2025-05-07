@@ -1,55 +1,76 @@
-# scripts/db.sh-completion
-# Bash completion for db.sh (dump|restore local|neon [env_num] [dump_file])
-# Shows filenames sorted newest-first by timestamp in the name.
+# Bash completion for db.sh (dump|restore local|neon with optional flags)
+# Supports:
+#   -e|--env <0-9>    (local only)
+#   -f|--file <file>  (both targets)
+# and suggests dump filenames sorted newest-first.
 
 _db_sh() {
-    local cur cword cmd target dump_dir files
+    local cur prev cmd target dump_dir files envs opts
     COMPREPLY=()
-    cword=$COMP_CWORD
-    cur="${COMP_WORDS[cword]}"
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
     cmd="${COMP_WORDS[1]}"
     target="${COMP_WORDS[2]}"
 
-    # 1st arg: dump|restore
-    if (( cword == 1 )); then
+    # first argument: dump|restore
+    if (( COMP_CWORD == 1 )); then
         COMPREPLY=( $(compgen -W "dump restore" -- "$cur") )
         return
     fi
-
-    # 2nd arg: local|neon
-    if (( cword == 2 )); then
+    # second argument: local|neon
+    if (( COMP_CWORD == 2 )); then
         COMPREPLY=( $(compgen -W "local neon" -- "$cur") )
         return
     fi
 
-    # Only complete filenames at the right word index
-    if [[ "$cmd" =~ ^(dump|restore)$ && "$target" =~ ^(local|neon)$ ]]; then
-        if [[ "$target" == "neon" ]]; then
-            (( cword != 3 )) && return
-        else
-            if [[ "${COMP_WORDS[3]:-}" =~ ^[0-9]$ ]]; then
-                (( cword != 4 )) && return
-            else
-                (( cword != 3 )) && return
-            fi
-        fi
+    # environment numbers for -e/--env
+    envs="0 1 2 3 4 5 6 7 8 9"
+    # option flags
+    opts="-e --env -f --file"
 
-        # find dumps/ next to this completion file
-        dump_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../dumps" && pwd)"
+    # if previous is an option flag requiring an argument
+    case "$prev" in
+      -e|--env)
+        COMPREPLY=( $(compgen -W "$envs" -- "$cur") )
+        return
+        ;;
+      -f|--file)
+        ;;  # handled below by filename logic
+    esac
+
+    # determine dump directory
+    dump_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../dumps" && pwd)"
+
+    # helper: suggest dump files
+    _suggest_files() {
         files=()
         for f in "$dump_dir"/*.sql; do
             [[ -e "$f" ]] || continue
-            files+=( "$(basename "$f")" )
+            files+=("$(basename "$f")")
         done
-        # reverse-lex sort so YYYYMMDD_HHMMSS names newest-first
         IFS=$'\n' files=( $(printf "%s\n" "${files[@]}" | sort -r) )
         unset IFS
-
         COMPREPLY=( $(compgen -W "${files[*]}" -- "$cur") )
+    }
+
+    # if completing after -f/--file or if current word doesn't start with -
+    if [[ "$prev" == -f || "$prev" == --file || "$cur" != -* ]]; then
+        _suggest_files
+        return
     fi
+
+    # otherwise, suggest flags based on target
+    case "$target" in
+      local)
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+        ;;
+      neon)
+        COMPREPLY=( $(compgen -W "-f --file" -- "$cur") )
+        ;;
+    esac
 }
 
-# register for all common invocation patterns:
+# register for scripts
 complete -F _db_sh db.sh
 complete -F _db_sh scripts/db.sh
 complete -F _db_sh ./scripts/db.sh
