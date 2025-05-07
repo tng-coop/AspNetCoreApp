@@ -7,6 +7,7 @@
 @inject IJSRuntime JS
 @inject NavigationManager Nav
 @inject IPublicationService PublicationService
+@inject ICategoryService CategoryService
 
 <h3>@(Id == null ? "New Publication" : (loadedExisting ? "Edit Publication" : "Unknown Publication – creating new"))</h3>
 
@@ -15,9 +16,21 @@
     <ValidationSummary />
 
     <div class="mb-3">
+        <label class="form-label">Category</label>
+        <InputSelect class="form-select" @bind-Value="dto.CategoryId">
+            <option value="">-- None --</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.Id">@cat.Name</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => dto.CategoryId)" />
+    </div>
+
+    <div class="mb-3">
         <label class="form-label">Title</label>
         <InputText class="form-control" @bind-Value="dto.Title" />
-        <ValidationMessage For="() => dto.Title" />
+        <ValidationMessage For="@(() => dto.Title)" />
     </div>
 
     <div class="mb-3">
@@ -38,8 +51,9 @@
     [Parameter] public Guid? Id { get; set; }
 
     private PublicationWriteDto dto = new();
+    private List<CategoryDto> categories = new();
     private EditContext editContext = null!;
-private IJSObjectReference module = null!;
+    private IJSObjectReference module = null!;
     private bool loadedExisting;
     private bool canPublish =>
         !string.IsNullOrWhiteSpace(dto.Title) &&
@@ -48,14 +62,14 @@ private IJSObjectReference module = null!;
     protected override void OnInitialized()
     {
         editContext = new EditContext(dto);
+        _ = LoadCategories();
     }
 
     protected override async Task OnAfterRenderAsync(bool first)
     {
         if (!first) return;
 
-        module ??= await JS.InvokeAsync<IJSObjectReference>(
-            "import", "/js/quillInterop.js");
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/quillInterop.js");
         await module.InvokeVoidAsync("initializeQuill", "#editor");
 
         if (Id.HasValue)
@@ -64,9 +78,9 @@ private IJSObjectReference module = null!;
             if (existing != null)
             {
                 loadedExisting = true;
-                dto.Title     = existing.Title;
+                dto.Title = existing.Title;
                 dto.DeltaJson = existing.DeltaJson;
-                dto.Html      = existing.Html;
+                dto.Html = existing.Html;
                 await module.InvokeVoidAsync("setContents", existing.DeltaJson);
                 editContext.NotifyValidationStateChanged();
                 StateHasChanged();
@@ -76,40 +90,39 @@ private IJSObjectReference module = null!;
 
     private async Task HandleSubmit(EditContext context)
     {
-        // grab the latest from Quill
+        // pull from Quill
         dto.DeltaJson = await module.InvokeAsync<string>("getDeltaJson");
-        dto.Html      = await module.InvokeAsync<string>("getHtml");
+        dto.Html = await module.InvokeAsync<string>("getHtml");
 
         if (!context.Validate())
             return;
 
         if (loadedExisting && Id.HasValue)
         {
-            // update the existing draft
             await PublicationService.UpdateAsync(Id.Value, dto);
         }
         else
         {
-            // create a new one
             var created = await PublicationService.CreateAsync(dto);
             Id = created.Id;
             loadedExisting = true;
-
-            // rewrite the URL to reflect the new Id
             Nav.NavigateTo($"/editor/{Id}", replace: true);
-            return;
         }
     }
 
     private async Task PublishAsync()
     {
-        // ensure it's saved first
         await HandleSubmit(editContext);
-
         if (loadedExisting && Id.HasValue)
         {
             await PublicationService.PublishAsync(Id.Value);
             Nav.NavigateTo($"/publications/{Id}");
         }
+    }
+
+    private async Task LoadCategories()
+    {
+        categories = await CategoryService.ListAsync();
+        StateHasChanged();
     }
 }
