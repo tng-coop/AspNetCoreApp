@@ -11,20 +11,10 @@ const loadScript = src =>
   });
 
 export async function initializeQuill(selector) {
-  // inject styles as before
-  const snowCss = document.createElement('link');
-  snowCss.rel = 'stylesheet';
-  snowCss.href = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css';
-  document.head.appendChild(snowCss);
-
-  const tableCss = document.createElement('link');
-  tableCss.rel = 'stylesheet';
-  tableCss.href = 'https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.css';
-  document.head.appendChild(tableCss);
-
-  await loadScript('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js');
-  await loadScript('https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.js');
-  Quill.register({'modules/table-better': QuillTableBetter}, true);
+  // load local scripts only
+  await loadScript('/lib/quill/dist/quill.js');
+  await loadScript('/lib/quill-table-better/dist/quill-table-better.js');
+  Quill.register({ 'modules/table-better': QuillTableBetter }, true);
 
   quill = new Quill(selector, {
     theme: 'snow',
@@ -39,14 +29,14 @@ export async function initializeQuill(selector) {
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['link', 'image', 'video'],
           ['table-better'],
-          [{ 'color': [] }, { 'background': [] }],
+          [{ color: [] }, { background: [] }],
           ['clean']
         ],
         handlers: {
-          'image': () => {
+          image: () => {
             const input = document.createElement('input');
-            input.setAttribute('type', 'file');
-            input.setAttribute('accept', 'image/*');
+            input.type = 'file';
+            input.accept = 'image/*';
             input.click();
             input.onchange = async () => {
               const file = input.files[0];
@@ -71,10 +61,10 @@ export function setContents(deltaJson) {
   try {
     const delta = JSON.parse(deltaJson);
     quill.updateContents(delta, Quill.sources.USER);
-    const length = delta.ops.reduce((sum, op) => {
-      if (typeof op.insert === 'string') return sum + op.insert.length;
-      return sum + 1;
-    }, 0);
+    const length = delta.ops.reduce(
+      (sum, op) => (typeof op.insert === 'string' ? sum + op.insert.length : sum + 1),
+      0
+    );
     quill.setSelection(length, Quill.sources.SILENT);
     quill.scrollIntoView();
   } catch (err) {

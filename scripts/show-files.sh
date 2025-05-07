@@ -59,6 +59,7 @@ else
   BlazorWebApp.Tests
   Uploader/obj
   Uploader/bin
+  BlazorWebApp/wwwroot/dist
    BlazorWebApp/bin node_modules bin out obj PlaywrightTests asset migration launchSett wwwroot )
   # file extensions to drop:
   skip_exts=( sh txt md css mjs env ps1 )
