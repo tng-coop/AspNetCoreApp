@@ -38,8 +38,8 @@
     [Parameter] public Guid? Id { get; set; }
 
     private PublicationWriteDto dto = new();
-    private EditContext editContext;
-    private IJSObjectReference? module;
+    private EditContext editContext = null!;
+private IJSObjectReference module = null!;
     private bool loadedExisting;
     private bool canPublish =>
         !string.IsNullOrWhiteSpace(dto.Title) &&
@@ -77,7 +77,7 @@
     private async Task HandleSubmit(EditContext context)
     {
         // grab the latest from Quill
-        dto.DeltaJson = await module!.InvokeAsync<string>("getDeltaJson");
+        dto.DeltaJson = await module.InvokeAsync<string>("getDeltaJson");
         dto.Html      = await module.InvokeAsync<string>("getHtml");
 
         if (!context.Validate())
