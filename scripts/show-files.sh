@@ -54,7 +54,12 @@ if [[ $all ]]; then
   base_find=( find . -type f )
 else
   # directories to skip entirely:
-  skip_dirs=( .git published node_module logs docs bin out obj PlaywrightTests asset migration launchSett wwwroot )
+  skip_dirs=( .git published node_module logs docs
+  BlazorWebApp/obj
+  BlazorWebApp.Tests
+  Uploader/obj
+  Uploader/bin
+   BlazorWebApp/bin node_modules bin out obj PlaywrightTests asset migration launchSett wwwroot )
   # file extensions to drop:
   skip_exts=( sh txt md css mjs env ps1 )
 
