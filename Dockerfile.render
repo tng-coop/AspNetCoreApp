@@ -4,6 +4,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 COPY . .
+
+# Ensure global tools path is available
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Install LibMan CLI and restore client-side libraries
+RUN dotnet tool install --global Microsoft.Web.LibraryManager.Cli \
+    && libman restore --verbosity detailed
+
+# Restore and publish
 RUN dotnet restore
 RUN dotnet publish -c Release -o out
 
