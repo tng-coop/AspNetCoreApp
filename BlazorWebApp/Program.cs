@@ -34,6 +34,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<INameService, NameService>();
 builder.Services.AddScoped<INoteService, NoteService>();
 builder.Services.AddScoped<IPublicationService, PublicationService>();
+    // register category service
+    builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Add Razor Components and Authentication State
 builder.Services.AddRazorComponents()

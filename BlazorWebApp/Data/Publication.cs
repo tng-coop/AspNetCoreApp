@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BlazorWebApp.Data
@@ -19,5 +20,9 @@ namespace BlazorWebApp.Data
         public PublicationStatus Status { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? PublishedAt { get; set; }
+
+        // navigation for many-to-many with Category
+        public ICollection<PublicationCategory> PublicationCategories { get; set; }
+            = new List<PublicationCategory>();
     }
 }

@@ -255,7 +255,8 @@ namespace BlazorWebApp.Migrations
                 columns: table => new
                 {
                     PublicationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PublicationId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -272,6 +273,11 @@ namespace BlazorWebApp.Migrations
                         principalTable: "Publications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PublicationCategories_Publications_PublicationId1",
+                        column: x => x.PublicationId1,
+                        principalTable: "Publications",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -340,6 +346,11 @@ namespace BlazorWebApp.Migrations
                 name: "IX_PublicationCategories_CategoryId",
                 table: "PublicationCategories",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PublicationCategories_PublicationId1",
+                table: "PublicationCategories",
+                column: "PublicationId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Publications_CreatedAt",

@@ -247,9 +247,14 @@ namespace BlazorWebApp.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("PublicationId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("PublicationId", "CategoryId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("PublicationId1");
 
                     b.ToTable("PublicationCategories");
                 });
@@ -428,6 +433,10 @@ namespace BlazorWebApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BlazorWebApp.Data.Publication", null)
+                        .WithMany("PublicationCategories")
+                        .HasForeignKey("PublicationId1");
+
                     b.Navigation("Category");
 
                     b.Navigation("Publication");
@@ -495,6 +504,11 @@ namespace BlazorWebApp.Migrations
                 {
                     b.Navigation("Children");
 
+                    b.Navigation("PublicationCategories");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
+                {
                     b.Navigation("PublicationCategories");
                 });
 #pragma warning restore 612, 618
