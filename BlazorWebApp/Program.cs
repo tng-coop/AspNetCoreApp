@@ -1,3 +1,4 @@
+// __SPLT__USINGS_START__
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +17,13 @@ using System.Text;
 using System.Security.Cryptography;
 using BlazorWebApp.Models;
 using Microsoft.Extensions.FileProviders;
+// __SPLT__USINGS_END__
 
+// __SPLT__BUILDER_START__
 var builder = WebApplication.CreateBuilder(args);
+// __SPLT__BUILDER_END__
 
+// __SPLT__JWT_SETUP_START__
 // Prepare RSA key for JWT validation
 var privateKeyPem = Encoding.UTF8.GetString(Convert.FromBase64String(
     builder.Configuration["JwtSettings:PrivateKeyBase64"]!));
@@ -28,15 +33,19 @@ builder.Services.AddControllers();
 var rsaKey = new RsaSecurityKey(rsa);
 
 builder.Services.AddScoped<JwtTokenService>();
+// __SPLT__JWT_SETUP_END__
 
+// __SPLT__HTTP_SERVICES_START__
 // Add HTTP and application services
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<INameService, NameService>();
 builder.Services.AddScoped<INoteService, NoteService>();
 builder.Services.AddScoped<IPublicationService, PublicationService>();
-    // register category service
-    builder.Services.AddScoped<ICategoryService, CategoryService>();
+// register category service
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+// __SPLT__HTTP_SERVICES_END__
 
+// __SPLT__BLAZOR_AUTH_START__
 // Add Razor Components and Authentication State
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -44,14 +53,18 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+// __SPLT__BLAZOR_AUTH_END__
 
+// __SPLT__DBCONFIG_START__
 // Configure PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+// __SPLT__DBCONFIG_END__
 
+// __SPLT__IDENTITY_SETUP_START__
 // Identity setup with Default UI and Token Providers
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.SignIn.RequireConfirmedAccount = true)
@@ -59,7 +72,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+// __SPLT__IDENTITY_SETUP_END__
 
+// __SPLT__AUTH_CONFIG_START__
 // Authentication configuration
 builder.Services.AddAuthentication()
     .AddGitHub(options =>
@@ -123,7 +138,9 @@ builder.Services.AddAuthentication()
             ValidateLifetime = true
         };
     });
+// __SPLT__AUTH_CONFIG_END__
 
+// __SPLT__AUTHORIZATION_POLICY_START__
 // Define the Bearer policy for JWT
 builder.Services.AddAuthorization(options =>
 {
@@ -134,7 +151,9 @@ builder.Services.AddAuthorization(options =>
             .RequireAuthenticatedUser()
     );
 });
+// __SPLT__AUTHORIZATION_POLICY_END__
 
+// __SPLT__FORWARDED_HEADERS_CONFIG_START__
 // Forwarded Headers in production
 if (!builder.Environment.IsDevelopment())
 {
@@ -145,7 +164,9 @@ if (!builder.Environment.IsDevelopment())
         options.KnownProxies.Clear();
     });
 }
+// __SPLT__FORWARDED_HEADERS_CONFIG_END__
 
+// __SPLT__LOCALIZATION_START__
 // Localization and HttpContextAccessor
 builder.Services.AddScoped<LocalizationService>();
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -156,9 +177,13 @@ builder.Services.Configure<AuthenticationOptions>(opts =>
 {
     opts.Schemes.First(s => s.Name == "LINE").DisplayName = "LINE";
 });
+// __SPLT__LOCALIZATION_END__
 
+// __SPLT__APP_BUILD_START__
 var app = builder.Build();
+// __SPLT__APP_BUILD_END__
 
+// __SPLT__PROD_PIPELINE_START__
 // Use Forwarded Headers and HSTS in production
 if (!app.Environment.IsDevelopment())
 {
@@ -180,7 +205,9 @@ else
         RequestPath = "/cert"
     });
 }
+// __SPLT__PROD_PIPELINE_END__
 
+// __SPLT__MIGRATIONS_ERRORHANDLING_START__
 // Migrations and error handling
 if (app.Environment.IsDevelopment())
 {
@@ -191,7 +218,9 @@ else
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+// __SPLT__MIGRATIONS_ERRORHANDLING_END__
 
+// __SPLT__STATIC_CACHE_START__
 app.UseStaticFiles();
 var cachePath = Path.Combine(app.Environment.WebRootPath, "imgcache");
 Directory.CreateDirectory(cachePath);
@@ -200,12 +229,17 @@ app.UseStaticFiles(new StaticFileOptions {
     RequestPath = "/imgcache",
     OnPrepareResponse = ctx => ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=604800"
 });
+// __SPLT__STATIC_CACHE_END__
+
+// __SPLT__ROUTING_AUTH_START__
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseAntiforgery();
+// __SPLT__ROUTING_AUTH_END__
 
+// __SPLT__NAME_HELLO_ENDPOINTS_START__
 // Name and Hello endpoints
 app.MapGet("/api/name/{key}", async (
         string key,
@@ -232,8 +266,9 @@ app.MapPut("/api/name/{key}", async (
 
 app.MapGet("/api/hello", () => Results.Ok("Hello from API!"))
 .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+// __SPLT__NAME_HELLO_ENDPOINTS_END__
 
-
+// __SPLT__PUBLICATION_ENDPOINTS_START__
 // Publication endpoints
 app.MapGet("/api/publications", async (IPublicationService svc) =>
     Results.Ok(await svc.ListAsync()))
@@ -262,13 +297,17 @@ app.MapPost("/api/publications/{id:guid}/publish", async (Guid id, IPublicationS
     await svc.PublishAsync(id);
     return Results.NoContent();
 }).RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+// __SPLT__PUBLICATION_ENDPOINTS_END__
 
+// __SPLT__BLAZOR_RENDER_START__
 // Blazor render
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapAdditionalIdentityEndpoints();
+// __SPLT__BLAZOR_RENDER_END__
 
+// __SPLT__DATA_SEEDING_START__
 // Data seeding
 using (var scope = app.Services.CreateScope())
 {
@@ -358,5 +397,8 @@ using (var scope = app.Services.CreateScope())
             await nameSvc.SetNameAsync(key, url, ownerId: null);
     }
 }
+// __SPLT__DATA_SEEDING_END__
 
+// __SPLT__RUN_START__
 app.Run();
+// __SPLT__RUN_END__
