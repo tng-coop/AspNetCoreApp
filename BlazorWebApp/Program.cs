@@ -33,7 +33,7 @@ builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<INameService, NameService>();
 builder.Services.AddScoped<INoteService, NoteService>();
-    builder.Services.AddScoped<IPublicationService, PublicationService>();
+builder.Services.AddScoped<IPublicationService, PublicationService>();
 
 // Add Razor Components and Authentication State
 builder.Services.AddRazorComponents()
@@ -170,7 +170,7 @@ else
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(certPath),
-        RequestPath  = "/cert"
+        RequestPath = "/cert"
     });    
     app.UseDirectoryBrowser(new DirectoryBrowserOptions
     {
@@ -178,7 +178,6 @@ else
         RequestPath = "/cert"
     });
 }
-
 
 // Migrations and error handling
 if (app.Environment.IsDevelopment())
@@ -196,7 +195,7 @@ var cachePath = Path.Combine(app.Environment.WebRootPath, "imgcache");
 Directory.CreateDirectory(cachePath);
 app.UseStaticFiles(new StaticFileOptions {
     FileProvider = new PhysicalFileProvider(cachePath),
-    RequestPath  = "/imgcache",
+    RequestPath = "/imgcache",
     OnPrepareResponse = ctx => ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=604800"
 });
 app.UseRouting();
@@ -205,7 +204,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseAntiforgery();
 
-// API endpoints
+// Name and Hello endpoints
 app.MapGet("/api/name/{key}", async (
         string key,
         ClaimsPrincipal user,
@@ -231,6 +230,36 @@ app.MapPut("/api/name/{key}", async (
 
 app.MapGet("/api/hello", () => Results.Ok("Hello from API!"))
 .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+
+
+// Publication endpoints
+app.MapGet("/api/publications", async (IPublicationService svc) =>
+    Results.Ok(await svc.ListAsync()))
+    .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+
+app.MapGet("/api/publications/{id:guid}", async (Guid id, IPublicationService svc) =>
+{
+    var pub = await svc.GetAsync(id);
+    return pub is not null ? Results.Ok(pub) : Results.NotFound();
+}).RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+
+app.MapPost("/api/publications", async (PublicationWriteDto dto, IPublicationService svc) =>
+{
+    var created = await svc.CreateAsync(dto);
+    return Results.Created($"/api/publications/{created.Id}", created);
+}).RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+
+app.MapPut("/api/publications/{id:guid}", async (Guid id, PublicationWriteDto dto, IPublicationService svc) =>
+{
+    await svc.UpdateAsync(id, dto);
+    return Results.NoContent();
+}).RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
+
+app.MapPost("/api/publications/{id:guid}/publish", async (Guid id, IPublicationService svc) =>
+{
+    await svc.PublishAsync(id);
+    return Results.NoContent();
+}).RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
 
 // Blazor render
 app.MapRazorComponents<App>()
