@@ -44,8 +44,10 @@ export async function initializeQuill(selector) {
               form.append('file', file);
               const res = await fetch('/api/images/upload', { method: 'POST', body: form });
               const { url } = await res.json();
+                            // use the returned URL’s path (preserves extension)
+              const relativePath = url.startsWith('http') ? new URL(url).pathname : url;
               const range = quill.getSelection(true);
-              quill.insertEmbed(range.index, 'image', url);
+              quill.insertEmbed(range.index, 'image', relativePath);
               quill.setSelection(range.index + 1);
             };
           },
