@@ -90,6 +90,26 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("BlazorWebApp.Data.ImageAsset", b =>
                 {
                     b.Property<Guid>("Id")
@@ -217,6 +237,21 @@ namespace BlazorWebApp.Migrations
                     b.HasIndex("CreatedAt");
 
                     b.ToTable("Publications");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.PublicationCategory", b =>
+                {
+                    b.Property<Guid>("PublicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("PublicationId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("PublicationCategories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -351,6 +386,16 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.Category", b =>
+                {
+                    b.HasOne("BlazorWebApp.Data.Category", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("BlazorWebApp.Data.NameRetention", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.ApplicationUser", "Owner")
@@ -367,6 +412,25 @@ namespace BlazorWebApp.Migrations
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.PublicationCategory", b =>
+                {
+                    b.HasOne("BlazorWebApp.Data.Category", "Category")
+                        .WithMany("PublicationCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlazorWebApp.Data.Publication", "Publication")
+                        .WithMany()
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Publication");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -425,6 +489,13 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("NameRetentions");
 
                     b.Navigation("Notes");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.Category", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("PublicationCategories");
                 });
 #pragma warning restore 612, 618
         }
