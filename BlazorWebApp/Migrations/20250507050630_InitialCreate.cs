@@ -53,6 +53,20 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Content = table.Column<byte[]>(type: "bytea", nullable: false),
+                    ContentType = table.Column<string>(type: "text", nullable: false),
+                    UploadedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Publications",
                 columns: table => new
                 {
@@ -297,6 +311,9 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Images");
 
             migrationBuilder.DropTable(
                 name: "NameRetentions");

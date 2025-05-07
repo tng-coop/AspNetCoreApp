@@ -1,4 +1,6 @@
+// Data/ImageAsset.cs
 using System;
+
 namespace BlazorWebApp.Data
 {
     public class ImageAsset

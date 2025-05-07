@@ -24,6 +24,7 @@ var privateKeyPem = Encoding.UTF8.GetString(Convert.FromBase64String(
     builder.Configuration["JwtSettings:PrivateKeyBase64"]!));
 var rsa = RSA.Create();
 rsa.ImportFromPem(privateKeyPem);
+builder.Services.AddControllers();
 var rsaKey = new RsaSecurityKey(rsa);
 
 builder.Services.AddScoped<JwtTokenService>();
@@ -201,6 +202,7 @@ app.UseStaticFiles(new StaticFileOptions {
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 app.UseAntiforgery();
 
 // API endpoints

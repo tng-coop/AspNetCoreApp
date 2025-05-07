@@ -1,26 +1,26 @@
-using Microsoft.AspNetCore.Identity;
+// Data/ApplicationDbContext.cs
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorWebApp.Data;
-
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+namespace BlazorWebApp.Data
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-    }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
-    // ← This line makes _db.Publications available
-    public DbSet<Publication> Publications { get; set; } = null!;
+        public DbSet<Publication> Publications { get; set; } = null!;
+        public DbSet<NameRetention> NameRetentions { get; set; } = null!;
+        public DbSet<Note> Notes { get; set; } = null!;
 
-    public DbSet<NameRetention> NameRetentions { get; set; } = null!;
-        public DbSet<BlazorWebApp.Data.ImageAsset> Images { get; set; } = null!;
-    public DbSet<Note> Notes { get; set; } = null!;
+        // ← Newly added DbSet for images
+        public DbSet<ImageAsset> Images { get; set; } = null!;
 
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
         // Configure Publication entity
         builder.Entity<Publication>(e =>
@@ -62,5 +62,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Note>()
             .Property(n => n.CreatedAt)
             .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+        }
     }
 }
