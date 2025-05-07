@@ -7,15 +7,19 @@ using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/images")]
+// Enable client/CDN caching for 1 hour
+[ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
 public class ImagesController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
-    private readonly IWebHostEnvironment  _env;
+    private readonly string _cacheDir;
 
     public ImagesController(ApplicationDbContext db, IWebHostEnvironment env)
     {
-        _db  = db;
-        _env = env;
+        _db = db;
+        // Prepare the disk cache directory once
+        _cacheDir = Path.Combine(env.WebRootPath, "imgcache");
+        Directory.CreateDirectory(_cacheDir);
     }
 
     [HttpPost("upload")]
@@ -27,11 +31,12 @@ public class ImagesController : ControllerBase
         using var ms = new MemoryStream();
         await file.CopyToAsync(ms);
 
-        var asset = new ImageAsset {
-            Id          = Guid.NewGuid(),
-            Content     = ms.ToArray(),
+        var asset = new ImageAsset
+        {
+            Id = Guid.NewGuid(),
+            Content = ms.ToArray(),
             ContentType = file.ContentType,
-            UploadedAt  = DateTimeOffset.UtcNow
+            UploadedAt = DateTimeOffset.UtcNow
         };
         _db.Images.Add(asset);
         await _db.SaveChangesAsync();
@@ -47,16 +52,25 @@ public class ImagesController : ControllerBase
         if (img == null)
             return NotFound();
 
-        var cacheDir  = Path.Combine(_env.WebRootPath, "imgcache");
-        var fileName  = $"{id}.bin";
-        var cachePath = Path.Combine(cacheDir, fileName);
+        // Determine extension from content-type
+        string extension = img.ContentType switch
+        {
+            "image/png"  => ".png",
+            "image/jpeg" => ".jpg",
+            "image/gif"  => ".gif",
+            _             => ".bin"
+        };
 
+        var fileName = id + extension;
+        var cachePath = Path.Combine(_cacheDir, fileName);
+
+        // Write cache file if missing
         if (!System.IO.File.Exists(cachePath))
         {
-            Directory.CreateDirectory(cacheDir);
             await System.IO.File.WriteAllBytesAsync(cachePath, img.Content);
         }
 
+        // Serve the file via optimized file streaming
         return PhysicalFile(cachePath, img.ContentType);
     }
 }
