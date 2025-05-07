@@ -191,6 +191,13 @@ else
 }
 
 app.UseStaticFiles();
+var cachePath = Path.Combine(app.Environment.WebRootPath, "imgcache");
+Directory.CreateDirectory(cachePath);
+app.UseStaticFiles(new StaticFileOptions {
+    FileProvider = new PhysicalFileProvider(cachePath),
+    RequestPath  = "/imgcache",
+    OnPrepareResponse = ctx => ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=604800"
+});
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

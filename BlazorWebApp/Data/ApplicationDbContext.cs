@@ -15,6 +15,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Publication> Publications { get; set; } = null!;
 
     public DbSet<NameRetention> NameRetentions { get; set; } = null!;
+        public DbSet<BlazorWebApp.Data.ImageAsset> Images { get; set; } = null!;
     public DbSet<Note> Notes { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)

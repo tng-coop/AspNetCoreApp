@@ -1,3 +1,4 @@
+// wwwroot/js/quillInterop.js
 let quill;
 
 const loadScript = src =>
@@ -10,30 +11,24 @@ const loadScript = src =>
   });
 
 export async function initializeQuill(selector) {
-  // inject Quill Snow stylesheet
+  // inject styles as before
   const snowCss = document.createElement('link');
   snowCss.rel = 'stylesheet';
   snowCss.href = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css';
   document.head.appendChild(snowCss);
 
-  // inject table-better stylesheet
   const tableCss = document.createElement('link');
   tableCss.rel = 'stylesheet';
   tableCss.href = 'https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.css';
   document.head.appendChild(tableCss);
 
-  // Load Quill core and table-better plugin
   await loadScript('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js');
   await loadScript('https://cdn.jsdelivr.net/npm/quill-table-better@1.0.7/dist/quill-table-better.js');
-
-  // Register the table-better plugin
   Quill.register({'modules/table-better': QuillTableBetter}, true);
 
-  // Initialize Quill with toolbar (including color pickers) and table handler
   quill = new Quill(selector, {
     theme: 'snow',
     modules: {
-      table: false,
       'table-better': {},
       keyboard: { bindings: QuillTableBetter.keyboardBindings },
       toolbar: {
@@ -44,11 +39,26 @@ export async function initializeQuill(selector) {
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['link', 'image', 'video'],
           ['table-better'],
-          // ← Add color and background pickers here:
           [{ 'color': [] }, { 'background': [] }],
           ['clean']
         ],
         handlers: {
+          'image': () => {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+            input.onchange = async () => {
+              const file = input.files[0];
+              const form = new FormData();
+              form.append('file', file);
+              const res = await fetch('/api/images/upload', { method: 'POST', body: form });
+              const { url } = await res.json();
+              const range = quill.getSelection(true);
+              quill.insertEmbed(range.index, 'image', url);
+              quill.setSelection(range.index + 1);
+            };
+          },
           'table-better': () => quill.getModule('table-better').insertTable(3, 3)
         }
       }
@@ -61,7 +71,6 @@ export function setContents(deltaJson) {
   try {
     const delta = JSON.parse(deltaJson);
     quill.updateContents(delta, Quill.sources.USER);
-    // move cursor to end
     const length = delta.ops.reduce((sum, op) => {
       if (typeof op.insert === 'string') return sum + op.insert.length;
       return sum + 1;
@@ -81,7 +90,6 @@ export function getHtml() {
   return quill.root.innerHTML;
 }
 
-// optional: restore full HTML when Delta isn't enough
 export function setHtml(html) {
   quill.clipboard.dangerouslyPasteHtml(html);
 }
