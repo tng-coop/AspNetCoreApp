@@ -10,7 +10,10 @@
 else
 {
     <h1>@pub.Title</h1>
-    <article>@((MarkupString)pub.Html)</article>
+    <!-- Wrapped in Quill’s classes so table borders appear -->
+    <article class="ql-snow ql-editor">
+        @((MarkupString)pub.Html)
+    </article>
     <p><small>Created: @pub.CreatedAt:f</small></p>
     @if (pub.PublishedAt.HasValue)
     {
