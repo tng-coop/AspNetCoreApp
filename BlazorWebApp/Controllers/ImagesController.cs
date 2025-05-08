@@ -42,7 +42,7 @@ public class ImagesController : ControllerBase
         await _db.SaveChangesAsync();
 
         var url = Url.Action(nameof(Get), "Images", new { id = asset.Id }, Request.Scheme);
-        return Ok(new { url });
+        return Ok(new { location = url });
     }
 
     [HttpGet("{id:guid}")]

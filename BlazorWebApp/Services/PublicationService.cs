@@ -19,7 +19,6 @@ namespace BlazorWebApp.Services
             {
                 Id = Guid.NewGuid(),
                 Title = dto.Title,
-                DeltaJson = dto.DeltaJson,
                 Html = dto.Html,
                 CreatedAt = DateTimeOffset.UtcNow
             };
@@ -72,7 +71,6 @@ namespace BlazorWebApp.Services
         {
             Id = p.Id,
             Title = p.Title,
-            DeltaJson = p.DeltaJson,
             Html = p.Html,
             Status = p.Status.ToString(),
             CreatedAt = p.CreatedAt,
@@ -87,7 +85,6 @@ namespace BlazorWebApp.Services
             var pub = await _db.Publications.FindAsync(id);
             if (pub == null) throw new KeyNotFoundException($"Publication {id} not found");
             pub.Title = dto.Title;
-            pub.DeltaJson = dto.DeltaJson;
             pub.Html = dto.Html;
             await _db.SaveChangesAsync();
 

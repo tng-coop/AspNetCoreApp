@@ -210,10 +210,6 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
-                    b.Property<string>("DeltaJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Html")
                         .IsRequired()
                         .ValueGeneratedOnAdd()

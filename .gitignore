@@ -513,3 +513,4 @@ BlazorWebApp/a.sh
 imgcache
 
 /BlazorWebApp/wwwroot/dist/*
+/BlazorWebApp/wwwroot/lib/tinymce/*

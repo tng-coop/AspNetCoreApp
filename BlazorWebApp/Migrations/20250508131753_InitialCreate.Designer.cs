@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250507141801_InitialCreate")]
+    [Migration("20250508131753_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -212,10 +212,6 @@ namespace BlazorWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
-
-                    b.Property<string>("DeltaJson")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Html")
                         .IsRequired()

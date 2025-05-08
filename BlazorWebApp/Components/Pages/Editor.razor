@@ -1,128 +1,144 @@
-@page "/editor/{Id:guid?}"
+@page "/editor"
+@page "/editor/{Id:guid}"
 @rendermode InteractiveServer
 
+@using TinyMCE.Blazor
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @using Microsoft.AspNetCore.Components.Forms
-@inject IJSRuntime JS
-@inject NavigationManager Nav
+
 @inject IPublicationService PublicationService
-@inject ICategoryService CategoryService
+@inject ICategoryService    CategoryService
+@inject NavigationManager   Nav
 
-<h3>@(Id == null ? "New Publication" : (loadedExisting ? "Edit Publication" : "Unknown Publication – creating new"))</h3>
+<h3>
+  @(Id == null
+      ? "New Publication"
+      : (loadedExisting
+          ? "Edit Publication"
+          : "Unknown Publication – creating new"))
+</h3>
 
-<EditForm EditContext="editContext" OnSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<EditForm EditContext="editContext"
+          OnValidSubmit="HandleSubmit">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
 
-    <div class="mb-3">
-        <label class="form-label">Category</label>
-        <InputSelect class="form-select" @bind-Value="dto.CategoryId">
-            <option value="">-- None --</option>
-            @foreach (var cat in categories)
-            {
-                <option value="@cat.Id">@cat.Name</option>
-            }
-        </InputSelect>
-        <ValidationMessage For="@(() => dto.CategoryId)" />
-    </div>
+  <!-- Category -->
+  <div class="mb-3">
+    <label class="form-label">Category</label>
+    <InputSelect class="form-select" @bind-Value="dto.CategoryId">
+      <option value="">-- None --</option>
+      @foreach (var cat in categories)
+      {
+        <option value="@cat.Id">@cat.Name</option>
+      }
+    </InputSelect>
+    <ValidationMessage For="@(() => dto.CategoryId)" />
+  </div>
 
-    <div class="mb-3">
-        <label class="form-label">Title</label>
-        <InputText class="form-control" @bind-Value="dto.Title" />
-        <ValidationMessage For="@(() => dto.Title)" />
-    </div>
+  <!-- Title -->
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    <InputText class="form-control" @bind-Value="dto.Title" />
+    <ValidationMessage For="@(() => dto.Title)" />
+  </div>
 
-    <div class="mb-3">
-        <label class="form-label">Content</label>
-        <div id="editor" style="height:300px; background:white;"></div>
-    </div>
+  <!-- TinyMCE Editor -->
+  <div class="mb-3">
+    <label class="form-label">Content</label>
+    <TinyMCE.Blazor.Editor
+      ApiKey="no-api-key"
+      Id="editor"
+      @bind-Value="dto.Html"
+      Field="@(() => dto.Html)"
+      Conf="editorConfig" />
+    <ValidationMessage For="@(() => dto.Html)" />
+  </div>
 
-    <button type="submit" class="btn btn-primary">Save Draft</button>
-    <button type="button"
-            class="btn btn-success ms-2"
-            @onclick="PublishAsync"
-            disabled="@(!canPublish)">
-        Publish
-    </button>
+  <!-- Buttons -->
+  <button type="submit" class="btn btn-primary">Save Draft</button>
+  <button type="button"
+          class="btn btn-success ms-2"
+          @onclick="PublishAsync"
+          disabled="@( !canPublish )">
+    Publish
+  </button>
 </EditForm>
 
 @code {
-    [Parameter] public Guid? Id { get; set; }
+  [Parameter] public Guid? Id { get; set; }
 
-    private PublicationWriteDto dto = new();
-    private List<CategoryDto> categories = new();
-    private EditContext editContext = null!;
-    private IJSObjectReference module = null!;
-    private bool loadedExisting;
-    private bool canPublish =>
-        !string.IsNullOrWhiteSpace(dto.Title) &&
-        !string.IsNullOrWhiteSpace(dto.DeltaJson);
+  private PublicationWriteDto dto = new();
+  private List<CategoryDto> categories = new();
+  private EditContext editContext = default!;  // satisfy nullable analysis
+  private bool loadedExisting;
 
-    protected override void OnInitialized()
+  // Can publish only if title and content are non-empty
+  private bool canPublish =>
+    !string.IsNullOrWhiteSpace(dto.Title) &&
+    !string.IsNullOrWhiteSpace(dto.Html);
+
+  // TinyMCE configuration dictionary
+  private Dictionary<string, object> editorConfig = new()
+  {
+    { "height", 300 },
+    { "menubar", false },
+    { "plugins", new[] { "link", "lists", "code", "image", "paste" } },
+    { "toolbar", "undo redo | bold italic underline | alignleft aligncenter | bullist numlist | link image | code" },
+    { "images_upload_url", "/api/images/upload" },
+    { "automatic_uploads", true },
+    { "paste_data_images", false },
+        { "branding", false }
+  };
+
+  protected override async Task OnInitializedAsync()
+  {
+    // Initialize EditContext
+    editContext = new EditContext(dto);
+
+    // Load categories
+    categories = await CategoryService.ListAsync();
+
+    // If editing an existing publication, load its data
+    if (Id.HasValue)
     {
-        editContext = new EditContext(dto);
-        _ = LoadCategories();
+      var existing = await PublicationService.GetAsync(Id.Value);
+      if (existing != null)
+      {
+        loadedExisting = true;
+        dto.CategoryId = existing.CategoryId;
+        dto.Title      = existing.Title;
+        dto.Html       = existing.Html;
+      }
     }
+  }
 
-    protected override async Task OnAfterRenderAsync(bool first)
+  private async Task HandleSubmit()
+  {
+    // At this point the form has already been validated for data annotations
+    if (loadedExisting && Id.HasValue)
     {
-        if (!first) return;
-
-        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/quillInterop.js");
-        await module.InvokeVoidAsync("initializeQuill", "#editor");
-
-        if (Id.HasValue)
-        {
-            var existing = await PublicationService.GetAsync(Id.Value);
-            if (existing != null)
-            {
-                loadedExisting = true;
-                dto.Title = existing.Title;
-                dto.DeltaJson = existing.DeltaJson;
-                dto.Html = existing.Html;
-                await module.InvokeVoidAsync("setContents", existing.DeltaJson);
-                editContext.NotifyValidationStateChanged();
-                StateHasChanged();
-            }
-        }
+      await PublicationService.UpdateAsync(Id.Value, dto);
     }
-
-    private async Task HandleSubmit(EditContext context)
+    else
     {
-        // pull from Quill
-        dto.DeltaJson = await module.InvokeAsync<string>("getDeltaJson");
-        dto.Html = await module.InvokeAsync<string>("getHtml");
-
-        if (!context.Validate())
-            return;
-
-        if (loadedExisting && Id.HasValue)
-        {
-            await PublicationService.UpdateAsync(Id.Value, dto);
-        }
-        else
-        {
-            var created = await PublicationService.CreateAsync(dto);
-            Id = created.Id;
-            loadedExisting = true;
-            Nav.NavigateTo($"/editor/{Id}", replace: true);
-        }
+      var created = await PublicationService.CreateAsync(dto);
+      Id = created.Id;
+      loadedExisting = true;
+      Nav.NavigateTo($"/editor/{Id}", replace: true);
     }
+  }
 
-    private async Task PublishAsync()
+  private async Task PublishAsync()
+  {
+    // Ensure we save first (form is valid)
+    await HandleSubmit();
+
+    if (loadedExisting && Id.HasValue)
     {
-        await HandleSubmit(editContext);
-        if (loadedExisting && Id.HasValue)
-        {
-            await PublicationService.PublishAsync(Id.Value);
-            Nav.NavigateTo($"/publications/{Id}");
-        }
+      await PublicationService.PublishAsync(Id.Value);
+      Nav.NavigateTo($"/publications/{Id}");
     }
-
-    private async Task LoadCategories()
-    {
-        categories = await CategoryService.ListAsync();
-        StateHasChanged();
-    }
+  }
 }

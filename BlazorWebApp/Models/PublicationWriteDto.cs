@@ -7,9 +7,6 @@ namespace BlazorWebApp.Models
         [Required]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
-        public string DeltaJson { get; set; } = string.Empty;
-
         // capture rendered HTML
         public string Html { get; set; } = string.Empty;
         // Category mapping 
