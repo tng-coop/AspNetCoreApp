@@ -14,20 +14,20 @@ public static class MiddlewareExtensions
             app.UseHsts();
             app.UseHttpsRedirection();
         }
-        else
-        {
-            var certPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "cert"));
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(certPath),
-                RequestPath = "/cert"
-            });    
-            app.UseDirectoryBrowser(new DirectoryBrowserOptions
-            {
-                FileProvider = new PhysicalFileProvider(certPath),
-                RequestPath = "/cert"
-            });
-        }
+        // else
+        // {
+        //     var certPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "cert"));
+        //     app.UseStaticFiles(new StaticFileOptions
+        //     {
+        //         FileProvider = new PhysicalFileProvider(certPath),
+        //         RequestPath = "/cert"
+        //     });    
+        //     app.UseDirectoryBrowser(new DirectoryBrowserOptions
+        //     {
+        //         FileProvider = new PhysicalFileProvider(certPath),
+        //         RequestPath = "/cert"
+        //     });
+        // }
 
         // Migrations and error handling
         if (app.Environment.IsDevelopment())
