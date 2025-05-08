@@ -2,7 +2,6 @@ using BlazorWebApp.Extensions;
 using BlazorWebApp.Data;
 using MudBlazor.Services;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure services via extension methods
