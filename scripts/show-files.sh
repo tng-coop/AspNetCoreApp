@@ -55,7 +55,9 @@ else
   for d in "${skip_dirs[@]}"; do
     prune_clause+=( -path "./$d" -o )
   done
-  prune_clause+=( -type d -name dist )  # drop “dist” dirs too
+# now prune any directory named dist, obj or bin, anywhere
+prune_clause+=( -type d -name dist -o 
+-type d -name obj -o -type d -name bin )
 
   # extensions to skip
   skip_exts=(sh txt md css mjs env ps1)
