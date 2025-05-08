@@ -80,17 +80,43 @@
     !string.IsNullOrWhiteSpace(dto.Html);
 
   // TinyMCE configuration dictionary
-  private Dictionary<string, object> editorConfig = new()
-  {
+// TinyMCE configuration dictionary—with table support enabled
+private Dictionary<string, object> editorConfig = new()
+{
     { "height", 300 },
-    { "menubar", false },
-    { "plugins", new[] { "link", "lists", "code", "image", "paste" } },
-    { "toolbar", "undo redo | bold italic underline | alignleft aligncenter | bullist numlist | link image | code" },
+    // enable the menubar (so Insert → Table shows up)
+    { "menubar", "file edit view insert format tools table help" },
+
+    // include the table plugin
+    { "plugins", new[]
+        {
+            "link",
+            "lists",
+            "code",
+            "image",
+            "paste",
+            "table"
+        }
+    },
+
+    // add the table button to the toolbar
+    { "toolbar",  
+        "undo redo | bold italic underline | alignleft aligncenter | " +
+        "bullist numlist | link image | table | code"
+    },
+
+    // optional: floating toolbar for row/col operations
+    { "table_toolbar",
+        "tableprops tabledelete | tableinsertrowbefore tableinsertrowafter | " +
+        "tableinsertcolbefore tableinsertcolafter"
+    },
+
+    // your existing upload & branding settings
     { "images_upload_url", "/api/images/upload" },
     { "automatic_uploads", true },
     { "paste_data_images", false },
-        { "branding", false }
-  };
+    { "branding", false }
+};
 
   protected override async Task OnInitializedAsync()
   {
