@@ -1,5 +1,7 @@
 using BlazorWebApp.Extensions;
 using BlazorWebApp.Data;
+using MudBlazor.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,7 @@ builder.Services
     .AddAuthenticationAndAuthorization(builder.Configuration)
     .AddPersistence(builder.Configuration)
     .AddLocalizationServices();
+    builder.Services.AddMudServices();
 
 var app = builder.Build();
 

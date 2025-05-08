@@ -1,0 +1,24 @@
+@page "/mudtestdrive"
+@using MudBlazor
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h4">MudBlazor Test Drive</MudText>
+        <MudDivider Class="my-4" />
+        <MudStack Spacing="2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       OnClick="@(() => Snackbar.Add("You clicked me!", Severity.Success))">
+                Click me
+            </MudButton>
+            <MudTextField @bind-Value="inputText"
+                          Label="Type something"
+                          Variant="Variant.Outlined" />
+            <MudText>You entered: <b>@inputText</b></MudText>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string inputText = string.Empty;
+}
