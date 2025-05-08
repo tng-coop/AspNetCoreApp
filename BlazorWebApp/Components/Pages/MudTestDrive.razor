@@ -1,26 +1,138 @@
 @page "/mudtestdrive"
 @using MudBlazor
 @inject ISnackbar Snackbar
-@rendermode InteractiveServer
-
+@inject IDialogService DialogService
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
     <MudPaper Class="pa-4">
-        <MudText Typo="Typo.h4">MudBlazor Test Drive</MudText>
+        <MudText Typo="Typo.h4">MudBlazor Enhanced Test Drive</MudText>
         <MudDivider Class="my-4" />
-        <MudStack Spacing="2">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       OnClick="@(() => Snackbar.Add("You clicked me!", Severity.Success))">
-                Click me
+        <MudStack Spacing="3">
+
+            <!-- Snackbar demo -->
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Snackbar.Add("Snackbar clicked!", Severity.Success))">
+                Show Snackbar
             </MudButton>
-            <MudTextField @bind-Value="inputText"
-                          Label="Type something"
-                          Variant="Variant.Outlined" />
+
+            <!-- Text input demo -->
+            <MudTextField @bind-Value="inputText" Label="Type something" Variant="Variant.Outlined" />
             <MudText>You entered: <b>@inputText</b></MudText>
+
+            <!-- Data Table demo -->
+            <MudTable Items="people" Hover="true" RowsPerPage="5">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Age</MudTh>
+                    <MudTh>Country</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>@context.Age</MudTd>
+                    <MudTd>@context.Country</MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            <!-- Card demo -->
+            <MudCard Class="mt-4" Style="max-width: 300px;">
+                <MudCardHeader>Monthly Sales</MudCardHeader>
+                <MudCardContent>
+                    <MudText>Sales increased by 15% compared to last month.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Color="Color.Primary">View Details</MudButton>
+                </MudCardActions>
+            </MudCard>
+
+            <!-- Chart demo -->
+            <MudChart ChartType="ChartType.Bar" InputLabels="quarters" InputData="revenues" Class="mt-4" />
+
+            <!-- Stepper (Wizard) demo -->
+            <MudStepper Elevation="0" Class="mt-4" @bind-ActiveStepIndex="activeStep">
+                <MudStep Label="Step 1">
+                    <MudStepContent>Enter your information in step one.</MudStepContent>
+                </MudStep>
+                <MudStep Label="Step 2">
+                    <MudStepContent>Confirm details in step two.</MudStepContent>
+                </MudStep>
+                <MudStep Label="Step 3">
+                    <MudStepContent>Finish in step three.</MudStepContent>
+                </MudStep>
+            </MudStepper>
+            <MudStack Direction="Row" Spacing="2" Class="mt-2">
+                <MudButton Variant="Variant.Outlined" Disabled="activeStep == 0" OnClick="@(() => activeStep--)">Back</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="activeStep == 2" OnClick="@(() => activeStep++)">Next</MudButton>
+            </MudStack>
+
+            <!-- Alert demo -->
+            <MudAlert Severity="Severity.Warning" Class="mt-4">
+                This is a warning alert. Please pay attention!
+            </MudAlert>
+
+            <!-- Slider demo -->
+            <MudSlider Min="0" Max="100" Step="10" @bind-Value="sliderValue" ValueLabel="true" Class="mt-4" />
+            <MudText>Slider value: <b>@sliderValue</b></MudText>
+
+            <!-- Dialog demo -->
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@OpenDemoDialog" Class="mt-4">
+                Open Dialog
+            </MudButton>
+
+            <!-- Tabs demo -->
+            <MudTabs Class="mt-4">
+                <MudTabPanel Text="Overview">
+                    <MudText>Overview content here.</MudText>
+                </MudTabPanel>
+                <MudTabPanel Text="Details">
+                    <MudText>Details content here.</MudText>
+                </MudTabPanel>
+                <MudTabPanel Text="Settings" Disabled="true">
+                    <MudText>Settings are disabled.</MudText>
+                </MudTabPanel>
+            </MudTabs>
+
+            <!-- Expansion Panels demo -->
+            <MudExpansionPanels MultiExpansion="false" Class="mt-4">
+                <MudExpansionPanel Text="More Info">
+                    <MudText>Expanded content for more info goes here.</MudText>
+                </MudExpansionPanel>
+                <MudExpansionPanel Text="Extra Details">
+                    <MudText>Additional details appear here.</MudText>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+            <!-- Progress Bars demo -->
+            <MudProgressLinear Value="progressValue" Max="100" Class="mt-4" />
+            <MudProgressLinear Indeterminate="true" Height="4px" Class="mt-1" />
         </MudStack>
     </MudPaper>
 </MudContainer>
 
 @code {
     private string inputText = string.Empty;
+    private List<Person> people = new List<Person>
+    {
+        new Person { Name = "Alice", Age = 30, Country = "USA" },
+        new Person { Name = "Bob", Age = 25, Country = "Canada" },
+        new Person { Name = "Charlie", Age = 28, Country = "UK" },
+        new Person { Name = "Diana", Age = 32, Country = "Australia" }
+    };
+    private int activeStep = 0;
+    private double sliderValue = 50;
+    private string[] quarters = { "Q1", "Q2", "Q3", "Q4" };
+    private double[] revenues = { 150, 230, 180, 200 };
+    private double progressValue = 65;
+
+    void OpenDemoDialog()
+    {
+        DialogService.Show<DemoDialog>("Demo Dialog");
+    }
+
+    public class Person
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public string Country { get; set; }
+    }
 }
+
+@* Note: Create a separate DemoDialog.razor component for the dialog content *@

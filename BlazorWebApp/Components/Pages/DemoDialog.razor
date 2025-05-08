@@ -1,0 +1,19 @@
+@namespace BlazorWebApp.Components.Pages
+@using MudBlazor
+
+<MudDialog>
+  <MudDialogTitle>Demo Dialog</MudDialogTitle>
+  <MudDialogContent>
+    This is the body of your demo dialog.
+  </MudDialogContent>
+  <MudDialogActions>
+    <MudButton OnClick="Cancel">Close</MudButton>
+  </MudDialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+}
