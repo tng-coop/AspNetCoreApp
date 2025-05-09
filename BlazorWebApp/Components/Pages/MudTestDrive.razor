@@ -1,4 +1,5 @@
 @page "/mudtestdrive"
+@rendermode InteractiveServer
 @using MudBlazor
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
@@ -12,7 +13,7 @@
             <!-- Snackbar demo -->
             <MudButton Variant="Variant.Filled"
                        Color="Color.Primary"
-                       OnClick="@(() => Snackbar.Add("Snackbar clicked!", Severity.Success))">
+                       OnClick="@ShowSnackbar">
                 Show Snackbar
             </MudButton>
 
@@ -54,30 +55,31 @@
                       Class="mt-4" />
 
             <!-- Stepper (Wizard) demo -->
-            <MudStepper @bind-ActiveStep="activeStep"
-                        Class="mt-4">
-                <MudStep Text="Step 1">
-                    Enter your information in step one.
-                </MudStep>
-                <MudStep Text="Step 2">
-                    Confirm details in step two.
-                </MudStep>
-                <MudStep Text="Step 3">
-                    Finish in step three.
-                </MudStep>
-            </MudStepper>
+            <MudPaper Elevation="0" Class="mt-4">
+                <MudStepper @bind-ActiveIndex="activeStep">
+                    <MudStep Title="Step 1">
+                        Enter your information in step one.
+                    </MudStep>
+                    <MudStep Title="Step 2">
+                        Confirm details in step two.
+                    </MudStep>
+                    <MudStep Title="Step 3">
+                        Finish in step three.
+                    </MudStep>
+                </MudStepper>
+            </MudPaper>
 
             <!-- Stepper controls -->
             <MudStack Row="true" Spacing="2" Class="mt-2">
                 <MudButton Variant="Variant.Outlined"
                            Disabled="activeStep == 0"
-                           OnClick="@(() => activeStep--)">
+                           OnClick="() => activeStep--">
                     Back
                 </MudButton>
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            Disabled="activeStep == 2"
-                           OnClick="@(() => activeStep++)">
+                           OnClick="() => activeStep++">
                     Next
                 </MudButton>
             </MudStack>
@@ -134,6 +136,7 @@
             <MudProgressLinear Indeterminate="true"
                                Style="height:4px;"
                                Class="mt-1" />
+
         </MudStack>
     </MudPaper>
 </MudContainer>
@@ -142,16 +145,21 @@
     private string inputText = string.Empty;
     private List<Person> people = new()
     {
-        new Person { Name = "Alice",   Age = 30, Country = "USA" },
-        new Person { Name = "Bob",     Age = 25, Country = "Canada" },
+        new Person { Name = "Alice", Age = 30, Country = "USA" },
+        new Person { Name = "Bob", Age = 25, Country = "Canada" },
         new Person { Name = "Charlie", Age = 28, Country = "UK" },
-        new Person { Name = "Diana",   Age = 32, Country = "Australia" }
+        new Person { Name = "Diana", Age = 32, Country = "Australia" }
     };
     private int activeStep = 0;
     private double sliderValue = 50;
     private string[] quarters = { "Q1", "Q2", "Q3", "Q4" };
     private double[] revenues = { 150, 230, 180, 200 };
     private double progressValue = 65;
+
+    private void ShowSnackbar()
+    {
+        Snackbar.Add("Snackbar clicked!", Severity.Success);
+    }
 
     private async Task OpenDemoDialog()
     {
@@ -160,8 +168,8 @@
 
     public class Person
     {
-        public string Name    { get; set; } = string.Empty;
-        public int    Age     { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int Age { get; set; }
         public string Country { get; set; } = string.Empty;
     }
 }
