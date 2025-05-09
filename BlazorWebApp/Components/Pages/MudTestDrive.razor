@@ -47,23 +47,17 @@
             <MudChart ChartType="ChartType.Bar" InputLabels="quarters" InputData="revenues" Class="mt-4" />
 
             <!-- Stepper (Wizard) demo -->
-<MudStepper Elevation="0" Class="mt-4" @bind-ActiveStepIndex="activeStep">
-    <MudStep Label="Step 1">
-        <StepContent>
-            Enter your information in step one.
-        </StepContent>
-    </MudStep>
-    <MudStep Label="Step 2">
-        <StepContent>
-            Confirm details in step two.
-        </StepContent>
-    </MudStep>
-    <MudStep Label="Step 3">
-        <StepContent>
-            Finish in step three.
-        </StepContent>
-    </MudStep>
-</MudStepper>
+            <MudStepper Elevation="0" Class="mt-4" @bind-ActiveStepIndex="activeStep">
+                <MudStep Label="Step 1">
+                    Enter your information in step one.
+                </MudStep>
+                <MudStep Label="Step 2">
+                    Confirm details in step two.
+                </MudStep>
+                <MudStep Label="Step 3">
+                    Finish in step three.
+                </MudStep>
+            </MudStepper>
 
             <MudStack Direction="Row" Spacing="2" Class="mt-2">
                 <MudButton Variant="Variant.Outlined" Disabled="activeStep == 0" OnClick="@(() => activeStep--)">Back</MudButton>
@@ -116,12 +110,12 @@
 
 @code {
     private string inputText = string.Empty;
-    private List<Person> people = new List<Person>
+    private List<Person> people = new()
     {
-        new Person { Name = "Alice", Age = 30, Country = "USA" },
-        new Person { Name = "Bob", Age = 25, Country = "Canada" },
+        new Person { Name = "Alice",   Age = 30, Country = "USA" },
+        new Person { Name = "Bob",     Age = 25, Country = "Canada" },
         new Person { Name = "Charlie", Age = 28, Country = "UK" },
-        new Person { Name = "Diana", Age = 32, Country = "Australia" }
+        new Person { Name = "Diana",   Age = 32, Country = "Australia" }
     };
     private int activeStep = 0;
     private double sliderValue = 50;
@@ -129,17 +123,15 @@
     private double[] revenues = { 150, 230, 180, 200 };
     private double progressValue = 65;
 
-    void OpenDemoDialog()
+    private async Task OpenDemoDialog()
     {
-        DialogService.Show<DemoDialog>("Demo Dialog");
+        await DialogService.ShowAsync<DemoDialog>("Demo Dialog");
     }
 
     public class Person
     {
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public string Country { get; set; }
+        public string Name    { get; set; } = string.Empty;
+        public int    Age     { get; set; }
+        public string Country { get; set; } = string.Empty;
     }
 }
-
-@* Note: Create a separate DemoDialog.razor component for the dialog content *@

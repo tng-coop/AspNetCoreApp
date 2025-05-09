@@ -2,20 +2,18 @@
 @using MudBlazor
 
 <MudDialog>
-  <TitleContent>
-    Demo Dialog
-  </TitleContent>
-  <DialogContent>
-    This is the body of your demo dialog.
-  </DialogContent>
-  <DialogActions>
-    <MudButton OnClick="Cancel">Close</MudButton>
-  </DialogActions>
+    <TitleContent>Demo Dialog</TitleContent>
+    <DialogContent>
+        This is the body of your demo dialog.
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
+    public IMudDialogInstance MudDialog { get; set; } = null!;
 
     void Cancel() => MudDialog.Cancel();
 }
