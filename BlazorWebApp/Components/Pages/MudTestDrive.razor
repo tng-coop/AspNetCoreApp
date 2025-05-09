@@ -47,17 +47,24 @@
             <MudChart ChartType="ChartType.Bar" InputLabels="quarters" InputData="revenues" Class="mt-4" />
 
             <!-- Stepper (Wizard) demo -->
-            <MudStepper Elevation="0" Class="mt-4" @bind-ActiveStepIndex="activeStep">
-                <MudStep Label="Step 1">
-                    <MudStepContent>Enter your information in step one.</MudStepContent>
-                </MudStep>
-                <MudStep Label="Step 2">
-                    <MudStepContent>Confirm details in step two.</MudStepContent>
-                </MudStep>
-                <MudStep Label="Step 3">
-                    <MudStepContent>Finish in step three.</MudStepContent>
-                </MudStep>
-            </MudStepper>
+<MudStepper Elevation="0" Class="mt-4" @bind-ActiveStepIndex="activeStep">
+    <MudStep Label="Step 1">
+        <StepContent>
+            Enter your information in step one.
+        </StepContent>
+    </MudStep>
+    <MudStep Label="Step 2">
+        <StepContent>
+            Confirm details in step two.
+        </StepContent>
+    </MudStep>
+    <MudStep Label="Step 3">
+        <StepContent>
+            Finish in step three.
+        </StepContent>
+    </MudStep>
+</MudStepper>
+
             <MudStack Direction="Row" Spacing="2" Class="mt-2">
                 <MudButton Variant="Variant.Outlined" Disabled="activeStep == 0" OnClick="@(() => activeStep--)">Back</MudButton>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="activeStep == 2" OnClick="@(() => activeStep++)">Next</MudButton>
