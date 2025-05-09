@@ -19,7 +19,4 @@ app
     .UseCustomMiddleware()
     .MapEndpoints();
 
-// Seed data
-await DataSeeder.SeedAsync(app);
-
 app.Run();

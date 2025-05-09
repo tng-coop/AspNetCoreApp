@@ -12,29 +12,6 @@ public static class EndpointMappingExtensions
 {
     public static WebApplication MapEndpoints(this WebApplication app)
     {
-        // Name and Hello endpoints
-        app.MapGet("/api/name/{key}", async (
-                string key,
-                ClaimsPrincipal user,
-                INameService svc) =>
-        {
-            var value = await svc.GetLatestForNameAsync(key);
-            return value is not null
-                ? Results.Ok(value)
-                : Results.NotFound();
-        })
-        .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
-        
-        app.MapPut("/api/name/{key}", async (
-                string key,
-                NameWriteDto dto,
-                ClaimsPrincipal user,
-                INameService svc) =>
-        {
-            await svc.SetNameAsync(key, dto.Value, null);
-            return Results.NoContent();
-        })
-        .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);
         
         app.MapGet("/api/hello", () => Results.Ok("Hello from API!"))
         .RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);

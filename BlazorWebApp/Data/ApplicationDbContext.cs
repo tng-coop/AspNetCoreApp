@@ -12,9 +12,6 @@ namespace BlazorWebApp.Data
         }
 
         public DbSet<Publication> Publications { get; set; } = null!;
-        public DbSet<NameRetention> NameRetentions { get; set; } = null!;
-        public DbSet<Note> Notes { get; set; } = null!;
-
         // ← Newly added DbSet for images
         public DbSet<ImageAsset> Images { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
@@ -58,31 +55,6 @@ namespace BlazorWebApp.Data
             e.HasIndex(p => p.CreatedAt);
         });
 
-        // Your existing NameRetention configuration…
-        builder.Entity<NameRetention>()
-            .HasOne(r => r.Owner)
-            .WithMany(u => u.NameRetentions)
-            .HasForeignKey(r => r.OwnerId)
-            .IsRequired(false);
-        builder.Entity<NameRetention>()
-            .HasIndex(r => new { r.Name, r.CreatedAt });
-        builder.Entity<NameRetention>()
-            .Property(r => r.CreatedAt)
-            .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
-
-        // And your Note configuration…
-        builder.Entity<Note>()
-            .HasKey(n => n.Id);
-        builder.Entity<Note>()
-            .HasOne(n => n.Owner)
-            .WithMany(u => u.Notes)
-            .HasForeignKey(n => n.OwnerId)
-            .IsRequired(false);
-        builder.Entity<Note>()
-            .HasIndex(n => n.CreatedAt);
-        builder.Entity<Note>()
-            .Property(n => n.CreatedAt)
-            .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
         }
     }
 }

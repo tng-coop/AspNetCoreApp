@@ -12,8 +12,6 @@ public static class ServiceCollectionExtensions
     {
         // Add HTTP and application services
         services.AddHttpClient();
-        services.AddScoped<INameService, NameService>();
-        services.AddScoped<INoteService, NoteService>();
         services.AddScoped<IPublicationService, PublicationService>();
         // register category service
         services.AddScoped<ICategoryService, CategoryService>();
