@@ -208,48 +208,6 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NameRetentions",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
-                    OwnerId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NameRetentions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_NameRetentions_AspNetUsers_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Notes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    IsPublic = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
-                    OwnerId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notes_AspNetUsers_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PublicationCategories",
                 columns: table => new
                 {
@@ -322,26 +280,6 @@ namespace BlazorWebApp.Migrations
                 column: "ParentCategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NameRetentions_Name_CreatedAt",
-                table: "NameRetentions",
-                columns: new[] { "Name", "CreatedAt" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_NameRetentions_OwnerId",
-                table: "NameRetentions",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notes_CreatedAt",
-                table: "Notes",
-                column: "CreatedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notes_OwnerId",
-                table: "Notes",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PublicationCategories_CategoryId",
                 table: "PublicationCategories",
                 column: "CategoryId");
@@ -377,12 +315,6 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Images");
-
-            migrationBuilder.DropTable(
-                name: "NameRetentions");
-
-            migrationBuilder.DropTable(
-                name: "Notes");
 
             migrationBuilder.DropTable(
                 name: "PublicationCategories");

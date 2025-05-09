@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250508131753_InitialCreate")]
+    [Migration("20250509053457_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -133,73 +133,6 @@ namespace BlazorWebApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
-                });
-
-            modelBuilder.Entity("BlazorWebApp.Data.NameRetention", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("Name", "CreatedAt");
-
-                    b.ToTable("NameRetentions");
-                });
-
-            modelBuilder.Entity("BlazorWebApp.Data.Note", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
@@ -400,24 +333,6 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.NameRetention", b =>
-                {
-                    b.HasOne("BlazorWebApp.Data.ApplicationUser", "Owner")
-                        .WithMany("NameRetentions")
-                        .HasForeignKey("OwnerId");
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("BlazorWebApp.Data.Note", b =>
-                {
-                    b.HasOne("BlazorWebApp.Data.ApplicationUser", "Owner")
-                        .WithMany("Notes")
-                        .HasForeignKey("OwnerId");
-
-                    b.Navigation("Owner");
-                });
-
             modelBuilder.Entity("BlazorWebApp.Data.PublicationCategory", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.Category", "Category")
@@ -490,13 +405,6 @@ namespace BlazorWebApp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("BlazorWebApp.Data.ApplicationUser", b =>
-                {
-                    b.Navigation("NameRetentions");
-
-                    b.Navigation("Notes");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.Category", b =>
