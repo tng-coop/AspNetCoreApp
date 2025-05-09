@@ -15,16 +15,6 @@ public static class AuthenticationExtensions
 {
     public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services, IConfiguration configuration)
     {
-        // Prepare RSA key for JWT validation
-        var privateKeyPem = Encoding.UTF8.GetString(Convert.FromBase64String(
-            configuration["JwtSettings:PrivateKeyBase64"]!));
-        var rsa = RSA.Create();
-        rsa.ImportFromPem(privateKeyPem);
-        services.AddControllers();
-        var rsaKey = new RsaSecurityKey(rsa);
-        
-        services.AddScoped<JwtTokenService>();
-
         // Authentication configuration
         services.AddAuthentication()
             .AddGitHub(options =>
@@ -73,19 +63,6 @@ public static class AuthenticationExtensions
         
                     using var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
                     context.RunClaimActions(user.RootElement);
-                };
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = rsaKey,
-                    ValidateIssuer = true,
-                    ValidIssuer = configuration["JwtSettings:Issuer"],
-                    ValidateAudience = true,
-                    ValidAudience = configuration["JwtSettings:Audience"],
-                    ValidateLifetime = true
                 };
             });
 
