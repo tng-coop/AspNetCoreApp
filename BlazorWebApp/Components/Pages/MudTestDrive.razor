@@ -10,12 +10,16 @@
         <MudStack Spacing="3">
 
             <!-- Snackbar demo -->
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Snackbar.Add("Snackbar clicked!", Severity.Success))">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="@(() => Snackbar.Add("Snackbar clicked!", Severity.Success))">
                 Show Snackbar
             </MudButton>
 
             <!-- Text input demo -->
-            <MudTextField @bind-Value="inputText" Label="Type something" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="inputText"
+                          Label="Type something"
+                          Variant="Variant.Outlined" />
             <MudText>You entered: <b>@inputText</b></MudText>
 
             <!-- Data Table demo -->
@@ -44,24 +48,38 @@
             </MudCard>
 
             <!-- Chart demo -->
-            <MudChart ChartType="ChartType.Bar" InputLabels="quarters" InputData="revenues" Class="mt-4" />
+            <MudChart ChartType="ChartType.Bar"
+                      InputLabels="quarters"
+                      InputData="revenues"
+                      Class="mt-4" />
 
             <!-- Stepper (Wizard) demo -->
-            <MudStepper Elevation="0" Class="mt-4" @bind-ActiveStepIndex="activeStep">
-                <MudStep Label="Step 1">
+            <MudStepper @bind-ActiveStep="activeStep"
+                        Class="mt-4">
+                <MudStep Text="Step 1">
                     Enter your information in step one.
                 </MudStep>
-                <MudStep Label="Step 2">
+                <MudStep Text="Step 2">
                     Confirm details in step two.
                 </MudStep>
-                <MudStep Label="Step 3">
+                <MudStep Text="Step 3">
                     Finish in step three.
                 </MudStep>
             </MudStepper>
 
-            <MudStack Direction="Row" Spacing="2" Class="mt-2">
-                <MudButton Variant="Variant.Outlined" Disabled="activeStep == 0" OnClick="@(() => activeStep--)">Back</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="activeStep == 2" OnClick="@(() => activeStep++)">Next</MudButton>
+            <!-- Stepper controls -->
+            <MudStack Row="true" Spacing="2" Class="mt-2">
+                <MudButton Variant="Variant.Outlined"
+                           Disabled="activeStep == 0"
+                           OnClick="@(() => activeStep--)">
+                    Back
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="activeStep == 2"
+                           OnClick="@(() => activeStep++)">
+                    Next
+                </MudButton>
             </MudStack>
 
             <!-- Alert demo -->
@@ -70,11 +88,19 @@
             </MudAlert>
 
             <!-- Slider demo -->
-            <MudSlider Min="0" Max="100" Step="10" @bind-Value="sliderValue" ValueLabel="true" Class="mt-4" />
+            <MudSlider Min="0"
+                       Max="100"
+                       Step="10"
+                       @bind-Value="sliderValue"
+                       ValueLabel="true"
+                       Class="mt-4" />
             <MudText>Slider value: <b>@sliderValue</b></MudText>
 
             <!-- Dialog demo -->
-            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@OpenDemoDialog" Class="mt-4">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Secondary"
+                       OnClick="@OpenDemoDialog"
+                       Class="mt-4">
                 Open Dialog
             </MudButton>
 
@@ -102,8 +128,12 @@
             </MudExpansionPanels>
 
             <!-- Progress Bars demo -->
-            <MudProgressLinear Value="progressValue" Max="100" Class="mt-4" />
-            <MudProgressLinear Indeterminate="true" Height="4px" Class="mt-1" />
+            <MudProgressLinear Value="progressValue"
+                               Max="100"
+                               Class="mt-4" />
+            <MudProgressLinear Indeterminate="true"
+                               Style="height:4px;"
+                               Class="mt-1" />
         </MudStack>
     </MudPaper>
 </MudContainer>
