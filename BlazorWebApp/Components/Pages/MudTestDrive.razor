@@ -5,171 +5,169 @@
 @inject IDialogService DialogService
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
-    <MudPaper Class="pa-4">
-        <MudText Typo="Typo.h4">MudBlazor Enhanced Test Drive</MudText>
-        <MudDivider Class="my-4" />
-        <MudStack Spacing="3">
+  <MudPaper Class="pa-4">
+    <MudText Typo="Typo.h4">MudBlazor Enhanced Test Drive</MudText>
+    <MudDivider Class="my-4" />
 
-            <!-- Snackbar demo -->
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       OnClick="@ShowSnackbar">
-                Show Snackbar
-            </MudButton>
+    <!-- Snackbar demo -->
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               OnClick="@ShowSnackbar">
+      Show Snackbar
+    </MudButton>
 
-            <!-- Text input demo -->
-            <MudTextField @bind-Value="inputText"
-                          Label="Type something"
-                          Variant="Variant.Outlined" />
-            <MudText>You entered: <b>@inputText</b></MudText>
+    <!-- Text input demo -->
+    <MudTextField @bind-Value="inputText"
+                  Label="Type something"
+                  Variant="Variant.Outlined" />
+    <MudText>You entered: <b>@inputText</b></MudText>
 
-            <!-- Data Table demo -->
-            <MudTable Items="people" Hover="true" RowsPerPage="5">
-                <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Age</MudTh>
-                    <MudTh>Country</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@context.Name</MudTd>
-                    <MudTd>@context.Age</MudTd>
-                    <MudTd>@context.Country</MudTd>
-                </RowTemplate>
-            </MudTable>
+    <!-- Data Table demo -->
+    <MudTable Items="people" Hover="true" RowsPerPage="5">
+      <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Age</MudTh>
+        <MudTh>Country</MudTh>
+      </HeaderContent>
+      <RowTemplate>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@context.Age</MudTd>
+        <MudTd>@context.Country</MudTd>
+      </RowTemplate>
+    </MudTable>
 
-            <!-- Card demo -->
-            <MudCard Class="mt-4" Style="max-width: 300px;">
-                <MudCardHeader>Monthly Sales</MudCardHeader>
-                <MudCardContent>
-                    <MudText>Sales increased by 15% compared to last month.</MudText>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton Color="Color.Primary">View Details</MudButton>
-                </MudCardActions>
-            </MudCard>
+    <!-- Card demo -->
+    <MudCard Class="mt-4" Style="max-width: 300px;">
+      <MudCardHeader>Monthly Sales</MudCardHeader>
+      <MudCardContent>
+        <MudText>Sales increased by 15% compared to last month.</MudText>
+      </MudCardContent>
+      <MudCardActions>
+        <MudButton Color="Color.Primary">View Details</MudButton>
+      </MudCardActions>
+    </MudCard>
 
-            <!-- Chart demo -->
-            <MudChart ChartType="ChartType.Bar"
-                      InputLabels="quarters"
-                      InputData="revenues"
-                      Class="mt-4" />
+    <!-- Chart demo -->
+    <MudChart ChartType="ChartType.Bar"
+              InputLabels="quarters"
+              InputData="revenues"
+              Class="mt-4" />
 
-            <!-- Stepper (Wizard) demo -->
-            <MudPaper Elevation="0" Class="mt-4">
-                <MudStepper @bind-ActiveIndex="activeStep">
-                    <MudStep Title="Step 1">
-                        Enter your information in step one.
-                    </MudStep>
-                    <MudStep Title="Step 2">
-                        Confirm details in step two.
-                    </MudStep>
-                    <MudStep Title="Step 3">
-                        Finish in step three.
-                    </MudStep>
-                </MudStepper>
-            </MudPaper>
-
-            <!-- Stepper controls -->
-            <MudStack Row="true" Spacing="2" Class="mt-2">
-                <MudButton Variant="Variant.Outlined"
-                           Disabled="activeStep == 0"
-                           OnClick="() => activeStep--">
-                    Back
-                </MudButton>
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Disabled="activeStep == 2"
-                           OnClick="() => activeStep++">
-                    Next
-                </MudButton>
-            </MudStack>
-
-            <!-- Alert demo -->
-            <MudAlert Severity="Severity.Warning" Class="mt-4">
-                This is a warning alert. Please pay attention!
-            </MudAlert>
-
-            <!-- Slider demo -->
-            <MudSlider Min="0"
-                       Max="100"
-                       Step="10"
-                       @bind-Value="sliderValue"
-                       ValueLabel="true"
-                       Class="mt-4" />
-            <MudText>Slider value: <b>@sliderValue</b></MudText>
-
-            <!-- Dialog demo -->
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Secondary"
-                       OnClick="@OpenDemoDialog"
-                       Class="mt-4">
-                Open Dialog
-            </MudButton>
-
-            <!-- Tabs demo -->
-            <MudTabs Class="mt-4">
-                <MudTabPanel Text="Overview">
-                    <MudText>Overview content here.</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Details">
-                    <MudText>Details content here.</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Settings" Disabled="true">
-                    <MudText>Settings are disabled.</MudText>
-                </MudTabPanel>
-            </MudTabs>
-
-            <!-- Expansion Panels demo -->
-            <MudExpansionPanels MultiExpansion="false" Class="mt-4">
-                <MudExpansionPanel Text="More Info">
-                    <MudText>Expanded content for more info goes here.</MudText>
-                </MudExpansionPanel>
-                <MudExpansionPanel Text="Extra Details">
-                    <MudText>Additional details appear here.</MudText>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-
-            <!-- Progress Bars demo -->
-            <MudProgressLinear Value="progressValue"
-                               Max="100"
-                               Class="mt-4" />
-            <MudProgressLinear Indeterminate="true"
-                               Style="height:4px;"
-                               Class="mt-1" />
-
-        </MudStack>
+    <!-- Stepper demo -->
+    <MudPaper Elevation="0" Class="mt-4">
+      <MudStepper @bind-ActiveIndex="activeStep">
+        <MudStep Title="Step 1">
+          Enter your information in step one.
+        </MudStep>
+        <MudStep Title="Step 2">
+          Confirm details in step two.
+        </MudStep>
+        <MudStep Title="Step 3">
+          Finish in step three.
+        </MudStep>
+      </MudStepper>
     </MudPaper>
+
+    <!-- Stepper controls -->
+    <MudStack Row="true" Spacing="2" Class="mt-2">
+      <MudButton Variant="Variant.Outlined"
+                 Disabled="activeStep == 0"
+                 OnClick="() => activeStep--">
+        Back
+      </MudButton>
+      <MudButton Variant="Variant.Filled"
+                 Color="Color.Primary"
+                 Disabled="activeStep == 2"
+                 OnClick="() => activeStep++">
+        Next
+      </MudButton>
+    </MudStack>
+
+    <!-- Alert demo -->
+    <MudAlert Severity="Severity.Warning" Class="mt-4">
+      This is a warning alert. Please pay attention!
+    </MudAlert>
+
+    <!-- Slider demo -->
+    <MudSlider Min="0"
+               Max="100"
+               Step="10"
+               @bind-Value="sliderValue"
+               ValueLabel="true"
+               Class="mt-4" />
+    <MudText>Slider value: <b>@sliderValue</b></MudText>
+
+    <!-- Dialog demo -->
+    <MudButton Variant="Variant.Outlined"
+               Color="Color.Secondary"
+               OnClick="@OpenDemoDialog"
+               Class="mt-4">
+      Open Dialog
+    </MudButton>
+
+    <!-- Tabs demo -->
+    <MudTabs Class="mt-4">
+      <MudTabPanel Text="Overview">
+        <MudText>Overview content here.</MudText>
+      </MudTabPanel>
+      <MudTabPanel Text="Details">
+        <MudText>Details content here.</MudText>
+      </MudTabPanel>
+      <MudTabPanel Text="Settings" Disabled="true">
+        <MudText>Settings are disabled.</MudText>
+      </MudTabPanel>
+    </MudTabs>
+
+    <!-- Expansion Panels demo -->
+    <MudExpansionPanels MultiExpansion="false" Class="mt-4">
+      <MudExpansionPanel Text="More Info">
+        <MudText>Expanded content for more info goes here.</MudText>
+      </MudExpansionPanel>
+      <MudExpansionPanel Text="Extra Details">
+        <MudText>Additional details appear here.</MudText>
+      </MudExpansionPanel>
+    </MudExpansionPanels>
+
+    <!-- Progress Bars demo -->
+    <MudProgressLinear Value="progressValue"
+                       Max="100"
+                       Class="mt-4" />
+    <MudProgressLinear Indeterminate="true"
+                       Style="height:4px;"
+                       Class="mt-1" />
+
+  </MudPaper>
 </MudContainer>
 
 @code {
-    private string inputText = string.Empty;
-    private List<Person> people = new()
-    {
-        new Person { Name = "Alice", Age = 30, Country = "USA" },
-        new Person { Name = "Bob", Age = 25, Country = "Canada" },
-        new Person { Name = "Charlie", Age = 28, Country = "UK" },
-        new Person { Name = "Diana", Age = 32, Country = "Australia" }
-    };
-    private int activeStep = 0;
-    private double sliderValue = 50;
-    private string[] quarters = { "Q1", "Q2", "Q3", "Q4" };
-    private double[] revenues = { 150, 230, 180, 200 };
-    private double progressValue = 65;
+  private string inputText = string.Empty;
+  private List<Person> people = new()
+  {
+    new Person { Name = "Alice", Age = 30, Country = "USA" },
+    new Person { Name = "Bob", Age = 25, Country = "Canada" },
+    new Person { Name = "Charlie", Age = 28, Country = "UK" },
+    new Person { Name = "Diana", Age = 32, Country = "Australia" }
+  };
+  private int activeStep = 0;
+  private double sliderValue = 50;
+  private string[] quarters = { "Q1", "Q2", "Q3", "Q4" };
+  private double[] revenues = { 150, 230, 180, 200 };
+  private double progressValue = 65;
 
-    private void ShowSnackbar()
-    {
-        Snackbar.Add("Snackbar clicked!", Severity.Success);
-    }
+  private void ShowSnackbar()
+  {
+    Snackbar.Add("Snackbar clicked!", Severity.Success);
+  }
 
-    private async Task OpenDemoDialog()
-    {
-        await DialogService.ShowAsync<DemoDialog>("Demo Dialog");
-    }
+  private async Task OpenDemoDialog()
+  {
+    await DialogService.ShowAsync<DemoDialog>("Demo Dialog");
+  }
 
-    public class Person
-    {
-        public string Name { get; set; } = string.Empty;
-        public int Age { get; set; }
-        public string Country { get; set; } = string.Empty;
-    }
+  public class Person
+  {
+    public string Name { get; set; } = string.Empty;
+    public int Age { get; set; }
+    public string Country { get; set; } = string.Empty;
+  }
 }
