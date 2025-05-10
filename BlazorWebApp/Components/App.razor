@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Components.Routing
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -14,11 +17,11 @@
     <link href=@Assets["_content/MudBlazor/MudBlazor.min.css"] rel="stylesheet" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet @rendermode=InteractiveServer />
+    <HeadOutlet @rendermode="RenderModeForPage" />
 </head>
 
 <body>
-    <Routes @rendermode=InteractiveServer  />
+    <Routes @rendermode="RenderModeForPage"  />
         <script>
         window.blazorCulture = {
             set: function (value) {
@@ -35,3 +38,14 @@
 </body>
 
 </html>
+
+
+@code {
+    [CascadingParameter] 
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private IComponentRenderMode? RenderModeForPage =>
+        HttpContext.Request.Path.StartsWithSegments("/Account") 
+            ? null  // use default static SSR for Identity pages
+            : InteractiveServer;  // interactive for everything else
+}
