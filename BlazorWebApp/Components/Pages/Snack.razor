@@ -1,0 +1,8 @@
+@rendermode InteractiveServer
+@page "/mud-demo"
+@using MudBlazor
+@inject ISnackbar Snackbar
+
+            <MudButton Color="Color.Primary" @onclick='() => Snackbar.Add("Hello Mud")'>
+                Click Me
+            </MudButton>
