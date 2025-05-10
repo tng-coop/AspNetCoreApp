@@ -1,31 +1,25 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-
+    <base href="/" />  
+    @* <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" /> *@
     <!-- Bootstrap, app and Blazor styles -->
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["BlazorWebApp.styles.css"]" />
 
-    <!-- Quill editor styles -->
-    <link rel="stylesheet" href="/lib/quill/dist/quill.snow.css" />
-    <link rel="stylesheet" href="/lib/quill-table-better/dist/quill-table-better.css" />
-
-    <!-- **MudBlazor CSS** -->
-    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-
+    <link href=@Assets["_content/MudBlazor/MudBlazor.min.css"] rel="stylesheet" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
-<body>
-    <!-- Your Blazor routing outlet -->
-    <Routes />
 
-    <script>
+<body>
+    <Routes />
+        <script>
         window.blazorCulture = {
             set: function (value) {
                 localStorage.setItem("blazorCulture", value);
@@ -35,26 +29,9 @@
             },
         };
     </script>
-
-    <!-- Vimeo Player SDK + init -->
-    <script src="https://player.vimeo.com/api/player.js"></script>
-    <script>
-        window.initVimeoPlayer = function (iframe) {
-            const player = new Vimeo.Player(iframe);
-            player.setVolume(0.5);
-            player.on('play',    () => console.log('▶️ Video started'));
-            player.on('pause',   () => console.log('⏸️ Video paused'));
-            player.on('ended',   () => console.log('🏁 Video ended'));
-        };
-    </script>
-
-    <!-- Blazor framework -->
     <script src="_framework/blazor.web.js"></script>
-
-    <!-- **MudBlazor JavaScript** -->
-    <script src="_content/MudBlazor/MudBlazor.min.js?v=8.6.0"></script>
-
-  <script src="/lib/tinymce/tinymce.min.js"></script>
+      <script src="/lib/tinymce/tinymce.min.js"></script>
     <script src=@Assets["_content/MudBlazor/MudBlazor.min.js"]></script>
 </body>
+
 </html>
