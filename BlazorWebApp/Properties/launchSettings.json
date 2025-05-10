@@ -2,7 +2,7 @@
   "profiles": {
     "BlazorWebApp": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "applicationUrl": "https://aspnet.lan:5001;http://aspnet.lan:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
