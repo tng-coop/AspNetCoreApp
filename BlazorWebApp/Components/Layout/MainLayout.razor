@@ -1,24 +1,24 @@
 ﻿@inherits LayoutComponentBase
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
-<MudThemeProvider />
+<MudPopoverProvider />
 <MudDialogProvider />
-<MudSnackbarProvider/>
-
-<div class="page">
-    <div class="sidebar">
+<MudSnackbarProvider />
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
-    </div>
+    </MudDrawer>
+    <MudMainContent Class="pt-16 pa-4">
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-    <main>
-        <div class="top-row px-4">
-            <LangSwitchButton /> 
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -26,10 +26,9 @@
     <span class="dismiss">🗙</span>
 </div>
 
-
 @code {
     private bool _drawerOpen = true;
-    private bool _isDarkMode = false;
+    private bool _isDarkMode = true;
     private MudTheme? _theme = null;
 
     protected override void OnInitialized()
@@ -57,7 +56,7 @@
     private readonly PaletteLight _lightPalette = new()
     {
         Black = "#110e2d",
-        AppbarText = "#000000",
+        AppbarText = "#424242",
         AppbarBackground = "rgba(255,255,255,0.8)",
         DrawerBackground = "#ffffff",
         GrayLight = "#e8e8e8",
@@ -66,7 +65,7 @@
 
     private readonly PaletteDark _darkPalette = new()
     {
-        Primary = "#ae6fff",
+        Primary = "#7e6fff",
         Surface = "#1e1e2d",
         Background = "#1a1a27",
         BackgroundGray = "#151521",
