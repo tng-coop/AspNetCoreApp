@@ -1,0 +1,45 @@
+@using BlazorWebApp.Models
+@using Microsoft.AspNetCore.Components
+
+<ul class="nav flex-column tree-menu">
+  @foreach (var item in Items)
+  {
+    <li class="nav-item">
+      @if (item.Children.Count > 0)
+      {
+        <button class="nav-link d-flex justify-content-between align-items-center"
+                @onclick="() => Toggle(item)">
+          <span><i class="@item.IconCss"></i> @item.Title</span>
+          <i class="bi @(IsExpanded(item) ? "bi-caret-down-fill" : "bi-caret-right-fill")"></i>
+        </button>
+        <ul class="nav flex-column ps-3 collapse @(IsExpanded(item) ? "show" : "")">
+          <TreeMenu Items="item.Children" />
+        </ul>
+      }
+      else
+      {
+        <NavLink class="nav-link disabled" href="#">
+          <i class="@item.IconCss"></i> @item.Title
+        </NavLink>
+      }
+    </li>
+  }
+</ul>
+
+@code {
+  [Parameter] public List<MenuItem> Items { get; set; } = new();
+  private HashSet<MenuItem> _expanded = new();
+
+  private void Toggle(MenuItem it)
+  {
+    if (_expanded.Contains(it))
+      _expanded.Remove(it);
+    else
+      _expanded.Add(it);
+  }
+
+  private bool IsExpanded(MenuItem it)
+  {
+    return _expanded.Contains(it);
+  }
+}

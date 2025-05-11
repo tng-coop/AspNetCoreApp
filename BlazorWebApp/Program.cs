@@ -10,6 +10,7 @@ builder.Services
     .AddAuthenticationAndAuthorization(builder.Configuration)
     .AddPersistence(builder.Configuration)
     .AddLocalizationServices();
+    builder.Services.AddScoped<BlazorWebApp.Services.ITreeMenuService, BlazorWebApp.Services.TreeMenuService>();
     builder.Services.AddMudServices();
 
 var app = builder.Build();
