@@ -17,11 +17,11 @@
     <link href=@Assets["_content/MudBlazor/MudBlazor.min.css"] rel="stylesheet" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet @rendermode="RenderModeForPage" />
+    <HeadOutlet @rendermode="PageRenderMode" />
 </head>
 
 <body>
-    <Routes @rendermode="RenderModeForPage"  />
+    <Routes @rendermode="PageRenderMode" />
         <script>
         window.blazorCulture = {
             set: function (value) {
@@ -40,12 +40,11 @@
 </html>
 
 
-@code {
-    [CascadingParameter] 
+
+ @code {
+    [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    private IComponentRenderMode? RenderModeForPage =>
-        HttpContext.Request.Path.StartsWithSegments("/Account") 
-            ? null  // use default static SSR for Identity pages
-            : InteractiveServer;  // interactive for everything else
+    private IComponentRenderMode? PageRenderMode =>
+        HttpContext.AcceptsInteractiveRouting() ? InteractiveServer : null; 
 }

@@ -24,9 +24,9 @@ namespace BlazorWebApp.Data.Seeders
                 }
             }
 
-            await Add("admin@domain.local", "Admin");
-            await Add("member@domain.local", "Member");
-            await Add("member2@domain.local", "Member");
+            await Add("admin@youromain.com", "Admin");
+            await Add("member@yourdomain.com", "Member");
+            await Add("member2@yourdomain.com", "Member");
         }
     }
 }
