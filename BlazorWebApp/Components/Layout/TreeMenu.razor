@@ -1,41 +1,24 @@
-@using System.Collections.Generic
 @using BlazorWebApp.Models
 @using Microsoft.AspNetCore.Components
 
 <ul class="nav flex-column tree-menu">
     @foreach (var item in Items)
     {
-        // compute expanded state and classes
-        var expanded = IsExpanded(item);
-        var arrowClass = expanded ? "bi-caret-down-fill" : "bi-caret-right-fill";
-        var collapseClass = expanded ? "collapse show" : "collapse";
-
         <li class="nav-item">
-            <div class="d-flex align-items-center">
-                @* collapse toggle *@
-                @if (item.Children != null && item.Children.Count > 0)
+            <NavLink class="nav-link flex-grow-1"
+                     href="@($"/{item.Slug}")"
+                     Match="NavLinkMatch.Prefix">
+                @if (!string.IsNullOrEmpty(item.IconCss))
                 {
-                    <button class="btn btn-link p-0 me-2" @onclick="() => Toggle(item)">
-                        <i class="bi @arrowClass"></i>
-                    </button>
+                    <i class="@item.IconCss me-1"></i>
                 }
-                else
-                {
-                    <span class="me-2"></span>
-                }
+                @item.Title
+            </NavLink>
 
-                @* navigation link with active highlighting *@
-                <NavLink class="nav-link flex-grow-1"
-                         href="@($"/{item.Slug}")"
-                         Match="NavLinkMatch.Prefix">
-                    <i class="@item.IconCss me-1"></i> @item.Title
-                </NavLink>
-            </div>
-
-            @* recursive children *@
-            @if (item.Children != null && item.Children.Count > 0)
+            @* always render children, indented *@
+            @if (item.Children?.Any() == true)
             {
-                <ul class="nav flex-column ps-4 @collapseClass">
+                <ul class="nav flex-column ps-4">
                     <TreeMenu Items="item.Children" />
                 </ul>
             }
@@ -46,17 +29,4 @@
 @code {
     [Parameter]
     public List<MenuItemDto> Items { get; set; } = new();
-
-    private HashSet<MenuItemDto> _expanded = new();
-
-    private void Toggle(MenuItemDto item)
-    {
-        if (_expanded.Contains(item))
-            _expanded.Remove(item);
-        else
-            _expanded.Add(item);
-    }
-
-    private bool IsExpanded(MenuItemDto item)
-        => _expanded.Contains(item);
 }

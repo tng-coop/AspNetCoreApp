@@ -1,0 +1,80 @@
+@page "/{Slug}"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+@using BlazorWebApp.Models
+@using BlazorWebApp.Services
+@inject ICategoryService CategoryService
+@inject IPublicationService PublicationService
+
+
+@if (category == null)
+{
+    <h2>Category not found</h2>
+}
+else
+{
+    <h1>@category.Name</h1>
+
+    @if (subcats.Any())
+    {
+        <h4>Sub-categories</h4>
+        <ul class="list-inline">
+        @foreach (var sub in subcats)
+        {
+            <li class="list-inline-item">
+                <NavLink class="btn btn-outline-primary btn-sm"
+                         href="@($"/{sub.Slug}")"
+                         Match="NavLinkMatch.Prefix">
+                    @sub.Name
+                </NavLink>
+            </li>
+        }
+        </ul>
+    }
+
+    <h4>Articles</h4>
+    @if (!posts.Any())
+    {
+        <p><em>No published articles in this category.</em></p>
+    }
+    else
+    {
+        <ul class="list-unstyled">
+        @foreach (var p in posts)
+        {
+            <li class="mb-2">
+                <NavLink href="@($"/publications/{p.Id}")"
+                         Match="NavLinkMatch.Prefix">
+                    <strong>@p.Title</strong>
+                </NavLink>
+                <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
+            </li>
+        }
+        </ul>
+    }
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = string.Empty;
+
+    private CategoryDto? category;
+    private List<CategoryDto> subcats = new();
+    private List<PublicationReadDto> posts = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var allCats = await CategoryService.ListAsync();
+        category = allCats.FirstOrDefault(c => c.Slug == Slug);
+        if (category == null)
+            return;
+
+        subcats = allCats
+            .Where(c => c.ParentCategoryId == category.Id)
+            .ToList();
+
+        var allPosts = await PublicationService.ListAsync();
+        posts = allPosts
+            .Where(p => p.CategoryId == category.Id && p.Status == "Published")
+            .ToList();
+    }
+}

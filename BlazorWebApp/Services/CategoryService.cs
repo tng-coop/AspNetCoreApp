@@ -19,7 +19,9 @@ namespace BlazorWebApp.Services
                 .Select(c => new CategoryDto {
                     Id = c.Id,
                     Name = c.Name,
-                    ParentCategoryId = c.ParentCategoryId
+                    ParentCategoryId = c.ParentCategoryId,
+                    // Map the Slug from the entity
+                    Slug = c.Slug
                 })
                 .ToListAsync();
         }
