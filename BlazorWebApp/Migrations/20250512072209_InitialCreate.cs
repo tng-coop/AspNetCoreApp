@@ -58,6 +58,7 @@ namespace BlazorWebApp.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false),
                     ParentCategoryId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -72,6 +73,19 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ContentTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContentTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Images",
                 columns: table => new
                 {
@@ -83,6 +97,29 @@ namespace BlazorWebApp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Images", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MenuItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false),
+                    IconCss = table.Column<string>(type: "text", nullable: false),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false),
+                    ParentMenuItemId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ParentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ContentItemId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MenuItems_MenuItems_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "MenuItems",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -280,6 +317,11 @@ namespace BlazorWebApp.Migrations
                 column: "ParentCategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MenuItems_ParentId",
+                table: "MenuItems",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PublicationCategories_CategoryId",
                 table: "PublicationCategories",
                 column: "CategoryId");
@@ -314,7 +356,13 @@ namespace BlazorWebApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ContentTypes");
+
+            migrationBuilder.DropTable(
                 name: "Images");
+
+            migrationBuilder.DropTable(
+                name: "MenuItems");
 
             migrationBuilder.DropTable(
                 name: "PublicationCategories");

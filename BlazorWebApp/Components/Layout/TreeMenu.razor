@@ -11,22 +11,33 @@
         var collapseClass = expanded ? "collapse show" : "collapse";
 
         <li class="nav-item">
+            <div class="d-flex align-items-center">
+                @* collapse toggle *@
+                @if (item.Children != null && item.Children.Count > 0)
+                {
+                    <button class="btn btn-link p-0 me-2" @onclick="() => Toggle(item)">
+                        <i class="bi @arrowClass"></i>
+                    </button>
+                }
+                else
+                {
+                    <span class="me-2"></span>
+                }
+
+                @* navigation link with active highlighting *@
+                <NavLink class="nav-link flex-grow-1"
+                         href="@($"/{item.Slug}")"
+                         Match="NavLinkMatch.Prefix">
+                    <i class="@item.IconCss me-1"></i> @item.Title
+                </NavLink>
+            </div>
+
+            @* recursive children *@
             @if (item.Children != null && item.Children.Count > 0)
             {
-                <button class="nav-link d-flex justify-content-between align-items-center"
-                        @onclick="() => Toggle(item)">
-                    <span><i class="@item.IconCss"></i> @item.Title</span>
-                    <i class="bi @(arrowClass)"></i>
-                </button>
-                <ul class="nav flex-column ps-3 @(collapseClass)">
+                <ul class="nav flex-column ps-4 @collapseClass">
                     <TreeMenu Items="item.Children" />
                 </ul>
-            }
-            else
-            {
-                <NavLink class="nav-link" href="#">
-                    <i class="@item.IconCss"></i> @item.Title
-                </NavLink>
             }
         </li>
     }

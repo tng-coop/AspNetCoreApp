@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250510200032_InitialCreate")]
+    [Migration("20250512072209_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -106,11 +106,34 @@ namespace BlazorWebApp.Migrations
                     b.Property<Guid?>("ParentCategoryId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.ContentType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentTypes");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.ImageAsset", b =>
@@ -133,6 +156,43 @@ namespace BlazorWebApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.MenuItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ContentItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IconCss")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ParentMenuItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("MenuItems");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
@@ -333,6 +393,15 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.MenuItem", b =>
+                {
+                    b.HasOne("BlazorWebApp.Data.MenuItem", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("BlazorWebApp.Data.PublicationCategory", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.Category", "Category")
@@ -412,6 +481,11 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Children");
 
                     b.Navigation("PublicationCategories");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.MenuItem", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>

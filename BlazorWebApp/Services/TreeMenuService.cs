@@ -19,27 +19,29 @@ namespace BlazorWebApp.Services
 
         public async Task<List<MenuItemDto>> GetMenuAsync()
         {
-            var entities = await _db.MenuItems
+            // load all categories for menu
+            var categories = await _db.Categories
                 .AsNoTracking()
-                .OrderBy(mi => mi.SortOrder)
+                .OrderBy(c => c.Name)
                 .ToListAsync();
 
-            var lookup = entities.ToLookup(mi => mi.ParentMenuItemId);
+            // build lookup by ParentCategoryId
+            var lookup = categories.ToLookup(c => c.ParentCategoryId);
 
-            List<MenuItemDto> Map(IEnumerable<MenuItem> items)
-                => items.Select(e => new MenuItemDto
+            List<MenuItemDto> Map(IEnumerable<Category> cats)
+                => cats.Select(c => new MenuItemDto
                    {
-                       Id = e.Id,
-                       Title = e.Title,
-                       Slug = e.Slug,
-                       IconCss = e.IconCss,
-                       SortOrder = e.SortOrder,
-                       ContentItemId = e.ContentItemId,
-                       Children = Map(lookup[e.Id])
+                       Id = c.Id,
+                       Title = c.Name,
+                       Slug = c.Slug,
+                       IconCss = string.Empty,  // or map from Category if you add one
+                       SortOrder = 0,           // categories can be sorted by Name
+                       ContentItemId = null,
+                       Children = Map(lookup[c.Id])
                    })
-                   .OrderBy(d => d.SortOrder)
                    .ToList();
 
+            // root categories have null parent
             return Map(lookup[null]);
         }
     }
