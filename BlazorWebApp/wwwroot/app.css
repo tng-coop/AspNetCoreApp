@@ -65,3 +65,8 @@ h1:focus {
   background-color: rgba(0,0,0,0.15);
   cursor: ew-resize;
 }
+
+.mud-nav-no-border {
+  border: none !important;
+  box-shadow: none !important;
+}
