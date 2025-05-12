@@ -1,48 +1,46 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using BlazorWebApp.Data;
 using BlazorWebApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorWebApp.Services
 {
     public interface ITreeMenuService
     {
-        Task<List<MenuItem>> GetMenuAsync();
+        Task<List<MenuItemDto>> GetMenuAsync();
     }
 
     public class TreeMenuService : ITreeMenuService
     {
-        public Task<List<MenuItem>> GetMenuAsync()
+        private readonly ApplicationDbContext _db;
+        public TreeMenuService(ApplicationDbContext db) => _db = db;
+
+        public async Task<List<MenuItemDto>> GetMenuAsync()
         {
-            var now = DateTime.Now;
-            var timeGroup = new MenuItem
-            {
-                Title = $"Current Time: {now:HH:mm:ss}",
-                IconCss = "bi bi-clock",
-                Children = new List<MenuItem>
-                {
-                    new MenuItem { Title = $"Hour: {now.Hour}",   IconCss = "bi bi-hourglass-top"    },
-                    new MenuItem { Title = $"Minute: {now.Minute}", IconCss = "bi bi-hourglass-split"  },
-                    new MenuItem { Title = $"Second: {now.Second}",IconCss = "bi bi-hourglass-bottom" }
-                }
-            };
-            var rnd = new Random();
-            var groups = new List<MenuItem> { timeGroup };
-            for (int i = 2; i <= 3; i++)
-            {
-                var grp = new MenuItem { Title = $"Group {i}", IconCss = "bi bi-folder", Children = new List<MenuItem>() };
-                for (int j = 1; j <= 3; j++)
-                {
-                    grp.Children.Add(new MenuItem
-                    {
-                        Title = $"Item {i}.{j}: {rnd.Next(1000)}",
-                        IconCss = "bi bi-file-earmark",
-                        Url = $"/random/{rnd.Next(1000)}"
-                    });
-                }
-                groups.Add(grp);
-            }
-            return Task.FromResult(groups);
+            var entities = await _db.MenuItems
+                .AsNoTracking()
+                .OrderBy(mi => mi.SortOrder)
+                .ToListAsync();
+
+            var lookup = entities.ToLookup(mi => mi.ParentMenuItemId);
+
+            List<MenuItemDto> Map(IEnumerable<MenuItem> items)
+                => items.Select(e => new MenuItemDto
+                   {
+                       Id = e.Id,
+                       Title = e.Title,
+                       Slug = e.Slug,
+                       IconCss = e.IconCss,
+                       SortOrder = e.SortOrder,
+                       ContentItemId = e.ContentItemId,
+                       Children = Map(lookup[e.Id])
+                   })
+                   .OrderBy(d => d.SortOrder)
+                   .ToList();
+
+            return Map(lookup[null]);
         }
     }
 }
