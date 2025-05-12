@@ -7,30 +7,30 @@
     <li class="nav-item" @key="item.Slug">
       <div class="d-flex align-items-center">
 
-@if (item.Children?.Any() == true)
-{
-    <button type="button"
-
-            @onclick:stopPropagation
-            @onclick="() => OnChevronClick(item.Slug)">
- <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> 
-    </button>
-}
-else
-{
-    @* same width as the button above, so text lines up *@
-    <span style="display:inline-block; width:2.5rem; height:2.5rem;" class="me-2"></span>
-}
-
+        @* Toggle button: ▶ for collapsed, ▼ for expanded *@
+        @if (item.Children?.Any() == true)
+        {
+          <button type="button"
+                  class="btn btn-sm me-2"
+                  @onclick:stopPropagation
+                  @onclick="() => OnChevronClick(item.Slug)">
+            <span aria-hidden="true">
+              @(IsExpanded(item.Slug) ? "▼" /* U+25BC */ : "▶" /* U+25B6 */)
+            </span>
+          </button>
+        }
+        else
+        {
+          <!-- placeholder to keep titles aligned -->
+          <span class="me-2" style="width:1.25rem; display:inline-block;"></span>
+        }
 
         <NavLink class="nav-link flex-grow-1"
                  href="@($"/{item.Slug}")"
                  Match="NavLinkMatch.Prefix">
-          @* use the same pattern as your Home/Register icons *@
           @if (!string.IsNullOrEmpty(item.IconCss))
           {
-            <span class="bi @($"{item.IconCss}-nav-menu")"
-                  aria-hidden="true"></span>
+            <i class="bi bi-@item.IconCss me-1" aria-hidden="true"></i>
           }
           @item.Title
         </NavLink>
@@ -50,15 +50,11 @@ else
   [Parameter] public List<MenuItemDto> Items { get; set; } = new();
   private HashSet<string> _expanded = new();
 
-  private void OnChevronClick(string slug)
-    => Toggle(slug);
-
+  private void OnChevronClick(string slug) => Toggle(slug);
   private void Toggle(string slug)
   {
     if (_expanded.Contains(slug)) _expanded.Remove(slug);
     else                          _expanded.Add(slug);
   }
-
-  private bool IsExpanded(string slug) 
-    => _expanded.Contains(slug);
+  private bool IsExpanded(string slug) => _expanded.Contains(slug);
 }

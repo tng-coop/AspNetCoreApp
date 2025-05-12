@@ -514,5 +514,6 @@ imgcache
 
 /BlazorWebApp/wwwroot/dist/*
 /BlazorWebApp/wwwroot/lib/tinymce/*
+/BlazorWebApp/wwwroot/lib/bootstrap-icons/*
 
 /MyMudServerApp/*
