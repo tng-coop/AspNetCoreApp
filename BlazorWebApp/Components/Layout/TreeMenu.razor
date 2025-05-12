@@ -7,25 +7,47 @@
     <li class="nav-item" @key="item.Slug">
       <div class="d-flex align-items-center">
 
-        @* Toggle button: ▶ for collapsed, ▼ for expanded *@
+        @* Toggle button: SVG chevron right for collapsed, down for expanded *@
         @if (item.Children?.Any() == true)
         {
           <button type="button"
-                  class="btn btn-sm me-2"
+                  class="btn btn-sm p-0 me-1"
                   @onclick:stopPropagation
-                  @onclick="() => OnChevronClick(item.Slug)">
-            <span aria-hidden="true">
-              @(IsExpanded(item.Slug) ? "▼" /* U+25BC */ : "▶" /* U+25B6 */)
-            </span>
+                  @onclick="() => OnChevronClick(item.Slug)"
+                  aria-label="Toggle">
+            @if (IsExpanded(item.Slug))
+            {
+              <!-- chevron-down, forced white -->
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="1em" height="1em"
+                   fill="white"
+                   class="bi bi-chevron-down"
+                   viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            }
+            else
+            {
+              <!-- chevron-right, forced white -->
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="1em" height="1em"
+                   fill="white"
+                   class="bi bi-chevron-right"
+                   viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                      d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 1 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            }
           </button>
         }
         else
         {
           <!-- placeholder to keep titles aligned -->
-          <span class="me-2" style="width:1.25rem; display:inline-block;"></span>
+          <span class="me-1" style="width:1rem; display:inline-block;"></span>
         }
 
-        <NavLink class="nav-link flex-grow-1"
+        <NavLink class="nav-link flex-grow-1 ps-0"
                  href="@($"/{item.Slug}")"
                  Match="NavLinkMatch.Prefix">
           @if (!string.IsNullOrEmpty(item.IconCss))
