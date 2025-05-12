@@ -4,7 +4,8 @@
 <ul class="nav flex-column tree-menu">
   @foreach (var item in Items)
   {
-    <li class="nav-item" @key="item.Slug">
+    <!-- no outer padding; compactness comes from NavLink padding -->
+    <li class="nav-item py-0 px-0" @key="item.Slug">
       <div class="d-flex align-items-center">
 
         @* Toggle button: SVG chevron right for collapsed, down for expanded *@
@@ -17,7 +18,7 @@
                   aria-label="Toggle">
             @if (IsExpanded(item.Slug))
             {
-              <!-- chevron-down, forced white -->
+              <!-- white chevron-down -->
               <svg xmlns="http://www.w3.org/2000/svg"
                    width="1em" height="1em"
                    fill="white"
@@ -29,7 +30,7 @@
             }
             else
             {
-              <!-- chevron-right, forced white -->
+              <!-- white chevron-right -->
               <svg xmlns="http://www.w3.org/2000/svg"
                    width="1em" height="1em"
                    fill="white"
@@ -43,11 +44,11 @@
         }
         else
         {
-          <!-- placeholder to keep titles aligned -->
-          <span class="me-1" style="width:1rem; display:inline-block;"></span>
+          <!-- placeholder to align when no children -->
         }
 
-        <NavLink class="nav-link flex-grow-1 ps-0"
+        @* Inner padding gives desired compact spacing *@
+        <NavLink class="nav-link flex-grow-1 ps-0 pe-0 p-9 lh-1" style="height:auto;"
                  href="@($"/{item.Slug}")"
                  Match="NavLinkMatch.Prefix">
           @if (!string.IsNullOrEmpty(item.IconCss))
