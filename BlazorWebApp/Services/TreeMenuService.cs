@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BlazorWebApp.Data;
 using BlazorWebApp.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorWebApp.Services
 {
@@ -14,18 +15,23 @@ namespace BlazorWebApp.Services
 
     public class TreeMenuService : ITreeMenuService
     {
-        private readonly ApplicationDbContext _db;
-        public TreeMenuService(ApplicationDbContext db) => _db = db;
+        private readonly IServiceScopeFactory _scopeFactory;
+
+        // ← Inject the scope factory instead of DbContext directly
+        public TreeMenuService(IServiceScopeFactory scopeFactory) 
+            => _scopeFactory = scopeFactory;
 
         public async Task<List<MenuItemDto>> GetMenuAsync()
         {
-            // load all categories for menu
-            var categories = await _db.Categories
+            // ← Create a new scope (and with it, a fresh ApplicationDbContext) each call
+            using var scope = _scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var categories = await db.Categories
                 .AsNoTracking()
                 .OrderBy(c => c.Name)
                 .ToListAsync();
 
-            // build lookup by ParentCategoryId
             var lookup = categories.ToLookup(c => c.ParentCategoryId);
 
             List<MenuItemDto> Map(IEnumerable<Category> cats)
@@ -34,14 +40,13 @@ namespace BlazorWebApp.Services
                        Id = c.Id,
                        Title = c.Name,
                        Slug = c.Slug,
-                       IconCss = string.Empty,  // or map from Category if you add one
-                       SortOrder = 0,           // categories can be sorted by Name
+                       IconCss = string.Empty,
+                       SortOrder = 0,
                        ContentItemId = null,
                        Children = Map(lookup[c.Id])
                    })
                    .ToList();
 
-            // root categories have null parent
             return Map(lookup[null]);
         }
     }
