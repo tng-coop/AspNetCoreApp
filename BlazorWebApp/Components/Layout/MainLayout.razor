@@ -9,7 +9,7 @@
 
 <MudLayout>
 
-  <MudAppBar Elevation="1">
+  <MudAppBar Elevation="1" Fixed="false">
     <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
     <MudSpacer />
     <LangSwitchButton />
@@ -22,10 +22,13 @@
   </MudAppBar>
 
   <!-- Splitter starts just under the AppBar -->
-  <MudSplitter Height="calc(100vh - 64px)" Class="mt-16">
+<MudSplitter
+  Style="
+    height: calc(100vh - var(--mud-appbar-height));
+  ">
     <!-- Left pane: your nav wrapped in MudPaper & MudNavMenu -->
     <StartContent>
-      <MudPaper Class="pa-4 mud-theme-background" Elevation="0" Style="height:100%">
+      <MudPaper Class="pa-0 mud-theme-background" Elevation="0" Style="height:100%">
         <MudNavMenu Class="mud-nav-no-border">
           <MudNavLink Href="" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
           <MudNavLink Href="publications" Icon="@Icons.Material.Filled.Book">Publications</MudNavLink>
