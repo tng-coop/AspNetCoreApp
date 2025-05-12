@@ -10,6 +10,8 @@ namespace BlazorWebApp.Data
             : base(options)
         {
         }
+        public DbSet<ContentType> ContentTypes { get; set; } = null!;
+        public DbSet<MenuItem>    MenuItems    { get; set; } = null!;        
 
         public DbSet<Publication> Publications { get; set; } = null!;
         // ← Newly added DbSet for images
