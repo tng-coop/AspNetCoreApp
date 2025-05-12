@@ -2,31 +2,63 @@
 @using Microsoft.AspNetCore.Components
 
 <ul class="nav flex-column tree-menu">
-    @foreach (var item in Items)
-    {
-        <li class="nav-item">
-            <NavLink class="nav-link flex-grow-1"
-                     href="@($"/{item.Slug}")"
-                     Match="NavLinkMatch.Prefix">
-                @if (!string.IsNullOrEmpty(item.IconCss))
-                {
-                    <i class="@item.IconCss me-1"></i>
-                }
-                @item.Title
-            </NavLink>
+  @foreach (var item in Items)
+  {
+    <li class="nav-item" @key="item.Slug">
+      <div class="d-flex align-items-center">
 
-            @* always render children, indented *@
-            @if (item.Children?.Any() == true)
-            {
-                <ul class="nav flex-column ps-4">
-                    <TreeMenu Items="item.Children" />
-                </ul>
-            }
-        </li>
-    }
+@if (item.Children?.Any() == true)
+{
+    <button type="button"
+
+            @onclick:stopPropagation
+            @onclick="() => OnChevronClick(item.Slug)">
+ <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> 
+    </button>
+}
+else
+{
+    @* same width as the button above, so text lines up *@
+    <span style="display:inline-block; width:2.5rem; height:2.5rem;" class="me-2"></span>
+}
+
+
+        <NavLink class="nav-link flex-grow-1"
+                 href="@($"/{item.Slug}")"
+                 Match="NavLinkMatch.Prefix">
+          @* use the same pattern as your Home/Register icons *@
+          @if (!string.IsNullOrEmpty(item.IconCss))
+          {
+            <span class="bi @($"{item.IconCss}-nav-menu")"
+                  aria-hidden="true"></span>
+          }
+          @item.Title
+        </NavLink>
+      </div>
+
+      @if (item.Children?.Any() == true && IsExpanded(item.Slug))
+      {
+        <ul class="nav flex-column ps-4">
+          <TreeMenu Items="item.Children" />
+        </ul>
+      }
+    </li>
+  }
 </ul>
 
 @code {
-    [Parameter]
-    public List<MenuItemDto> Items { get; set; } = new();
+  [Parameter] public List<MenuItemDto> Items { get; set; } = new();
+  private HashSet<string> _expanded = new();
+
+  private void OnChevronClick(string slug)
+    => Toggle(slug);
+
+  private void Toggle(string slug)
+  {
+    if (_expanded.Contains(slug)) _expanded.Remove(slug);
+    else                          _expanded.Add(slug);
+  }
+
+  private bool IsExpanded(string slug) 
+    => _expanded.Contains(slug);
 }
