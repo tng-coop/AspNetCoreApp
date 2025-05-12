@@ -3,26 +3,37 @@
 @using BlazorWebApp.Services
 @inject IPublicationService PublicationService
 
+<AuthorizeView>
+  <Authorized>
+    <p class="mb-4">
+      👋 Hello, <strong>@context.User.Identity!.Name</strong>!
+    </p>
+  </Authorized>
+    <NotAuthorized>
+        <p class="mb-4 text-warning">You’re not logged in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
 <h3>Drafts</h3>
 <ul class="list-unstyled">
-@foreach (var p in pubs.Where(p => p.Status == "Draft"))
-{
-    <li>
-        <a href="/editor/@p.Id"><strong>@p.Title</strong></a>
-        <small class="text-muted ms-2">@p.CreatedAt:g</small>
-    </li>
-}
+    @foreach (var p in pubs.Where(p => p.Status == "Draft"))
+    {
+        <li>
+            <a href="/editor/@p.Id"><strong>@p.Title</strong></a>
+            <small class="text-muted ms-2">@p.CreatedAt:g</small>
+        </li>
+    }
 </ul>
 
 <h3>Published</h3>
 <ul class="list-unstyled">
-@foreach (var p in pubs.Where(p => p.Status == "Published"))
-{
-    <li>
-        <a href="/publications/@p.Id"><strong>@p.Title</strong></a>
-        <small class="text-muted ms-2">@p.PublishedAt!.Value:g</small>
-    </li>
-}
+    @foreach (var p in pubs.Where(p => p.Status == "Published"))
+    {
+        <li>
+            <a href="/publications/@p.Id"><strong>@p.Title</strong></a>
+            <small class="text-muted ms-2">@p.PublishedAt!.Value:g</small>
+        </li>
+    }
 </ul>
 
 @code {
