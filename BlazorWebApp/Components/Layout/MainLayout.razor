@@ -1,25 +1,48 @@
-﻿@inherits LayoutComponentBase
+﻿@using MudBlazor
+@using MudExtensions
+@inherits LayoutComponentBase
+
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-<MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
-        <MudSpacer />
-         <LangSwitchButton /> 
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
-    </MudAppBar>
-    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent Class="pt-16 pa-4">
-        @Body
-    </MudMainContent>
-</MudLayout>
 
+<MudLayout>
+
+  <MudAppBar Elevation="1">
+    <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+    <MudSpacer />
+    <LangSwitchButton />
+    <MudIconButton Icon="@(DarkLightModeButtonIcon)"
+                   Color="Color.Inherit"
+                   OnClick="DarkModeToggle" />
+    <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                   Color="Color.Inherit"
+                   Edge="Edge.End" />
+  </MudAppBar>
+
+  <!-- Splitter starts just under the AppBar -->
+  <MudSplitter Height="calc(100vh - 64px)" Class="mt-16">
+    <!-- Left pane: your nav wrapped in MudPaper & MudNavMenu -->
+    <StartContent>
+      <MudPaper Class="pa-4 mud-theme-background" Elevation="1" Style="height:100%">
+        <MudNavMenu>
+          <MudNavLink Href="" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+          <MudNavLink Href="publications" Icon="@Icons.Material.Filled.Book">Publications</MudNavLink>
+          <MudNavLink Href="editor"       Icon="@Icons.Material.Filled.AddCircle">New Publication</MudNavLink>
+          <MudNavLink Href="Account/Login"Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+        </MudNavMenu>
+      </MudPaper>
+    </StartContent>
+
+    <!-- Right pane: your main content -->
+    <EndContent>
+      <MudMainContent Class="pt-16 pa-4">
+        @Body
+      </MudMainContent>
+    </EndContent>
+  </MudSplitter>
+  </MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -28,31 +51,20 @@
 </div>
 
 @code {
-    private bool _drawerOpen = true;
     private bool _isDarkMode = false;
-    private MudTheme? _theme = null;
+    private MudTheme? _theme;
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
-
         _theme = new()
         {
             PaletteLight = _lightPalette,
-            PaletteDark = _darkPalette,
+            PaletteDark  = _darkPalette,
             LayoutProperties = new LayoutProperties()
         };
     }
 
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private void DarkModeToggle()
-    {
-        _isDarkMode = !_isDarkMode;
-    }
+    private void DarkModeToggle() => _isDarkMode = !_isDarkMode;
 
     private readonly PaletteLight _lightPalette = new()
     {
@@ -93,11 +105,7 @@
         OverlayLight = "#1e1e2d80",
     };
 
-    public string DarkLightModeButtonIcon => _isDarkMode switch
-    {
-        true => Icons.Material.Rounded.AutoMode,
-        false => Icons.Material.Outlined.DarkMode,
-    };
+    public string DarkLightModeButtonIcon => _isDarkMode
+        ? Icons.Material.Rounded.AutoMode
+        : Icons.Material.Outlined.DarkMode;
 }
-
-

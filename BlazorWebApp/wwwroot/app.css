@@ -58,3 +58,10 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* make the vertical splitter bar easy to see & grab */
+.mud-splitter-bar-horizontal {
+  width: 6px;
+  background-color: rgba(0,0,0,0.15);
+  cursor: ew-resize;
+}

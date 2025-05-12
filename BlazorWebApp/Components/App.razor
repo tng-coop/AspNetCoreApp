@@ -7,22 +7,30 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />  
-    @* <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" /> *@
-    <!-- Bootstrap, app and Blazor styles -->
-    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
-    <link rel="stylesheet" href="@Assets["BlazorWebApp.styles.css"]" />
+    <base href="/" />
 
-    <link href=@Assets["_content/MudBlazor/MudBlazor.min.css"] rel="stylesheet" />
+    <!-- Bootstrap, app and Blazor styles -->
+    <link rel="stylesheet" href="@(Assets["lib/bootstrap/dist/css/bootstrap.min.css"])" />
+    <link rel="stylesheet" href="@(Assets["app.css"])" />
+    <link rel="stylesheet" href="@(Assets["BlazorWebApp.styles.css"])" />
+
+    <!-- MudBlazor core CSS -->
+    <link rel="stylesheet"
+          href="@(Assets["_content/MudBlazor/MudBlazor.min.css"])" />
+
+    <!-- MudExtensions CSS (splitter, etc.) -->
+    <link rel="stylesheet"
+          href="@(Assets["_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.css"])" />
+
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet @rendermode="RenderModeForPage" />
 </head>
 
 <body>
-    <Routes @rendermode="RenderModeForPage"  />
-        <script>
+    <Routes @rendermode="RenderModeForPage" />
+
+    <script>
         window.blazorCulture = {
             set: function (value) {
                 localStorage.setItem("blazorCulture", value);
@@ -32,20 +40,28 @@
             },
         };
     </script>
+
+    <!-- Blazor framework -->
     <script src="_framework/blazor.web.js"></script>
-      <script src="/lib/tinymce/tinymce.min.js"></script>
-    <script src=@Assets["_content/MudBlazor/MudBlazor.min.js"]></script>
+
+    <!-- TinyMCE -->
+    <script src="/lib/tinymce/tinymce.min.js"></script>
+
+    <!-- MudBlazor core JS -->
+    <script src="@(Assets["_content/MudBlazor/MudBlazor.min.js"])" ></script>
+
+    <!-- MudExtensions JS -->
+    <script src="@(Assets["_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.js"])" ></script>
 </body>
 
 </html>
 
-
 @code {
-    [CascadingParameter] 
+    [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
     private IComponentRenderMode? RenderModeForPage =>
-        HttpContext.Request.Path.StartsWithSegments("/Account") 
-            ? null  // use default static SSR for Identity pages
-            : InteractiveServer;  // interactive for everything else
+        HttpContext.Request.Path.StartsWithSegments("/Account")
+            ? null
+            : InteractiveServer;
 }

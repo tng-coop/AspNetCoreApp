@@ -1,6 +1,7 @@
 using BlazorWebApp.Extensions;
 using BlazorWebApp.Data;
 using MudBlazor.Services;
+using MudExtensions.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services
     .AddLocalizationServices();
     builder.Services.AddScoped<BlazorWebApp.Services.ITreeMenuService, BlazorWebApp.Services.TreeMenuService>();
     builder.Services.AddMudServices();
+    builder.Services.AddMudExtensions();
 
 var app = builder.Build();
 
