@@ -48,7 +48,8 @@
         }
 
         @* Inner padding gives desired compact spacing *@
-        <NavLink class="nav-link flex-grow-1 ps-0 pe-0 p-9 lh-1" style="height:auto;"
+        <NavLink     class="nav-link flex-grow-1 px-0"
+    style="height:auto; line-height:2;"
                  href="@($"/{item.Slug}")"
                  Match="NavLinkMatch.Prefix">
           @if (!string.IsNullOrEmpty(item.IconCss))
@@ -61,7 +62,7 @@
 
       @if (item.Children?.Any() == true && IsExpanded(item.Slug))
       {
-        <ul class="nav flex-column ps-4">
+        <ul class="nav flex-column ps-2">
           <TreeMenu Items="item.Children" />
         </ul>
       }
