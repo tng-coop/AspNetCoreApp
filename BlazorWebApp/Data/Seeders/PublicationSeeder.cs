@@ -31,43 +31,49 @@ namespace BlazorWebApp.Data.Seeders
                       "style=\"max-width:100%;margin-bottom:1rem;\" />" + bodyHtml;
 
             var now = DateTimeOffset.UtcNow;
+
+            // define publications with their target category slugs
             var pubs = new[]
             {
-                new Publication {
+                (Pub: new Publication {
                     Id = Guid.NewGuid(),
                     Title = "Getting Started with Our CMS",
                     Html  = WrapWithImage("<h1>Welcome</h1><p>This is your first post. Edit me!</p>"),
                     Status = PublicationStatus.Published,
                     CreatedAt   = now.AddDays(-7),
                     PublishedAt = now.AddDays(-6)
-                },
-                new Publication {
+                }, CategorySlug: "about"),
+
+                (Pub: new Publication {
                     Id = Guid.NewGuid(),
                     Title = "Upcoming Outreach Event",
                     Html  = WrapWithImage("<h2>Join us</h2><p>Details coming soon…</p>"),
-                    Status      = PublicationStatus.Scheduled,
+                    Status      = PublicationStatus.Published, // mark as Published for demo
                     CreatedAt   = now,
-                    PublishedAt = now.AddDays(3)
-                },
-                new Publication {
+                    PublishedAt = now
+                }, CategorySlug: "outreach"),
+
+                (Pub: new Publication {
                     Id = Guid.NewGuid(),
                     Title = "Draft Post Example",
-                    Html  = WrapWithImage("<p>This one is still a draft.</p>"),
-                    Status    = PublicationStatus.Draft,
+                    Html    = WrapWithImage("<p>This one is still a draft.</p>"),
+                    Status  = PublicationStatus.Draft,
                     CreatedAt = now
-                }
+                }, CategorySlug: (string?)null)
             };
 
-            db.Publications.AddRange(pubs);
+            // add publications
+            db.Publications.AddRange(pubs.Select(x => x.Pub));
             await db.SaveChangesAsync();
 
-            // attach each publication to the "about" category
-            foreach (var p in pubs)
+            // attach each publication to its category
+            foreach (var (Pub, CategorySlug) in pubs)
             {
-                if (cats.TryGetValue("about", out var catId))
+                if (!string.IsNullOrEmpty(CategorySlug)
+                    && cats.TryGetValue(CategorySlug, out var catId))
                 {
                     db.PublicationCategories.Add(new PublicationCategory {
-                        PublicationId = p.Id,
+                        PublicationId = Pub.Id,
                         CategoryId    = catId
                     });
                 }
