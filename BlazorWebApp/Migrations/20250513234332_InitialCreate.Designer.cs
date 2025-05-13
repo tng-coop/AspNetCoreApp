@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250513063700_InitialCreate")]
+    [Migration("20250513234332_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -246,6 +246,38 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("PublicationCategories");
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.PublicationRevision", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+
+                    b.Property<string>("Html")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PublicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicationId");
+
+                    b.ToTable("PublicationRevisions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -412,6 +444,17 @@ namespace BlazorWebApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("Publication");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.PublicationRevision", b =>
+                {
+                    b.HasOne("BlazorWebApp.Data.Publication", "Publication")
+                        .WithMany()
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Publication");
                 });

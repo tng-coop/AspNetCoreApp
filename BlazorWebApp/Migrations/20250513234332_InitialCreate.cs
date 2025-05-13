@@ -268,6 +268,28 @@ namespace BlazorWebApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PublicationRevisions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PublicationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Html = table.Column<string>(type: "text", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PublicationRevisions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PublicationRevisions_Publications_PublicationId",
+                        column: x => x.PublicationId,
+                        principalTable: "Publications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -321,6 +343,11 @@ namespace BlazorWebApp.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PublicationRevisions_PublicationId",
+                table: "PublicationRevisions",
+                column: "PublicationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Publications_CreatedAt",
                 table: "Publications",
                 column: "CreatedAt");
@@ -355,6 +382,9 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "PublicationCategories");
+
+            migrationBuilder.DropTable(
+                name: "PublicationRevisions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -38,7 +38,7 @@ namespace BlazorWebApp.Data
             // PublicationRevision configuration
             builder.Entity<PublicationRevision>(e =>{
                 e.HasKey(r => r.Id);
-                e.Property(r => r.CreatedAt).HasDefaultValueSql("NOW() AT TIME ZONE UTC");
+                e.Property(r => r.CreatedAt).HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
                 e.HasOne(r => r.Publication)
                  .WithMany()
                  .HasForeignKey(r => r.PublicationId)
