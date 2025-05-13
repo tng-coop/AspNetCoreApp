@@ -1,53 +1,74 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BlazorWebApp.Data;
 using BlazorWebApp.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorWebApp.Services
 {
-    public interface ITreeMenuService
-    {
-        Task<List<MenuItemDto>> GetMenuAsync();
-    }
 
     public class TreeMenuService : ITreeMenuService
     {
         private readonly IServiceScopeFactory _scopeFactory;
-
-        // ← Inject the scope factory instead of DbContext directly
         public TreeMenuService(IServiceScopeFactory scopeFactory) 
             => _scopeFactory = scopeFactory;
 
         public async Task<List<MenuItemDto>> GetMenuAsync()
         {
-            // ← Create a new scope (and with it, a fresh ApplicationDbContext) each call
             using var scope = _scopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            var categories = await db.Categories
+            var allCats = await db.Categories
                 .AsNoTracking()
                 .OrderBy(c => c.Name)
                 .ToListAsync();
+            var catLookup = allCats.ToLookup(c => c.ParentCategoryId);
 
-            var lookup = categories.ToLookup(c => c.ParentCategoryId);
+            var published = await db.Publications
+                .Where(p => p.Status == PublicationStatus.Published)
+                .Include(p => p.PublicationCategories)
+                .ToListAsync();
+            var pubsByCat = published
+                .SelectMany(p => p.PublicationCategories.Select(pc => (pc.CategoryId, p)))
+                .GroupBy(x => x.CategoryId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(x => x.p)
+                          .OrderByDescending(p => p.PublishedAt)
+                          .ToList()
+                );
 
-            List<MenuItemDto> Map(IEnumerable<Category> cats)
-                => cats.Select(c => new MenuItemDto
-                   {
-                       Id = c.Id,
-                       Title = c.Name,
-                       Slug = c.Slug,
-                       IconCss = string.Empty,
-                       SortOrder = 0,
-                       ContentItemId = null,
-                       Children = Map(lookup[c.Id])
-                   })
-                   .ToList();
+            List<MenuItemDto> MapCats(IEnumerable<Category> cats) =>
+                cats.Select(cat =>
+                {
+                    var children = MapCats(catLookup[cat.Id]);
 
-            return Map(lookup[null]);
+                    if (pubsByCat.TryGetValue(cat.Id, out var posts))
+                    {
+                        children.AddRange(posts.Select(pub => new MenuItemDto
+                        {
+                            Id            = pub.Id,
+                            Title         = pub.Title,
+                            Slug          = $"publications/{pub.Id}",
+                            IconCss       = "bi-file-earmark-text",
+                            SortOrder     = 0,
+                            ContentItemId = pub.Id,
+                            Children      = new List<MenuItemDto>()
+                        }));
+                    }
+
+                    return new MenuItemDto
+                    {
+                        Id            = cat.Id,
+                        Title         = cat.Name,
+                        Slug          = cat.Slug,
+                        IconCss       = "bi-list-nested",
+                        SortOrder     = 0,
+                        ContentItemId = null,
+                        Children      = children
+                    };
+                })
+                .ToList();
+
+            return MapCats(catLookup[null]);
         }
     }
 }
