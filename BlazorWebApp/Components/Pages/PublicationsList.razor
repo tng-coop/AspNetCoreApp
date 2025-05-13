@@ -57,8 +57,10 @@
         // Build full category paths
         foreach (var p in pubs.Where(x => x.CategoryId.HasValue))
         {
-            var ancestry = await CategoryService.GetAncestryAsync(p.CategoryId.Value);
-            var crumbs = ancestry.Select(c => c.Name)
+            var ancestry = p.CategoryId.HasValue 
+                ? await CategoryService.GetAncestryAsync(p.CategoryId.Value) 
+                : new List<CategoryDto>();
+            var crumbs = ancestry.Select(c => c.Name ?? throw new InvalidOperationException("Category name cannot be null"))
                                  .Append(p.CategoryName!)
                                  .ToList();
             _categoryPaths[p.Id] = string.Join(" > ", crumbs);
