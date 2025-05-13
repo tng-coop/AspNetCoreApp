@@ -1,11 +1,8 @@
 @page "/{Slug}"
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Routing
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @inject ICategoryService CategoryService
 @inject IPublicationService PublicationService
-
 
 @if (category == null)
 {
@@ -19,16 +16,16 @@ else
     {
         <h4>Sub-categories</h4>
         <ul class="list-inline">
-        @foreach (var sub in subcats)
-        {
-            <li class="list-inline-item">
-                <NavLink class="btn btn-outline-primary btn-sm"
-                         href="@($"/{sub.Slug}")"
-                         Match="NavLinkMatch.Prefix">
-                    @sub.Name
-                </NavLink>
-            </li>
-        }
+            @foreach (var sub in subcats)
+            {
+                <li class="list-inline-item">
+                    <NavLink class="btn btn-outline-primary btn-sm"
+                             href="@($"/{sub.Slug}")"
+                             Match="NavLinkMatch.Prefix">
+                        @sub.Name
+                    </NavLink>
+                </li>
+            }
         </ul>
     }
 
@@ -39,18 +36,39 @@ else
     }
     else
     {
-        <ul class="list-unstyled">
-        @foreach (var p in posts)
+        <!-- 1) Full display of the most‐recent -->
+        @if (posts.Count > 0)
         {
-            <li class="mb-2">
-                <NavLink href="@($"/publications/{p.Id}")"
-                         Match="NavLinkMatch.Prefix">
-                    <strong>@p.Title</strong>
-                </NavLink>
-                <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
-            </li>
+            var firstPost = posts[0];
+            <article>
+                <h5>
+                    <NavLink href="@($"/publications/{firstPost.Id}")" Match="NavLinkMatch.Prefix">
+                        @firstPost.Title
+                    </NavLink>
+                </h5>
+                <small class="text-muted">@firstPost.PublishedAt?.ToString("f")</small>
+                <div class="mt-3 mce-content-body">
+                    @((MarkupString)firstPost.Html)
+                </div>
+            </article>
         }
-        </ul>
+
+        <!-- 2) List the rest by title/date -->
+        @if (posts.Count > 1)
+        {
+            <ul class="list-unstyled">
+                @for (int i = 1; i < posts.Count; i++)
+                {
+                    var p = posts[i];
+                    <li class="mb-2">
+                        <NavLink href="@($"/publications/{p.Id}")" Match="NavLinkMatch.Prefix">
+                            <strong>@p.Title</strong>
+                        </NavLink>
+                        <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
+                    </li>
+                }
+            </ul>
+        }
     }
 }
 
@@ -72,9 +90,9 @@ else
             .Where(c => c.ParentCategoryId == category.Id)
             .ToList();
 
-        var allPosts = await PublicationService.ListAsync();
-        posts = allPosts
+        posts = (await PublicationService.ListAsync())
             .Where(p => p.CategoryId == category.Id && p.Status == "Published")
+            .OrderByDescending(p => p.PublishedAt)
             .ToList();
     }
 }
