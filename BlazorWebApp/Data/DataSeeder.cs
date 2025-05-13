@@ -1,9 +1,10 @@
-// Data/DataSeeder.cs
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using BlazorWebApp.Data.Seeders;
 
 namespace BlazorWebApp.Data
@@ -12,36 +13,43 @@ namespace BlazorWebApp.Data
     {
         public static async Task SeedAsync(WebApplication app)
         {
-            // 1) Spin up a scope for resolving services
+            // 1) Create a scope for resolving services
             using var scope = app.Services.CreateScope();
-            var sp = scope.ServiceProvider;
+            var sp      = scope.ServiceProvider;
 
-            // 2) Grab the factory + identity managers + config
+            // 2) Resolve dependencies
             var factory = sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
             var roleMgr = sp.GetRequiredService<RoleManager<IdentityRole>>();
             var userMgr = sp.GetRequiredService<UserManager<ApplicationUser>>();
-            var config = sp.GetRequiredService<IConfiguration>();
+            var config  = sp.GetRequiredService<IConfiguration>();
 
-            // 3) Migrate with a fresh context
+            // 3) Migrate database
             await using (var db = factory.CreateDbContext())
+            {
                 await db.Database.MigrateAsync();
+            }
 
             // 4) Seed Identity (roles + users)
             await RolesSeeder.SeedAsync(roleMgr);
             await UsersSeeder.SeedAsync(userMgr, config);
 
-            // 5) Seed each area on its own fresh context
-            await using (var db = factory.CreateDbContext())
-                await ContentTypeSeeder.SeedAsync(db);
+            // 5) Seed application data
+            await RunSeederAsync(factory, ContentTypeSeeder.SeedAsync);
+            await RunSeederAsync(factory, CategorySeeder.SeedAsync);
+            await RunSeederAsync(factory, PublicationSeeder.SeedAsync);
+            await RunSeederAsync(factory, MenuItemSeeder.SeedAsync);
+            await RunSeederAsync(factory, ImageSeeder.SeedAsync);
+        }
 
-            await using (var db = factory.CreateDbContext())
-                await CategorySeeder.SeedAsync(db);
-
-            await using (var db = factory.CreateDbContext())
-                await PublicationSeeder.SeedAsync(db);
-
-            await using (var db = factory.CreateDbContext())
-                await MenuItemSeeder.SeedAsync(db);
+        /// <summary>
+        /// Helper to create a fresh DbContext, run the seeder, then dispose.
+        /// </summary>
+        private static async Task RunSeederAsync(
+            IDbContextFactory<ApplicationDbContext> factory,
+            Func<ApplicationDbContext, Task> seeder)
+        {
+            await using var db = factory.CreateDbContext();
+            await seeder(db);
         }
     }
 }

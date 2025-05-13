@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using BlazorWebApp.Data;
 
 namespace BlazorWebApp.Data.Seeders
@@ -9,43 +11,57 @@ namespace BlazorWebApp.Data.Seeders
     {
         public static async Task SeedAsync(ApplicationDbContext db)
         {
-            if (db.Publications.Any()) return;
+            if (await db.Publications.AnyAsync())
+                return;
 
             // grab your category IDs by slug
-            var cats = db.Categories.ToDictionary(c => c.Slug, c => c.Id);
+            var cats = await db.Categories.ToDictionaryAsync(c => c.Slug, c => c.Id);
 
+            // find the first fractal filename
+            var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "fractals");
+            var firstFractal = Directory.GetFiles(imagesFolder, "fractal_*.png")
+                                       .Select(Path.GetFileName)
+                                       .FirstOrDefault();
+
+            // helper to wrap HTML with an <img>
+            string WrapWithImage(string bodyHtml) =>
+                firstFractal is null
+                    ? bodyHtml
+                    : $"<img src=\"/images/fractals/{firstFractal}\" alt=\"Fractal\" " +
+                      "style=\"max-width:100%;margin-bottom:1rem;\" />" + bodyHtml;
+
+            var now = DateTimeOffset.UtcNow;
             var pubs = new[]
             {
                 new Publication {
                     Id = Guid.NewGuid(),
                     Title = "Getting Started with Our CMS",
-                    Html  = "<h1>Welcome</h1><p>This is your first post. Edit me!</p>",
+                    Html  = WrapWithImage("<h1>Welcome</h1><p>This is your first post. Edit me!</p>"),
                     Status = PublicationStatus.Published,
-                    CreatedAt   = DateTimeOffset.UtcNow.AddDays(-7),
-                    PublishedAt = DateTimeOffset.UtcNow.AddDays(-6)
+                    CreatedAt   = now.AddDays(-7),
+                    PublishedAt = now.AddDays(-6)
                 },
                 new Publication {
                     Id = Guid.NewGuid(),
                     Title = "Upcoming Outreach Event",
-                    Html  = "<h2>Join us</h2><p>Details coming soon…</p>",
+                    Html  = WrapWithImage("<h2>Join us</h2><p>Details coming soon…</p>"),
                     Status      = PublicationStatus.Scheduled,
-                    CreatedAt   = DateTimeOffset.UtcNow,
-                    PublishedAt = DateTimeOffset.UtcNow.AddDays(3)
+                    CreatedAt   = now,
+                    PublishedAt = now.AddDays(3)
                 },
                 new Publication {
                     Id = Guid.NewGuid(),
                     Title = "Draft Post Example",
-                    Html  = "<p>This one is still a draft.</p>",
+                    Html  = WrapWithImage("<p>This one is still a draft.</p>"),
                     Status    = PublicationStatus.Draft,
-                    CreatedAt = DateTimeOffset.UtcNow
+                    CreatedAt = now
                 }
             };
 
             db.Publications.AddRange(pubs);
             await db.SaveChangesAsync();
 
-            // attach each publication to a category
-            // e.g. first two go under "about", last one no category
+            // attach each publication to the "about" category
             foreach (var p in pubs)
             {
                 if (cats.TryGetValue("about", out var catId))

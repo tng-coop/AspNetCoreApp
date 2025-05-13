@@ -1,6 +1,4 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorWebApp.Data.Seeders
 {
@@ -8,7 +6,9 @@ namespace BlazorWebApp.Data.Seeders
     {
         public static async Task SeedAsync(ApplicationDbContext db)
         {
-            if (db.MenuItems.Any()) return;
+            // ← now async
+            if (await db.MenuItems.AnyAsync()) 
+                return;
 
             var items = new[]
             {
