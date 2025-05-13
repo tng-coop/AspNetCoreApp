@@ -67,6 +67,16 @@ namespace BlazorWebApp.Services
             await _db.SaveChangesAsync();
         }
 
+        public async Task UnpublishAsync(Guid id)
+        {
+            var p = await _db.Publications.FindAsync(id)
+                    ?? throw new KeyNotFoundException();
+            p.Status = PublicationStatus.Draft;
+            p.PublishedAt = null;
+            await _db.SaveChangesAsync();
+        }
+
+
         private static PublicationReadDto ToDto(Publication p) => new()
         {
             Id = p.Id,

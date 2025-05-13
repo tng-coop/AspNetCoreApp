@@ -7,5 +7,6 @@ namespace BlazorWebApp.Services
     public interface ICategoryService
     {
         Task<List<CategoryDto>> ListAsync();
+        Task<List<CategoryDto>> GetAncestryAsync(Guid categoryId);
     }
 }

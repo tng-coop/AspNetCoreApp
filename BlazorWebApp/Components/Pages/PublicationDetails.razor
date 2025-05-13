@@ -1,7 +1,9 @@
 @page "/publications/{Id:guid}"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IPublicationService PublicationService
+@inject ICategoryService CategoryService
 
 @if (pub == null)
 {
@@ -10,6 +12,14 @@
 else
 {
     <h1>@pub.Title</h1>
+
+    @if (!string.IsNullOrEmpty(fullCategoryPath))
+    {
+      <p class="text-muted mb-4">
+        <small>Category: @fullCategoryPath</small>
+      </p>
+    }
+
     <!-- Wrapped in Quill’s classes so table borders appear -->
     <article class="ql-snow ql-editor">
         @((MarkupString)pub.Html)
@@ -19,14 +29,42 @@ else
     {
         <p><small>Published: @pub.PublishedAt.Value:f</small></p>
     }
+
+    <!-- Admin-only: Set as Draft -->
+    <AuthorizeView Roles="Admin">
+        <div class="mt-3">
+            <button class="btn btn-secondary" @onclick="SetAsDraft">Set as Draft</button>
+        </div>
+    </AuthorizeView>
 }
 
 @code {
     [Parameter] public Guid Id { get; set; }
     private PublicationReadDto? pub;
+    private string fullCategoryPath = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
         pub = await PublicationService.GetAsync(Id);
+
+        if (pub?.CategoryId != null)
+        {
+            var ancestry = await CategoryService.GetAncestryAsync(pub.CategoryId.Value);
+            var crumbs = ancestry
+                          .Select(c => c.Name)
+                          .Append(pub.CategoryName!)
+                          .ToList();
+            fullCategoryPath = string.Join(" > ", crumbs);
+        }
     }
+
+    private async Task SetAsDraft()
+    {
+        if (pub == null) return;
+        await PublicationService.UnpublishAsync(pub.Id);
+        // refresh the DTO so UI shows correct dates/status
+        pub = await PublicationService.GetAsync(pub.Id);
+        StateHasChanged();
+    }
+
 }

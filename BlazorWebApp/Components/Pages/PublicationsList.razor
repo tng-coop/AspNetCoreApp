@@ -2,6 +2,7 @@
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @inject IPublicationService PublicationService
+@inject ICategoryService    CategoryService
 
 <AuthorizeView>
   <Authorized>
@@ -9,38 +10,74 @@
       👋 Hello, <strong>@context.User.Identity!.Name</strong>!
     </p>
   </Authorized>
-    <NotAuthorized>
-        <p class="mb-4 text-warning">You’re not logged in.</p>
-    </NotAuthorized>
+  <NotAuthorized>
+    <p class="mb-4 text-warning">You’re not logged in.</p>
+  </NotAuthorized>
 </AuthorizeView>
 
 <h3>Drafts</h3>
 <ul class="list-unstyled">
-    @foreach (var p in pubs.Where(p => p.Status == "Draft"))
+    @foreach (var p in draftPubs)
     {
         <li>
             <a href="/editor/@p.Id"><strong>@p.Title</strong></a>
             <small class="text-muted ms-2">@p.CreatedAt:g</small>
+            @if (!string.IsNullOrEmpty(GetCategoryPath(p)))
+            {
+                <small class="text-muted ms-2">(@GetCategoryPath(p))</small>
+            }
         </li>
     }
 </ul>
 
 <h3>Published</h3>
 <ul class="list-unstyled">
-    @foreach (var p in pubs.Where(p => p.Status == "Published"))
+    @foreach (var p in publishedPubs)
     {
         <li>
             <a href="/publications/@p.Id"><strong>@p.Title</strong></a>
             <small class="text-muted ms-2">@p.PublishedAt!.Value:g</small>
+            @if (!string.IsNullOrEmpty(GetCategoryPath(p)))
+            {
+                <small class="text-muted ms-2">(@GetCategoryPath(p))</small>
+            }
         </li>
     }
 </ul>
 
 @code {
-    private List<PublicationReadDto> pubs = new();
+    private List<PublicationReadDto> draftPubs = new();
+    private List<PublicationReadDto> publishedPubs = new();
+    private Dictionary<Guid, string> _categoryPaths = new();
 
     protected override async Task OnInitializedAsync()
     {
-        pubs = await PublicationService.ListAsync();
+        var pubs = await PublicationService.ListAsync();
+
+        // Build full category paths
+        foreach (var p in pubs.Where(x => x.CategoryId.HasValue))
+        {
+            var ancestry = await CategoryService.GetAncestryAsync(p.CategoryId.Value);
+            var crumbs = ancestry.Select(c => c.Name)
+                                 .Append(p.CategoryName!)
+                                 .ToList();
+            _categoryPaths[p.Id] = string.Join(" > ", crumbs);
+        }
+
+        // Sort and split by status
+        draftPubs = pubs
+            .Where(p => p.Status == "Draft")
+            .OrderBy(p => GetCategoryPath(p))
+            .ThenBy(p => p.CreatedAt)
+            .ToList();
+
+        publishedPubs = pubs
+            .Where(p => p.Status == "Published")
+            .OrderBy(p => GetCategoryPath(p))
+            .ThenByDescending(p => p.PublishedAt)
+            .ToList();
     }
+
+    private string GetCategoryPath(PublicationReadDto p)
+        => _categoryPaths.TryGetValue(p.Id, out var path) ? path : string.Empty;
 }

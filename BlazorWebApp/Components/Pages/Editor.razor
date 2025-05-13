@@ -29,9 +29,9 @@
     <label class="form-label">Category</label>
     <InputSelect class="form-select" @bind-Value="dto.CategoryId">
       <option value="">-- None --</option>
-      @foreach (var cat in categories)
+      @foreach (var opt in categoryOptions)
       {
-        <option value="@cat.Id">@cat.Name</option>
+        <option value="@opt.Id">@opt.DisplayName</option>
       }
     </InputSelect>
     <ValidationMessage For="@(() => dto.CategoryId)" />
@@ -71,6 +71,8 @@
 
   private PublicationWriteDto dto = new();
   private List<CategoryDto> categories = new();
+  // Each tuple holds the category Id and its full “Cat1 > Cat2 > Cat3” label
+  private List<(Guid Id, string DisplayName)> categoryOptions = new();
   private EditContext editContext = default!;  // satisfy nullable analysis
   private bool loadedExisting;
 
@@ -79,55 +81,51 @@
     !string.IsNullOrWhiteSpace(dto.Title) &&
     !string.IsNullOrWhiteSpace(dto.Html);
 
-  // TinyMCE configuration dictionary
-// TinyMCE configuration dictionary—with table support enabled
-private Dictionary<string, object> editorConfig = new()
-{
-    { "height", 300 },
-    // enable the menubar (so Insert → Table shows up)
-    { "menubar", "file edit view insert format tools table help" },
-
-    // include the table plugin
-    { "plugins", new[]
-        {
-            "link",
-            "lists",
-            "code",
-            "image",
-            "paste",
-            "table"
-        }
-    },
-
-    // add the table button to the toolbar
-    { "toolbar",  
-        "undo redo | bold italic underline | alignleft aligncenter | " +
-        "bullist numlist | link image | table | code"
-    },
-
-    // optional: floating toolbar for row/col operations
-    { "table_toolbar",
-        "tableprops tabledelete | tableinsertrowbefore tableinsertrowafter | " +
-        "tableinsertcolbefore tableinsertcolafter"
-    },
-
-    // your existing upload & branding settings
-    { "images_upload_url", "/api/images/upload" },
-    { "automatic_uploads", true },
-    { "paste_data_images", false },
-    { "promotion", false },
-    { "branding", false }
-};
+  // TinyMCE configuration dictionary—with table support enabled
+  private Dictionary<string, object> editorConfig = new()
+  {
+      { "height", 300 },
+      { "menubar", "file edit view insert format tools table help" },
+      { "plugins", new[] { "link", "lists", "code", "image", "paste", "table" } },
+      { "toolbar",
+          "undo redo | bold italic underline | alignleft aligncenter | " +
+          "bullist numlist | link image | table | code"
+      },
+      { "table_toolbar",
+          "tableprops tabledelete | tableinsertrowbefore tableinsertrowafter | " +
+          "tableinsertcolbefore tableinsertcolafter"
+      },
+      { "images_upload_url", "/api/images/upload" },
+      { "automatic_uploads", true },
+      { "paste_data_images", false },
+      { "promotion", false },
+      { "branding", false }
+  };
 
   protected override async Task OnInitializedAsync()
   {
-    // Initialize EditContext
+    // Initialize form context
     editContext = new EditContext(dto);
 
-    // Load categories
+    // 1) Load flat list of categories
     categories = await CategoryService.ListAsync();
 
-    // If editing an existing publication, load its data
+    // 2) Build the display names with full paths
+    categoryOptions.Clear();
+    foreach (var cat in categories)
+    {
+      var ancestors = await CategoryService.GetAncestryAsync(cat.Id);
+      var fullPath = string.Join(" > ",
+                        ancestors.Select(a => a.Name)
+                                 .Append(cat.Name));
+      categoryOptions.Add((cat.Id, fullPath));
+    }
+    // 3) Sort by the DisplayName (i.e. fullPath)
+    categoryOptions.Sort((a, b) =>
+      string.Compare(a.DisplayName, b.DisplayName, StringComparison.CurrentCulture));
+
+
+    // 3) If editing existing, prefill dto
     if (Id.HasValue)
     {
       var existing = await PublicationService.GetAsync(Id.Value);
@@ -143,7 +141,6 @@ private Dictionary<string, object> editorConfig = new()
 
   private async Task HandleSubmit()
   {
-    // At this point the form has already been validated for data annotations
     if (loadedExisting && Id.HasValue)
     {
       await PublicationService.UpdateAsync(Id.Value, dto);
@@ -159,9 +156,7 @@ private Dictionary<string, object> editorConfig = new()
 
   private async Task PublishAsync()
   {
-    // Ensure we save first (form is valid)
     await HandleSubmit();
-
     if (loadedExisting && Id.HasValue)
     {
       await PublicationService.PublishAsync(Id.Value);

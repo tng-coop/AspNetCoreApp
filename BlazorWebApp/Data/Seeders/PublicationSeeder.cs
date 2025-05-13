@@ -50,6 +50,11 @@ namespace BlazorWebApp.Data.Seeders
             var pubs = rawPubs.Select((entry, i) =>
             {
                 var file = fractalFiles.Count > i ? fractalFiles[i] : fractalFiles[0];
+                if (string.IsNullOrEmpty(file))
+                {
+                    throw new InvalidOperationException("Fractal file name cannot be null or empty.");
+                }
+
                 var pub = new Publication
                 {
                     Id = Guid.NewGuid(),

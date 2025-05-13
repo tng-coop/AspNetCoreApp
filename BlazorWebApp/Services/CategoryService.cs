@@ -16,7 +16,8 @@ namespace BlazorWebApp.Services
         {
             return await _db.Categories
                 .OrderBy(c => c.Name)
-                .Select(c => new CategoryDto {
+                .Select(c => new CategoryDto
+                {
                     Id = c.Id,
                     Name = c.Name,
                     ParentCategoryId = c.ParentCategoryId,
@@ -25,5 +26,41 @@ namespace BlazorWebApp.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<List<CategoryDto>> GetAncestryAsync(Guid categoryId)
+        {
+            // 1) get the flat list of all categories
+            var all = await _db.Categories
+                .OrderBy(c => c.Name)
+                .Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    ParentCategoryId = c.ParentCategoryId,
+                    Slug = c.Slug
+                })
+                .ToListAsync();
+
+            // 2) build a lookup for fast parent-lookup
+            var lookup = all.ToDictionary(c => c.Id);
+
+            // 3) walk upward from the target category
+            var result = new List<CategoryDto>();
+            if (!lookup.TryGetValue(categoryId, out var current))
+                return result;
+
+            // collect parents until root
+            while (current.ParentCategoryId.HasValue)
+            {
+                var parent = lookup[current.ParentCategoryId.Value];
+                result.Add(parent);
+                current = parent;
+            }
+
+            // now result = [ immediateParent, grandParent, … ], so reverse
+            result.Reverse();
+            return result;
+        }
+
     }
 }
