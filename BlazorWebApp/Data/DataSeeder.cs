@@ -14,13 +14,13 @@ namespace BlazorWebApp.Data
         {
             // 1) Spin up a scope for resolving services
             using var scope = app.Services.CreateScope();
-            var sp       = scope.ServiceProvider;
+            var sp = scope.ServiceProvider;
 
             // 2) Grab the factory + identity managers + config
-            var factory  = sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
-            var roleMgr  = sp.GetRequiredService<RoleManager<IdentityRole>>();
-            var userMgr  = sp.GetRequiredService<UserManager<ApplicationUser>>();
-            var config   = sp.GetRequiredService<IConfiguration>();
+            var factory = sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+            var roleMgr = sp.GetRequiredService<RoleManager<IdentityRole>>();
+            var userMgr = sp.GetRequiredService<UserManager<ApplicationUser>>();
+            var config = sp.GetRequiredService<IConfiguration>();
 
             // 3) Migrate with a fresh context
             await using (var db = factory.CreateDbContext())
@@ -36,6 +36,9 @@ namespace BlazorWebApp.Data
 
             await using (var db = factory.CreateDbContext())
                 await CategorySeeder.SeedAsync(db);
+
+            await using (var db = factory.CreateDbContext())
+                await PublicationSeeder.SeedAsync(db);
 
             await using (var db = factory.CreateDbContext())
                 await MenuItemSeeder.SeedAsync(db);

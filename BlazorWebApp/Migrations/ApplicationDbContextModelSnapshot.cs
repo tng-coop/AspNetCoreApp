@@ -236,14 +236,9 @@ namespace BlazorWebApp.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("PublicationId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("PublicationId", "CategoryId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("PublicationId1");
 
                     b.ToTable("PublicationCategories");
                 });
@@ -408,14 +403,10 @@ namespace BlazorWebApp.Migrations
                         .IsRequired();
 
                     b.HasOne("BlazorWebApp.Data.Publication", "Publication")
-                        .WithMany()
+                        .WithMany("PublicationCategories")
                         .HasForeignKey("PublicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("BlazorWebApp.Data.Publication", null)
-                        .WithMany("PublicationCategories")
-                        .HasForeignKey("PublicationId1");
 
                     b.Navigation("Category");
 

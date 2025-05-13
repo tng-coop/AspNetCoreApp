@@ -36,7 +36,7 @@ namespace BlazorWebApp.Data
             builder.Entity<PublicationCategory>(e => { 
                 e.HasKey(pc => new { pc.PublicationId, pc.CategoryId }); 
                 e.HasOne(pc => pc.Publication) 
-                  .WithMany() 
+                  .WithMany(p => p.PublicationCategories) 
                   .HasForeignKey(pc => pc.PublicationId); 
                 e.HasOne(pc => pc.Category) 
                   .WithMany(c => c.PublicationCategories) 
