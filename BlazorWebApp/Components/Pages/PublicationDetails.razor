@@ -1,8 +1,9 @@
 @page "/publications/{Id:guid}"
-@using TinyMCE.Blazor
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Authorization
+
 @inject IPublicationService PublicationService
 @inject ICategoryService CategoryService
 
@@ -21,12 +22,10 @@ else
         </p>
     }
 
-    <!-- TinyMCE in read-only mode -->
-    <TinyMCE.Blazor.Editor
-        ApiKey="no-api-key"
-        Value="@pub.Html"
-        Readonly="true"
-        Conf="@readOnlyConfig" />
+    <!-- direct HTML render, styled by TinyMCE's content CSS -->
+    <div class="mce-content-body">
+        @((MarkupString)pub.Html)
+    </div>
 
     <p><small>Created: @pub.CreatedAt:f</small></p>
 
@@ -50,15 +49,6 @@ else
     private PublicationReadDto? pub;
     private string fullCategoryPath = string.Empty;
 
-    // pull the read-only Editor config into a field so Razor parsing isn't confused by quotes
-    private readonly Dictionary<string, object> readOnlyConfig = new()
-    {
-        ["menubar"]   = false,
-        ["toolbar"]   = false,
-        ["statusbar"] = false,
-        ["height"]    = 400
-    };
-
     protected override async Task OnParametersSetAsync()
     {
         pub = await PublicationService.GetAsync(Id);
@@ -79,8 +69,6 @@ else
         if (pub == null) return;
 
         await PublicationService.UnpublishAsync(pub.Id);
-
-        // refresh so dates/status update
         pub = await PublicationService.GetAsync(pub.Id);
         StateHasChanged();
     }
