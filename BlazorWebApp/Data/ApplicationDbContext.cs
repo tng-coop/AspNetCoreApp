@@ -18,6 +18,7 @@ namespace BlazorWebApp.Data
         public DbSet<ImageAsset> Images { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<PublicationCategory> PublicationCategories { get; set; } = null!;
+        public DbSet<PublicationRevision> PublicationRevisions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,6 +35,15 @@ namespace BlazorWebApp.Data
             
             // --- PublicationCategory join table configuration --- 
             builder.Entity<PublicationCategory>(e => { 
+            // PublicationRevision configuration
+            builder.Entity<PublicationRevision>(e =>{
+                e.HasKey(r => r.Id);
+                e.Property(r => r.CreatedAt).HasDefaultValueSql("NOW() AT TIME ZONE UTC");
+                e.HasOne(r => r.Publication)
+                 .WithMany()
+                 .HasForeignKey(r => r.PublicationId)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
                 e.HasKey(pc => new { pc.PublicationId, pc.CategoryId }); 
                 e.HasOne(pc => pc.Publication) 
                   .WithMany(p => p.PublicationCategories) 

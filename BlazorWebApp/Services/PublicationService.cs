@@ -25,13 +25,12 @@ namespace BlazorWebApp.Services
             _db.Publications.Add(pub);
             await _db.SaveChangesAsync();
 
-            // assign category if provided
             if (dto.CategoryId.HasValue)
             {
-                _db.Set<PublicationCategory>().Add(new PublicationCategory
+                _db.PublicationCategories.Add(new PublicationCategory
                 {
                     PublicationId = pub.Id,
-                    CategoryId = dto.CategoryId.Value
+                    CategoryId    = dto.CategoryId.Value
                 });
                 await _db.SaveChangesAsync();
             }
@@ -42,8 +41,7 @@ namespace BlazorWebApp.Services
         public async Task<List<PublicationReadDto>> ListAsync()
         {
             return await _db.Publications
-                .Include(p => p.PublicationCategories)
-                    .ThenInclude(pc => pc.Category)
+                .Include(p => p.PublicationCategories).ThenInclude(pc => pc.Category)
                 .OrderByDescending(p => p.CreatedAt)
                 .Select(p => ToDto(p))
                 .ToListAsync();
@@ -52,17 +50,16 @@ namespace BlazorWebApp.Services
         public async Task<PublicationReadDto?> GetAsync(Guid id)
         {
             var p = await _db.Publications
-                .Include(pu => pu.PublicationCategories)
-                    .ThenInclude(pc => pc.Category)
+                .Include(pu => pu.PublicationCategories).ThenInclude(pc => pc.Category)
                 .FirstOrDefaultAsync(pu => pu.Id == id);
-            return p is null ? null : ToDto(p);
+            return p == null ? null : ToDto(p);
         }
 
         public async Task PublishAsync(Guid id)
         {
-            var p = await _db.Publications.FindAsync(id);
-            if (p == null) throw new KeyNotFoundException();
-            p.Status = PublicationStatus.Published;
+            var p = await _db.Publications.FindAsync(id)
+                    ?? throw new KeyNotFoundException();
+            p.Status      = PublicationStatus.Published;
             p.PublishedAt = DateTimeOffset.UtcNow;
             await _db.SaveChangesAsync();
         }
@@ -71,47 +68,101 @@ namespace BlazorWebApp.Services
         {
             var p = await _db.Publications.FindAsync(id)
                     ?? throw new KeyNotFoundException();
-            p.Status = PublicationStatus.Draft;
+            p.Status      = PublicationStatus.Draft;
             p.PublishedAt = null;
             await _db.SaveChangesAsync();
         }
 
-
-        private static PublicationReadDto ToDto(Publication p) => new()
-        {
-            Id = p.Id,
-            Title = p.Title,
-            Html = p.Html,
-            Status = p.Status.ToString(),
-            CreatedAt = p.CreatedAt,
-            PublishedAt = p.PublishedAt,
-            CategoryId = p.PublicationCategories.FirstOrDefault()?.CategoryId,
-            CategoryName = p.PublicationCategories.FirstOrDefault()?.Category.Name
-        };
-
-        // ← NEW: allow updating an existing draft
         public async Task UpdateAsync(Guid id, PublicationWriteDto dto)
         {
-            var pub = await _db.Publications.FindAsync(id);
-            if (pub == null) throw new KeyNotFoundException($"Publication {id} not found");
+            var pub = await _db.Publications.FindAsync(id)
+                      ?? throw new KeyNotFoundException($"Publication {id} not found");
             pub.Title = dto.Title;
-            pub.Html = dto.Html;
+            pub.Html  = dto.Html;
             await _db.SaveChangesAsync();
 
-            // update category mapping
-            var existing = _db.Set<PublicationCategory>()
+            var existing = _db.PublicationCategories
                               .Where(pc => pc.PublicationId == id)
                               .ToList();
-            _db.Set<PublicationCategory>().RemoveRange(existing);
+            _db.PublicationCategories.RemoveRange(existing);
             if (dto.CategoryId.HasValue)
             {
-                _db.Set<PublicationCategory>().Add(new PublicationCategory
+                _db.PublicationCategories.Add(new PublicationCategory
                 {
                     PublicationId = id,
-                    CategoryId = dto.CategoryId.Value
+                    CategoryId    = dto.CategoryId.Value
                 });
             }
             await _db.SaveChangesAsync();
         }
+
+        // ——— Revision history ———
+
+        public async Task<List<RevisionDto>> ListRevisionsAsync(Guid publicationId)
+        {
+            return await _db.PublicationRevisions
+                .Where(r => r.PublicationId == publicationId)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new RevisionDto
+                {
+                    Id        = r.Id,
+                    CreatedAt = r.CreatedAt,
+                    Title     = r.Title
+                })
+                .ToListAsync();
+        }
+
+        public async Task<PublicationReadDto> RestoreRevisionAsync(Guid revisionId)
+        {
+            var rev = await _db.PublicationRevisions.FindAsync(revisionId)
+                      ?? throw new KeyNotFoundException($"Revision {revisionId} not found");
+
+            var pub = await _db.Publications
+                .Include(p => p.PublicationCategories).ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(p => p.Id == rev.PublicationId)
+                ?? throw new KeyNotFoundException($"Publication {rev.PublicationId} not found");
+
+            // snapshot current state
+            _db.PublicationRevisions.Add(new PublicationRevision
+            {
+                Id            = Guid.NewGuid(),
+                PublicationId = pub.Id,
+                Title         = pub.Title,
+                Html          = pub.Html,
+                CategoryId    = pub.PublicationCategories.FirstOrDefault()?.CategoryId,
+                CreatedAt     = DateTimeOffset.UtcNow
+            });
+
+            // apply revision
+            pub.Title = rev.Title;
+            pub.Html  = rev.Html;
+
+            // reassign category
+            var existing = _db.PublicationCategories.Where(pc => pc.PublicationId == pub.Id);
+            _db.PublicationCategories.RemoveRange(existing);
+            if (rev.CategoryId.HasValue)
+            {
+                _db.PublicationCategories.Add(new PublicationCategory
+                {
+                    PublicationId = pub.Id,
+                    CategoryId    = rev.CategoryId.Value
+                });
+            }
+
+            await _db.SaveChangesAsync();
+            return ToDto(pub);
+        }
+
+        private static PublicationReadDto ToDto(Publication p) => new()
+        {
+            Id           = p.Id,
+            Title        = p.Title,
+            Html         = p.Html,
+            Status       = p.Status.ToString(),
+            CreatedAt    = p.CreatedAt,
+            PublishedAt  = p.PublishedAt,
+            CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
+            CategoryName = p.PublicationCategories.FirstOrDefault()?.Category.Name
+        };
     }
 }

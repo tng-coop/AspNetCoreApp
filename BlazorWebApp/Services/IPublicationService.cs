@@ -13,5 +13,9 @@ namespace BlazorWebApp.Services
         Task PublishAsync(Guid id);
         Task UpdateAsync(Guid id, PublicationWriteDto dto);
         Task UnpublishAsync(Guid id);
+
+        // Revision history
+        Task<List<RevisionDto>> ListRevisionsAsync(Guid publicationId);
+        Task<PublicationReadDto> RestoreRevisionAsync(Guid revisionId);
     }
 }
