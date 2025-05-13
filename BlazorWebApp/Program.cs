@@ -1,5 +1,6 @@
 using BlazorWebApp.Extensions;
 using BlazorWebApp.Data;
+using BlazorWebApp.Services;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,10 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApplicationServices()
     .AddAuthenticationAndAuthorization(builder.Configuration)
-    .AddPersistence(builder.Configuration)
-    .AddLocalizationServices();
-    builder.Services.AddScoped<BlazorWebApp.Services.ITreeMenuService, BlazorWebApp.Services.TreeMenuService>();
-    builder.Services.AddMudServices();
+    .AddPersistence(builder.Configuration)          // our factory-only + shim
+    .AddLocalizationServices()
+    .AddScoped<ITreeMenuService, TreeMenuService>() // page-menu service
+    .AddMudServices();                               // MudBlazor
 
 var app = builder.Build();
 
