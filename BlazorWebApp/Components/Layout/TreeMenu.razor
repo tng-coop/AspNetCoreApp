@@ -1,14 +1,14 @@
+@using System.Text.Json
 @using BlazorWebApp.Models
 @using Microsoft.AspNetCore.Components
+@inject IJSRuntime JS
 
 <ul class="nav flex-column tree-menu">
   @foreach (var item in Items)
   {
-    <!-- no outer padding; compactness comes from NavLink padding -->
     <li class="nav-item py-0 px-0" @key="item.Slug">
       <div class="d-flex align-items-center">
 
-        @* Toggle button: SVG chevron right for collapsed, down for expanded *@
         @if (item.Children?.Any() == true)
         {
           <button type="button"
@@ -18,43 +18,33 @@
                   aria-label="Toggle">
             @if (IsExpanded(item.Slug))
             {
-              <!-- white chevron-down -->
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="1em" height="1em"
-                   fill="white"
-                   class="bi bi-chevron-down"
-                   viewBox="0 0 16 16">
+              <!-- chevron-down -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                   fill="white" class="bi bi-chevron-down" viewBox="0 0 16 16">
                 <path fill-rule="evenodd"
                       d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
               </svg>
             }
             else
             {
-              <!-- white chevron-right -->
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="1em" height="1em"
-                   fill="white"
-                   class="bi bi-chevron-right"
-                   viewBox="0 0 16 16">
+              <!-- chevron-right -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                   fill="white" class="bi bi-chevron-right" viewBox="0 0 16 16">
                 <path fill-rule="evenodd"
-                      d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 1 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                      d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708
+                         l-6 6a.5.5 0 1 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
               </svg>
             }
           </button>
         }
-        else
-        {
-          <!-- placeholder to align when no children -->
-        }
 
-        @* Inner padding gives desired compact spacing *@
-        <NavLink     class="nav-link flex-grow-1 px-0"
-    style="height:auto; line-height:2;"
+        <NavLink class="nav-link flex-grow-1 px-0"
+                 style="height:auto; line-height:2;"
                  href="@($"/{item.Slug}")"
                  Match="NavLinkMatch.Prefix">
           @if (!string.IsNullOrEmpty(item.IconCss))
           {
-            <i class="bi bi-@item.IconCss me-1" aria-hidden="true"></i>
+            <i class="bi bi-@item.IconCss me-1"></i>
           }
           @item.Title
         </NavLink>
@@ -73,12 +63,32 @@
 @code {
   [Parameter] public List<MenuItemDto> Items { get; set; } = new();
   private HashSet<string> _expanded = new();
+  private const string StorageKey = "treeMenuExpanded";
 
-  private void OnChevronClick(string slug) => Toggle(slug);
-  private void Toggle(string slug)
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var json = await JS.InvokeAsync<string>("localStorage.getItem", StorageKey);
+      if (!string.IsNullOrEmpty(json))
+      {
+        var saved = JsonSerializer.Deserialize<List<string>>(json)!;
+        _expanded = new HashSet<string>(saved);
+        StateHasChanged();
+      }
+    }
+  }
+
+  private Task OnChevronClick(string slug) => ToggleAsync(slug);
+
+  private async Task ToggleAsync(string slug)
   {
     if (_expanded.Contains(slug)) _expanded.Remove(slug);
     else                          _expanded.Add(slug);
+
+    var toStore = JsonSerializer.Serialize(_expanded.ToList());
+    await JS.InvokeVoidAsync("localStorage.setItem", StorageKey, toStore);
   }
+
   private bool IsExpanded(string slug) => _expanded.Contains(slug);
 }
