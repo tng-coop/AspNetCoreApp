@@ -2,6 +2,8 @@ using BlazorWebApp.Extensions;
 using BlazorWebApp.Data;
 using BlazorWebApp.Services;
 using MudBlazor.Services;
+using Microsoft.AspNetCore.Rewrite;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,17 @@ builder.Services
     .AddMudServices();                               // MudBlazor
 
 var app = builder.Build();
+
+// —— strip trailing slash ONLY under /articles/** —————————
+var rewriteOptions = new RewriteOptions()
+    // matches:  /articles/{anything}/   (but not /foo/...)
+    .AddRedirect(
+        @"^articles/(.+)/$",           // incoming-path regex (no leading slash)
+        "/articles/$1",                // target
+        (int)HttpStatusCode.MovedPermanently
+    );
+
+app.UseRewriter(rewriteOptions);
 
 // Configure middleware and endpoints via extension methods
 app
