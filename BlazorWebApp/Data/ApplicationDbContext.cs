@@ -13,8 +13,8 @@ namespace BlazorWebApp.Data
         public DbSet<ContentType> ContentTypes { get; set; } = null!;
         public DbSet<MenuItem>    MenuItems     { get; set; } = null!;
         public DbSet<Publication> Publications   { get; set; } = null!;
-        public DbSet<ImageAsset> Images         { get; set; } = null!;
-        public DbSet<Category>   Categories     { get; set; } = null!;
+        public DbSet<ImageAsset>  Images         { get; set; } = null!;
+        public DbSet<Category>    Categories     { get; set; } = null!;
         public DbSet<PublicationCategory> PublicationCategories { get; set; } = null!;
         public DbSet<PublicationRevision> PublicationRevisions { get; set; } = null!;
 
@@ -27,9 +27,36 @@ namespace BlazorWebApp.Data
             {
                 e.HasKey(c => c.Id);
                 e.Property(c => c.Name).IsRequired();
+                e.Property(c => c.Slug).IsRequired();
+                e.HasIndex(c => c.Slug)
+                 .IsUnique();
                 e.HasOne(c => c.Parent)
                  .WithMany(c => c.Children)
                  .HasForeignKey(c => c.ParentCategoryId)
+                 .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // --- ContentType entity configuration ---
+            builder.Entity<ContentType>(e =>
+            {
+                e.HasKey(ct => ct.Id);
+                e.Property(ct => ct.Name).IsRequired();
+                e.Property(ct => ct.Slug).IsRequired();
+                e.HasIndex(ct => ct.Slug)
+                 .IsUnique();
+            });
+
+            // --- MenuItem entity configuration ---
+            builder.Entity<MenuItem>(e =>
+            {
+                e.HasKey(mi => mi.Id);
+                e.Property(mi => mi.Slug).IsRequired();
+                e.HasIndex(mi => mi.Slug)
+                 .IsUnique();
+                // Optional: configure parent-child relationship if not already annotated
+                e.HasOne(mi => mi.Parent)
+                 .WithMany(mi => mi.Children)
+                 .HasForeignKey(mi => mi.ParentMenuItemId)
                  .OnDelete(DeleteBehavior.Restrict);
             });
 

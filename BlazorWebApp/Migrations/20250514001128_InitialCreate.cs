@@ -109,17 +109,17 @@ namespace BlazorWebApp.Migrations
                     IconCss = table.Column<string>(type: "text", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
                     ParentMenuItemId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ParentId = table.Column<Guid>(type: "uuid", nullable: true),
                     ContentItemId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MenuItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MenuItems_MenuItems_ParentId",
-                        column: x => x.ParentId,
+                        name: "FK_MenuItems_MenuItems_ParentMenuItemId",
+                        column: x => x.ParentMenuItemId,
                         principalTable: "MenuItems",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -333,9 +333,27 @@ namespace BlazorWebApp.Migrations
                 column: "ParentCategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MenuItems_ParentId",
+                name: "IX_Categories_Slug",
+                table: "Categories",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContentTypes_Slug",
+                table: "ContentTypes",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MenuItems_ParentMenuItemId",
                 table: "MenuItems",
-                column: "ParentId");
+                column: "ParentMenuItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MenuItems_Slug",
+                table: "MenuItems",
+                column: "Slug",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PublicationCategories_CategoryId",

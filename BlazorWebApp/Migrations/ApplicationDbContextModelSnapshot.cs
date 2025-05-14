@@ -111,6 +111,9 @@ namespace BlazorWebApp.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
                     b.ToTable("Categories");
                 });
 
@@ -129,6 +132,9 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("ContentTypes");
                 });
@@ -168,9 +174,6 @@ namespace BlazorWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("ParentMenuItemId")
                         .HasColumnType("uuid");
 
@@ -187,7 +190,10 @@ namespace BlazorWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("ParentMenuItemId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("MenuItems");
                 });
@@ -421,7 +427,8 @@ namespace BlazorWebApp.Migrations
                 {
                     b.HasOne("BlazorWebApp.Data.MenuItem", "Parent")
                         .WithMany("Children")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentMenuItemId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
                 });
@@ -448,7 +455,7 @@ namespace BlazorWebApp.Migrations
             modelBuilder.Entity("BlazorWebApp.Data.PublicationRevision", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.Publication", "Publication")
-                        .WithMany()
+                        .WithMany("PublicationRevisions")
                         .HasForeignKey("PublicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -522,6 +529,8 @@ namespace BlazorWebApp.Migrations
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
                     b.Navigation("PublicationCategories");
+
+                    b.Navigation("PublicationRevisions");
                 });
 #pragma warning restore 612, 618
         }
