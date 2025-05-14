@@ -73,28 +73,40 @@ namespace BlazorWebApp.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Guid id, PublicationWriteDto dto)
-        {
-            var pub = await _db.Publications.FindAsync(id)
-                      ?? throw new KeyNotFoundException($"Publication {id} not found");
-            pub.Title = dto.Title;
-            pub.Html  = dto.Html;
-            await _db.SaveChangesAsync();
+public async Task UpdateAsync(Guid id, PublicationWriteDto dto)
+{
+    var pub = await _db.Publications
+        .Include(p => p.PublicationCategories)
+        .FirstOrDefaultAsync(p => p.Id == id)
+        ?? throw new KeyNotFoundException($"Publication {id} not found");
 
-            var existing = _db.PublicationCategories
-                              .Where(pc => pc.PublicationId == id)
-                              .ToList();
-            _db.PublicationCategories.RemoveRange(existing);
-            if (dto.CategoryId.HasValue)
-            {
-                _db.PublicationCategories.Add(new PublicationCategory
-                {
-                    PublicationId = id,
-                    CategoryId    = dto.CategoryId.Value
-                });
-            }
-            await _db.SaveChangesAsync();
-        }
+    // 1) snapshot current state:
+    var oldCategoryId = pub.PublicationCategories.FirstOrDefault()?.CategoryId;
+    _db.PublicationRevisions.Add(new PublicationRevision {
+        Id            = Guid.NewGuid(),
+        PublicationId = id,
+        Title         = pub.Title,
+        Html          = pub.Html,
+        CategoryId    = oldCategoryId,
+        CreatedAt     = DateTimeOffset.UtcNow
+    });
+
+    // 2) apply the update
+    pub.Title = dto.Title;
+    pub.Html  = dto.Html;
+
+    // 3) reassign category
+    var existing = _db.PublicationCategories.Where(pc => pc.PublicationId == id);
+    _db.PublicationCategories.RemoveRange(existing);
+    if (dto.CategoryId.HasValue)
+        _db.PublicationCategories.Add(new PublicationCategory {
+            PublicationId = id,
+            CategoryId    = dto.CategoryId.Value
+        });
+
+    await _db.SaveChangesAsync();
+}
+
 
         // ——— Revision history ———
 

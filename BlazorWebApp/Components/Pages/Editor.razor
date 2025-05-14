@@ -65,6 +65,42 @@
   </button>
 </EditForm>
 
+@if (loadedExisting)
+{
+  <h4 class="mt-5">Revision History</h4>
+  @if (revisions == null)
+  {
+    <p>Loading revisions…</p>
+  }
+  else if (!revisions.Any())
+  {
+    <p><em>No past revisions.</em></p>
+  }
+  else
+  {
+    <table class="table table-striped">
+      <thead>
+        <tr><th>When</th><th>Title</th><th></th></tr>
+      </thead>
+      <tbody>
+        @foreach (var r in revisions)
+        {
+          <tr>
+            <td>@r.CreatedAt.ToString("g")</td>
+            <td>@r.Title</td>
+            <td>
+              <button class="btn btn-sm btn-outline-secondary"
+                      @onclick="() => Restore(r.Id)">
+                Restore
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}
+
 @code {
   [Parameter] public Guid? Id { get; set; }
 
@@ -73,6 +109,7 @@
   private List<(Guid Id, string DisplayName)> categoryOptions = new();
   private EditContext editContext = default!;
   private bool loadedExisting;
+  private List<RevisionDto>? revisions;
 
   // Can publish only if title and content are non-empty
   private bool canPublish =>
@@ -141,26 +178,36 @@ function(data, resolve) {
       {
         loadedExisting = true;
         dto.CategoryId = existing.CategoryId;
-        dto.Title      = existing.Title;
-        dto.Html       = existing.Html;
+        dto.Title = existing.Title;
+        dto.Html = existing.Html;
+        // load revisions
+        revisions = await PublicationService.ListRevisionsAsync(Id.Value);
       }
     }
   }
 
-  private async Task HandleSubmit()
+private async Task HandleSubmit()
+{
+  if (loadedExisting && Id.HasValue)
   {
-    if (loadedExisting && Id.HasValue)
-    {
-      await PublicationService.UpdateAsync(Id.Value, dto);
-    }
-    else
-    {
-      var created = await PublicationService.CreateAsync(dto);
-      Id = created.Id;
-      loadedExisting = true;
-      Nav.NavigateTo($"/editor/{Id}", replace: true);
-    }
+    await PublicationService.UpdateAsync(Id.Value, dto);
   }
+  else
+  {
+    var created = await PublicationService.CreateAsync(dto);
+    Id = created.Id;
+    loadedExisting = true;
+    // replace the URL so OnInitializedAsync will load our new Id
+    Nav.NavigateTo($"/editor/{Id}", replace: true);
+  }
+
+  // AFTER either branch, refresh the history panel
+  if (Id is Guid pubId)
+    revisions = await PublicationService.ListRevisionsAsync(pubId);
+
+  StateHasChanged();
+}
+
 
   private async Task PublishAsync()
   {
@@ -170,5 +217,18 @@ function(data, resolve) {
       await PublicationService.PublishAsync(Id.Value);
       Nav.NavigateTo($"/publications/{Id}");
     }
+  }
+
+  private async Task Restore(Guid revisionId)
+  {
+    var updated = await PublicationService.RestoreRevisionAsync(revisionId);
+    // update the editor DTO
+    dto.Title = updated.Title;
+    dto.Html = updated.Html;
+    dto.CategoryId = updated.CategoryId;
+
+    // reload history
+    if (Id is Guid pubId)
+      revisions = await PublicationService.ListRevisionsAsync(pubId);
   }
 }

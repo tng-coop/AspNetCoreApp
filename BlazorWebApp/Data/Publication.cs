@@ -13,13 +13,22 @@ namespace BlazorWebApp.Data
         [Required]
         public string Title { get; set; } = string.Empty;
 
+        // Rendered HTML content
         public string Html { get; set; } = string.Empty;
-        public PublicationStatus Status { get; set; }
+
+        // Current publication status (draft, published, scheduled)
+        public PublicationStatus Status { get; set; } = PublicationStatus.Draft;
+
+        // Timestamps
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? PublishedAt { get; set; }
 
-        // navigation for many-to-many with Category
+        // Many-to-many join with categories
         public ICollection<PublicationCategory> PublicationCategories { get; set; }
             = new List<PublicationCategory>();
+
+        // Revision history navigation
+        public ICollection<PublicationRevision> PublicationRevisions { get; set; }
+            = new List<PublicationRevision>();
     }
 }
