@@ -15,22 +15,19 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="publications">
-                <span class="bi bi-book"></span> Publications
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="editor">
-                <span class="bi bi-plus-circle"></span> New Publication
-            </NavLink>
-        </div>
+        <!-- Dashboard (only for logged-in users) -->
+        <AuthorizeView>
+          <Authorized>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
+                </NavLink>
+            </div>
+          </Authorized>
+        </AuthorizeView>
+
+        <!-- CMS tree (always visible) -->
         <div class="nav-item px-3">
             @if (treeItems is null)
             {
@@ -42,11 +39,29 @@
             }
         </div>
 
+        <!-- Publication links (only for logged-in users) -->
+        <AuthorizeView>
+          <Authorized>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="publications">
+                    <span class="bi bi-book"></span> Publications
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="editor">
+                    <span class="bi bi-plus-circle"></span> New Publication
+                </NavLink>
+            </div>
+          </Authorized>
+        </AuthorizeView>
+
+        <!-- Account links -->
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span>
+                        @context.User.Identity?.Name
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -72,6 +87,7 @@
                 </div>
             </NotAuthorized>
         </AuthorizeView>
+
     </nav>
 </div>
 
