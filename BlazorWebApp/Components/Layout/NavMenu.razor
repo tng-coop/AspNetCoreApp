@@ -1,9 +1,10 @@
+@using BlazorWebApp.Models
+@using BlazorWebApp.Services
 @implements IDisposable
 
 @inject NavigationManager NavigationManager
-@using BlazorWebApp.Models
-@using BlazorWebApp.Services
-@inject ITreeMenuService TreeMenuService
+@inject ITreeMenuService    TreeMenuService
+@inject IJSRuntime           JSRuntime
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -11,9 +12,13 @@
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<input 
+    @ref="_toggler"
+    type="checkbox"
+    title="Navigation menu"
+    class="navbar-toggler" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+<div class="nav-scrollable" @onclick="CollapseMenu">
     <nav class="nav flex-column">
 
         <!-- Dashboard (only for logged-in users) -->
@@ -94,6 +99,7 @@
 @code {
     private string? currentUrl;
     private List<MenuItemDto>? treeItems;
+    private ElementReference _toggler;
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,6 +116,12 @@
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
+    }
+
+    private async Task CollapseMenu(MouseEventArgs _)
+    {
+        // Un-check the hamburger to collapse on mobile
+        await JSRuntime.InvokeVoidAsync("eval", "document.querySelector('.navbar-toggler').click()");
     }
 
     public void Dispose()
