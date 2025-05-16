@@ -17,6 +17,8 @@ namespace BlazorWebApp.Data
         public DbSet<Category>    Categories     { get; set; } = null!;
         public DbSet<PublicationCategory> PublicationCategories { get; set; } = null!;
         public DbSet<PublicationRevision> PublicationRevisions { get; set; } = null!;
+        public DbSet<Tenant> Tenants { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

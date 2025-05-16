@@ -14,20 +14,11 @@ builder.Services
     .AddPersistence(builder.Configuration)          // our factory-only + shim
     .AddLocalizationServices()
     .AddScoped<ITreeMenuService, TreeMenuService>() // page-menu service
+    .AddScoped<ITenantProvider, StubTenantProvider>()
     .AddMudServices();                               // MudBlazor
 
 var app = builder.Build();
 
-// —— strip trailing slash ONLY under /articles/** —————————
-var rewriteOptions = new RewriteOptions()
-    // matches:  /articles/{anything}/   (but not /foo/...)
-    .AddRedirect(
-        @"^articles/(.+)/$",           // incoming-path regex (no leading slash)
-        "/articles/$1",                // target
-        (int)HttpStatusCode.MovedPermanently
-    );
-
-app.UseRewriter(rewriteOptions);
 
 // Configure middleware and endpoints via extension methods
 app
