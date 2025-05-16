@@ -5,6 +5,7 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Rewrite;
 using System.Net;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure services via extension methods
@@ -16,6 +17,9 @@ builder.Services
     .AddScoped<ITreeMenuService, TreeMenuService>() // page-menu service
     .AddScoped<ITenantProvider, StubTenantProvider>()
     .AddMudServices();                               // MudBlazor
+
+builder.Services.Configure<StubTenantProviderOptions>(
+    builder.Configuration.GetSection("StubTenantProviderOptions"));
 
 var app = builder.Build();
 

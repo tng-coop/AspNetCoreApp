@@ -9,5 +9,8 @@ namespace BlazorWebApp.Data
     {
         public Guid   Id   { get; set; }
         public string Name { get; set; } = string.Empty;
+
+        // URL-friendly identifier used for subdomain or path segment
+        public string Slug { get; set; } = string.Empty;
     }
 }

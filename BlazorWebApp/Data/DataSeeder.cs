@@ -33,7 +33,10 @@ namespace BlazorWebApp.Data
             await RolesSeeder.SeedAsync(roleMgr);
             await UsersSeeder.SeedAsync(userMgr, config);
 
-            // 5) Seed application data
+            // 5) Seed Tenants
+            await RunSeederAsync(factory, TenantSeeder.SeedAsync);
+
+            // 6) Seed application data
             await RunSeederAsync(factory, ContentTypeSeeder.SeedAsync);
             await RunSeederAsync(factory, CategorySeeder.SeedAsync);
             await RunSeederAsync(factory, PublicationSeeder.SeedAsync);

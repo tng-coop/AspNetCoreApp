@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components
+@inject BlazorWebApp.Services.ITenantProvider TenantProvider
+@inject NavigationManager Nav
+@inherits LayoutComponentBase
+
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudThemeProvider />
 <MudDialogProvider />
@@ -14,6 +18,10 @@
             <LangSwitchButton /> 
         </div>
 
+        <div class="url-preview mb-2">
+            New URL: <code>@GetPreviewUrl()</code>
+        </div>
+
         <article class="content px-4">
             @Body
         </article>
@@ -25,7 +33,6 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
-
 
 @code {
     private bool _drawerOpen = true;
@@ -98,6 +105,13 @@
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,
     };
+
+    private string GetPreviewUrl()
+    {
+        var relative = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
+        var tenant = TenantProvider.Current.Slug;
+        return string.IsNullOrEmpty(relative)
+            ? $"/{tenant}/"
+            : $"/{tenant}/{relative}";
+    }
 }
-
-
