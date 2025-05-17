@@ -66,17 +66,6 @@ public static class AuthenticationExtensions
                 };
             });
 
-        // Define the Bearer policy for JWT
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy(
-                JwtBearerDefaults.AuthenticationScheme,
-                policy => policy
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser()
-            );
-        });
-
         return services;
     }
 }
