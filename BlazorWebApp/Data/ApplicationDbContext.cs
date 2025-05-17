@@ -37,16 +37,6 @@ namespace BlazorWebApp.Data
                  .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // --- ContentType entity configuration ---
-            builder.Entity<ContentType>(e =>
-            {
-                e.HasKey(ct => ct.Id);
-                e.Property(ct => ct.Name).IsRequired();
-                e.Property(ct => ct.Slug).IsRequired();
-                e.HasIndex(ct => ct.Slug)
-                 .IsUnique();
-            });
-
             // --- MenuItem entity configuration ---
             builder.Entity<MenuItem>(e =>
             {

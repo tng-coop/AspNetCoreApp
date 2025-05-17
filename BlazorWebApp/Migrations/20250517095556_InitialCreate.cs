@@ -73,19 +73,6 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ContentType",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Slug = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ContentType", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Images",
                 columns: table => new
                 {
@@ -352,12 +339,6 @@ namespace BlazorWebApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ContentType_Slug",
-                table: "ContentType",
-                column: "Slug",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MenuItems_ParentMenuItemId",
                 table: "MenuItems",
                 column: "ParentMenuItemId");
@@ -401,9 +382,6 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
-
-            migrationBuilder.DropTable(
-                name: "ContentType");
 
             migrationBuilder.DropTable(
                 name: "Images");

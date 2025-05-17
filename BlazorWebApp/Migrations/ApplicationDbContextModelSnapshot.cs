@@ -117,28 +117,6 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.ContentType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Slug")
-                        .IsUnique();
-
-                    b.ToTable("ContentType");
-                });
-
             modelBuilder.Entity("BlazorWebApp.Data.ImageAsset", b =>
                 {
                     b.Property<Guid>("Id")
