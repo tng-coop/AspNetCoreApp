@@ -136,7 +136,7 @@ namespace BlazorWebApp.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("ContentTypes");
+                    b.ToTable("ContentType");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.ImageAsset", b =>

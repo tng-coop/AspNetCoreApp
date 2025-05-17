@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250516094420_InitialCreate")]
+    [Migration("20250517095230_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -139,7 +139,7 @@ namespace BlazorWebApp.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("ContentTypes");
+                    b.ToTable("ContentType");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.ImageAsset", b =>

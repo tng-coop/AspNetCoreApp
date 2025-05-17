@@ -10,7 +10,6 @@ namespace BlazorWebApp.Data
         {
         }
 
-        public DbSet<ContentType> ContentTypes { get; set; } = null!;
         public DbSet<MenuItem>    MenuItems     { get; set; } = null!;
         public DbSet<Publication> Publications   { get; set; } = null!;
         public DbSet<ImageAsset>  Images         { get; set; } = null!;
