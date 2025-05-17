@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components
 @inject BlazorWebApp.Services.ITenantProvider TenantProvider
 @inject NavigationManager Nav
+@inject Microsoft.Extensions.Options.IOptions<BlazorWebApp.Services.StubTenantProviderOptions> TenantOptions
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
@@ -109,9 +110,14 @@
     private string GetPreviewUrl()
     {
         var relative = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
-        var tenant = TenantProvider.Current.Slug;
+        var tenantSlug = TenantProvider.Current.Slug;
+        var defaultSlug = TenantOptions.Value.DefaultTenantSlug;
+
+        var isDefault = string.Equals(tenantSlug, defaultSlug, StringComparison.OrdinalIgnoreCase);
+        var prefix = isDefault ? "/_cms" : $"/{tenantSlug}/_cms";
+
         return string.IsNullOrEmpty(relative)
-            ? $"/{tenant}/"
-            : $"/{tenant}/{relative}";
+            ? $"{prefix}/"
+            : $"{prefix}/{relative}";
     }
 }
