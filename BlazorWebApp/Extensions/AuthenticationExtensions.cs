@@ -1,12 +1,5 @@
-// Auto-generated from Program.cs
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using System.Text;
-using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json;
 
 namespace BlazorWebApp.Extensions;

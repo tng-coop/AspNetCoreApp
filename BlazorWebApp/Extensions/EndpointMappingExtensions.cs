@@ -1,11 +1,5 @@
-// Auto-generated from Program.cs
-using System.Security.Claims;
 using BlazorWebApp.Components;
-using BlazorWebApp.Models;
 using BlazorWebApp.Modules.Cms;
-using BlazorWebApp.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 
 namespace BlazorWebApp.Extensions;
 
