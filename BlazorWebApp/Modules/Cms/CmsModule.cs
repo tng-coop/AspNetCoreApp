@@ -1,0 +1,24 @@
+using Microsoft.Extensions.DependencyInjection;
+using BlazorWebApp.Services;
+
+namespace BlazorWebApp.Modules.Cms
+{
+    /// <summary>
+    /// Collects all CMS-related services into a self-contained module.
+    /// </summary>
+    public static class CmsModule
+    {
+        /// <summary>
+        /// Registers CMS services and related dependencies.
+        /// </summary>
+        public static IServiceCollection AddCmsModule(this IServiceCollection services)
+        {
+            // Core CMS application services
+            services.AddScoped<IPublicationService, PublicationService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ITreeMenuService, TreeMenuService>();
+
+            return services;
+        }
+    }
+}

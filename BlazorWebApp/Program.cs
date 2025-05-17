@@ -4,6 +4,7 @@ using BlazorWebApp.Services;
 using MudBlazor.Services;
 using Microsoft.AspNetCore.Rewrite;
 using System.Net;
+using BlazorWebApp.Modules.Cms;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,9 +15,9 @@ builder.Services
     .AddAuthenticationAndAuthorization(builder.Configuration)
     .AddPersistence(builder.Configuration)          // our factory-only + shim
     .AddLocalizationServices()
-    .AddScoped<ITreeMenuService, TreeMenuService>() // page-menu service
     .AddScoped<ITenantProvider, StubTenantProvider>()
-    .AddMudServices();                               // MudBlazor
+    .AddMudServices()                              // MudBlazor
+    .AddCmsModule();
 
 builder.Services.Configure<StubTenantProviderOptions>(
     builder.Configuration.GetSection("StubTenantProviderOptions"));

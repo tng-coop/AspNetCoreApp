@@ -12,10 +12,7 @@ public static class ServiceCollectionExtensions
     {
         // Add HTTP and application services
         services.AddHttpClient();
-        services.AddScoped<IPublicationService, PublicationService>();
-        // register category service
-        services.AddScoped<ICategoryService, CategoryService>();
-
+        
         // Add Razor Components and Authentication State
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
