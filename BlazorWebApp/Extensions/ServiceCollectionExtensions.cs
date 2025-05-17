@@ -1,8 +1,5 @@
-// Auto-generated from Program.cs
 using BlazorWebApp.Components.Account;
-using BlazorWebApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorWebApp.Extensions;
 

@@ -1,8 +1,4 @@
-// Auto-generated Middleware extensions from Program.cs
-using Microsoft.AspNetCore.Builder;
-using System.IO;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.HttpOverrides;
 
 namespace BlazorWebApp.Extensions;
 
