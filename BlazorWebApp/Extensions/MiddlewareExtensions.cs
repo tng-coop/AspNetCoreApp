@@ -1,5 +1,8 @@
 // Auto-generated Middleware extensions from Program.cs
-using Microsoft.AspNetCore.Builder; using System.IO; using Microsoft.Extensions.FileProviders; using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Builder;
+using System.IO;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace BlazorWebApp.Extensions;
 
@@ -21,7 +24,7 @@ public static class MiddlewareExtensions
             {
                 FileProvider = new PhysicalFileProvider(certPath),
                 RequestPath = "/cert"
-            });    
+            });
             app.UseDirectoryBrowser(new DirectoryBrowserOptions
             {
                 FileProvider = new PhysicalFileProvider(certPath),
@@ -43,7 +46,8 @@ public static class MiddlewareExtensions
         app.UseStaticFiles();
         var cachePath = Path.Combine(app.Environment.WebRootPath, "imgcache");
         Directory.CreateDirectory(cachePath);
-        app.UseStaticFiles(new StaticFileOptions {
+        app.UseStaticFiles(new StaticFileOptions
+        {
             FileProvider = new PhysicalFileProvider(cachePath),
             RequestPath = "/imgcache",
             OnPrepareResponse = ctx => ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=604800"
@@ -52,8 +56,11 @@ public static class MiddlewareExtensions
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.MapControllers();
+
+        // now register antiforgery _before_ mapping any endpoints
         app.UseAntiforgery();
+
+        app.MapControllers();
 
         return app;
     }
