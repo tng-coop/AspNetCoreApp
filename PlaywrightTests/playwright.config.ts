@@ -3,8 +3,8 @@ import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const projectFolder = path.resolve(__dirname, '..');
-const csprojFile    = path.join(projectFolder, 'AspNetCoreApp.csproj');
+const projectFolder = path.resolve(__dirname, '../BlazorWebApp');
+const csprojFile    = path.join(projectFolder, 'BlazorWebApp.csproj');
 
 function loadUserSecretsViaCli(): Record<string, string> {
   if (!fs.existsSync(csprojFile)) {
@@ -42,7 +42,7 @@ const secrets = loadUserSecretsViaCli();
 const baseURL =
   process.env.Kestrel__Endpoints__Https__Url              // 1) env-override
   || secrets['Kestrel:Endpoints:Https:Url']               // 2) from `dotnet user-secrets list`
-  || 'http://aspnet.lan:5000';                            // 3) fallback
+  || 'http://aspn5et.lan:5000';                            // 3) fallback
 
 export default defineConfig({
   testDir: './',
