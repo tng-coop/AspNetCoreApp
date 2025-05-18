@@ -1,4 +1,7 @@
-﻿@using Microsoft.AspNetCore.Components
+﻿@inject BlazorWebApp.Services.IPublicationService PublicationService
+@inject BlazorWebApp.Services.ICategoryService    CategoryService
+
+@using Microsoft.AspNetCore.Components
 @inject BlazorWebApp.Services.ITenantProvider TenantProvider
 @inject NavigationManager Nav
 @inherits LayoutComponentBase
@@ -18,9 +21,9 @@
             <LangSwitchButton /> 
         </div>
 
-        <div class="url-preview mb-2">
-            New URL: <code>@GetPreviewUrl()</code>
-        </div>
+<div class="url-preview mb-2">
+    New URL: <code>@previewUrl</code>
+</div>
 
         <article class="content px-4">
             @Body
@@ -38,6 +41,67 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = false;
     private MudTheme? _theme = null;
+    private string previewUrl = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // base relative path, e.g. "publications/3fa85f64-..."
+        var relative = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
+        var tenant   = TenantProvider.Current.Slug; // e.g. "acme"
+
+        // 1) If we're on a publication detail route, show categorySlug/publicationSlug
+        var parts = relative.Split('/');
+        if (parts.Length == 2
+            && parts[0] == "publications"
+            && Guid.TryParse(parts[1], out var pubId))
+        {
+            // fetch the publication to get Title & CategoryId
+            var pub = await PublicationService.GetAsync(pubId);
+            if (pub?.CategoryId != null)
+            {
+                // fetch all categories once, find our category slug
+                var cats   = await CategoryService.ListAsync();
+                var cat    = cats.FirstOrDefault(c => c.Id == pub.CategoryId.Value);
+                var catSlug = cat?.Slug ?? "";
+
+                // generate a URL‐friendly slug from the title
+                var pubSlug = GenerateSlug(pub.Title);
+
+                previewUrl = $"/{tenant}/{catSlug}/{pubSlug}";
+                return;
+            }
+        }
+
+        // 2) Fallback: keep the existing behavior
+        if (string.IsNullOrEmpty(relative))
+            previewUrl = $"/{tenant}/";
+        else
+            previewUrl = $"/{tenant}/{relative}";
+    }
+
+    // simple slugify helper
+    private static string GenerateSlug(string title)
+    {
+        var slug = title
+            .ToLowerInvariant()
+            .Replace(" ", "-")
+            .Replace(":", "")
+            .Replace("’", "")
+            .Replace("'", "")
+            .Replace("…", "")
+            .Replace("--", "-")
+            .Trim('-');
+        return slug;
+    }
+
+
+
+
+
+
+
+
+
 
     protected override void OnInitialized()
     {
@@ -106,12 +170,4 @@
         false => Icons.Material.Outlined.DarkMode,
     };
 
-    private string GetPreviewUrl()
-    {
-        var relative = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
-        var tenant = TenantProvider.Current.Slug;
-        return string.IsNullOrEmpty(relative)
-            ? $"/{tenant}/"
-            : $"/{tenant}/{relative}";
-    }
 }
