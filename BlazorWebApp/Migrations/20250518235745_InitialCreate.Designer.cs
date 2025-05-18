@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250518215448_InitialCreate")]
+    [Migration("20250518235745_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -225,6 +225,9 @@ namespace BlazorWebApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.HasIndex("IsFeatured", "FeaturedOrder");
 

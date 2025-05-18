@@ -363,12 +363,6 @@ namespace BlazorWebApp.Migrations
                 column: "PublicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Publications_Slug",
-                table: "Publications",
-                column: "Slug",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Publications_CreatedAt",
                 table: "Publications",
                 column: "CreatedAt");
@@ -377,6 +371,12 @@ namespace BlazorWebApp.Migrations
                 name: "IX_Publications_IsFeatured_FeaturedOrder",
                 table: "Publications",
                 columns: new[] { "IsFeatured", "FeaturedOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_Slug",
+                table: "Publications",
+                column: "Slug",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_Slug",
