@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250518043213_InitialCreate")]
+    [Migration("20250518215448_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -293,6 +293,9 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Tenants");
                 });
