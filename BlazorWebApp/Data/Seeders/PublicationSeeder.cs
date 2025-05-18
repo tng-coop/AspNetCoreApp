@@ -27,7 +27,7 @@ namespace BlazorWebApp.Data.Seeders
             // helper to wrap HTML with a specific <img>
             string WrapWithImage(string bodyHtml, string filename) =>
                 $"<img src=\"/images/fractals/{filename}\" alt=\"Fractal\" " +
-                "style=\"max-width:50%;height:auto;margin-bottom:1rem;\" />" + bodyHtml;
+                "style=\"max-width:25%;height:auto;margin-bottom:1rem;\" />" + bodyHtml;
 
             var now = DateTimeOffset.UtcNow;
 
