@@ -95,6 +95,15 @@ namespace BlazorWebApp.Data
      .HasDefaultValue(0);
     e.HasIndex(p => new { p.IsFeatured, p.FeaturedOrder });
             });
+
+            // --- Tenant entity configuration ---
+            builder.Entity<Tenant>(e =>
+            {
+                e.HasKey(t => t.Id);
+                e.Property(t => t.Name).IsRequired();
+                e.Property(t => t.Slug).IsRequired();
+                e.HasIndex(t => t.Slug).IsUnique();
+            });
         }
     }
 }

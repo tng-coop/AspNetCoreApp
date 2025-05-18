@@ -141,6 +141,12 @@ namespace BlazorWebApp.Migrations
                     table.PrimaryKey("PK_Tenants", x => x.Id);
                 });
 
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenants_Slug",
+                table: "Tenants",
+                column: "Slug",
+                unique: true);
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new

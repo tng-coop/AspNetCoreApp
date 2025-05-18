@@ -291,6 +291,9 @@ namespace BlazorWebApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
                     b.ToTable("Tenants");
                 });
 

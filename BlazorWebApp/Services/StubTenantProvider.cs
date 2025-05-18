@@ -3,6 +3,7 @@ using System.Linq;
 using BlazorWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Options;
 
 namespace BlazorWebApp.Services
 {
@@ -14,15 +15,25 @@ namespace BlazorWebApp.Services
     {
         public Tenant Current { get; }
 
-        public StubTenantProvider(IDbContextFactory<ApplicationDbContext> factory)
+        public StubTenantProvider(
+            IDbContextFactory<ApplicationDbContext> factory,
+            IOptions<StubTenantProviderOptions> options)
         {
-            // Create a fresh DbContext for this operation
             using var db = factory.CreateDbContext();
 
-            // Ensure at least one tenant exists
-            var tenant = db.Tenants
-                           .AsNoTracking()
-                           .FirstOrDefault();
+            var slug = options.Value.DefaultTenantSlug;
+            Tenant? tenant = null;
+
+            if (!string.IsNullOrWhiteSpace(slug))
+            {
+                tenant = db.Tenants
+                             .AsNoTracking()
+                             .FirstOrDefault(t => t.Slug == slug);
+            }
+
+            tenant ??= db.Tenants
+                            .AsNoTracking()
+                            .FirstOrDefault();
 
             if (tenant is null)
             {

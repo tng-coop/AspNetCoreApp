@@ -12,12 +12,20 @@ namespace BlazorWebApp.Data.Seeders
             if (await db.Tenants.AnyAsync())
                 return;
 
-            // Seed your default tenant(s) here
-            db.Tenants.Add(new Tenant {
-                Id   = Guid.NewGuid(),
-                Name = "Acme Corporation",
-                Slug = "acme"
-            });
+            // Seed your default tenants with distinct slugs
+            db.Tenants.AddRange(
+                new Tenant
+                {
+                    Id   = Guid.NewGuid(),
+                    Name = "Acme Corporation",
+                    Slug = "acme"
+                },
+                new Tenant
+                {
+                    Id   = Guid.NewGuid(),
+                    Name = "Beta Industries",
+                    Slug = "beta"
+                });
 
             await db.SaveChangesAsync();
         }
