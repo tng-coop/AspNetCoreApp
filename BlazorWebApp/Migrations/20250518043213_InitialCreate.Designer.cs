@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250518022604_InitialCreate")]
+    [Migration("20250518043213_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -190,11 +190,21 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
+                    b.Property<int>("FeaturedOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Html")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValue("");
+
+                    b.Property<bool>("IsFeatured")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("timestamp with time zone");
@@ -215,6 +225,8 @@ namespace BlazorWebApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
+
+                    b.HasIndex("IsFeatured", "FeaturedOrder");
 
                     b.ToTable("Publications");
                 });
