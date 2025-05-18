@@ -185,5 +185,17 @@ namespace BlazorWebApp.Services
             CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
             CategoryName = p.PublicationCategories.FirstOrDefault()?.Category.Name
         };
+           public async Task<List<PublicationReadDto>> ListFeaturedInCategoryAsync(Guid categoryId)
+    {
+        await using var db = CreateDb();
+        return await db.Publications
+            .Where(p => p.Status == PublicationStatus.Published
+                     && p.PublicationCategories.Any(pc => pc.CategoryId == categoryId)
+                     && p.IsFeatured)
+            .OrderBy(p => p.FeaturedOrder)
+            .ThenByDescending(p => p.PublishedAt)
+            .Select(p => ToDto(p))
+            .ToListAsync();
+    }
     }
 }

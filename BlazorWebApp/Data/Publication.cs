@@ -17,6 +17,9 @@ public class Publication
     public string Slug      { get; set; } = string.Empty;
 
     public string Html      { get; set; } = string.Empty;
+    public bool   IsFeatured    { get; set; } = false;
+public int    FeaturedOrder { get; set; } = 0;
+
     public PublicationStatus Status { get; set; } = PublicationStatus.Draft;
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? PublishedAt { get; set; }

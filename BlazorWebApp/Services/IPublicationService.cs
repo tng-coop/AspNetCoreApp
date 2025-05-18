@@ -17,5 +17,6 @@ namespace BlazorWebApp.Services
         // Revision history
         Task<List<RevisionDto>> ListRevisionsAsync(Guid publicationId);
         Task<PublicationReadDto> RestoreRevisionAsync(Guid revisionId);
+        Task<List<PublicationReadDto>> ListFeaturedInCategoryAsync(Guid categoryId);
     }
 }

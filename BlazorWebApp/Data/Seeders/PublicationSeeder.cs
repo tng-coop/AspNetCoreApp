@@ -61,6 +61,8 @@ namespace BlazorWebApp.Data.Seeders
                     Title = GenerateTitle(entry.Slug, i),
                     Html = WrapWithImage(entry.Html, file),
                     Status = entry.Status,
+                      IsFeatured    = entry.Slug == "about",      // or whatever logic
+  FeaturedOrder = entry.Slug == "about" ? 1 : 0,
                     CreatedAt = now.AddDays(entry.CreatedOffset),
                     PublishedAt = entry.PublishedOffset.HasValue
                                   ? now.AddDays(entry.PublishedOffset.Value)

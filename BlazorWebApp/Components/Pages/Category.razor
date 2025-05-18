@@ -78,6 +78,7 @@ else
     private CategoryDto? category;
     private List<CategoryDto> subcats = new();
     private List<PublicationReadDto> posts = new();
+            private List<PublicationReadDto> featured = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -90,9 +91,18 @@ else
             .Where(c => c.ParentCategoryId == category.Id)
             .ToList();
 
-        posts = (await PublicationService.ListAsync())
-            .Where(p => p.CategoryId == category.Id && p.Status == "Published")
-            .OrderByDescending(p => p.PublishedAt)
-            .ToList();
+        // 1) load featured posts for this category
+        featured = await PublicationService.ListFeaturedInCategoryAsync(category.Id);
+
+        // 2) load all published posts in this category
+        var all = (await PublicationService.ListAsync())
+                    .Where(p => p.CategoryId == category.Id)
+                    .OrderByDescending(p => p.PublishedAt)
+                    .ToList();
+
+        // 3) the rest are those not already featured
+        posts = all
+                .Where(p => !featured.Any(f => f.Id == p.Id))
+                .ToList();
     }
 }
