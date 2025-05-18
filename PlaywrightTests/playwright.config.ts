@@ -39,10 +39,20 @@ function loadUserSecretsViaCli(): Record<string, string> {
 
 const secrets = loadUserSecretsViaCli();
 
-const baseURL =
-  process.env.Kestrel__Endpoints__Https__Url              // 1) env-override
-  || secrets['Kestrel:Endpoints:Https:Url']               // 2) from `dotnet user-secrets list`
-  || 'http://aspn5et.lan:5000';                            // 3) fallback
+// figure out “real” baseURL
+const configuredUrl =
+  process.env.Kestrel__Endpoints__Http__Url
+  || secrets['Kestrel:Endpoints:Https:Url'];
+
+if (!configuredUrl) {
+  console.error(
+    'Error: no Kestrel URL found. ' +
+    'Please set Kestrel__Endpoints__Http__Url or add it to user-secrets.'
+  );
+  process.exit(1);
+}
+
+const baseURL = configuredUrl;
 
 export default defineConfig({
   testDir: './',

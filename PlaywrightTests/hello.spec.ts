@@ -5,7 +5,3 @@ test('Login exists', async ({ page }) => {
   await expect(page.getByText('Login')).toHaveCount(1)
 });
 
-test('Cert exists', async ({ page }) => {
-  await page.goto('http://localhost/cert/');
-  await expect(page.getByText('aspnet.lan-ca.crt')).toHaveCount(1)
-});

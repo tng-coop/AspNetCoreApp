@@ -2,8 +2,6 @@ using BlazorWebApp.Extensions;
 using BlazorWebApp.Data;
 using BlazorWebApp.Services;
 using MudBlazor.Services;
-using Microsoft.AspNetCore.Rewrite;
-using System.Net;
 using BlazorWebApp.Modules.Cms;
 
 
