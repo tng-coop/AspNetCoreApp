@@ -40,8 +40,18 @@
   <!-- Title -->
   <div class="mb-3">
     <label class="form-label">Title</label>
-    <InputText class="form-control" @bind-Value="dto.Title" />
+    <InputText class="form-control" @bind-Value="dto.Title" @oninput="TitleChanged" />
     <ValidationMessage For="@(() => dto.Title)" />
+  </div>
+
+  <!-- Slug -->
+  <div class="mb-3">
+    <label class="form-label">Slug</label>
+    <InputText class="form-control" @bind-Value="dto.Slug" />
+    @if (!slugAscii)
+    {
+        <div class="text-warning"><small>Slug should contain ASCII characters only.</small></div>
+    }
   </div>
 
   <!-- TinyMCE Editor -->

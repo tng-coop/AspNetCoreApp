@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using BlazorWebApp.Data;
 using BlazorWebApp.Models;
+using BlazorWebApp.Utils;
 
 namespace BlazorWebApp.Services
 {
@@ -18,10 +19,16 @@ namespace BlazorWebApp.Services
         public async Task<PublicationReadDto> CreateAsync(PublicationWriteDto dto)
         {
             await using var db = CreateDb();
+            var slugBase = string.IsNullOrWhiteSpace(dto.Slug)
+                ? dto.Title
+                : dto.Slug;
+            var slug = await GenerateUniqueSlugAsync(db, SlugGenerator.Generate(slugBase));
+
             var pub = new Publication
             {
                 Id           = Guid.NewGuid(),
                 Title        = dto.Title,
+                Slug         = slug,
                 Html         = dto.Html,
                 IsFeatured   = dto.IsFeatured,
                 FeaturedOrder = dto.FeaturedOrder,
@@ -118,6 +125,12 @@ namespace BlazorWebApp.Services
             pub.IsFeatured   = dto.IsFeatured;
             pub.FeaturedOrder = dto.FeaturedOrder;
 
+            var slugBase = string.IsNullOrWhiteSpace(dto.Slug)
+                ? dto.Title
+                : dto.Slug;
+            pub.Slug = await GenerateUniqueSlugAsync(db,
+                SlugGenerator.Generate(slugBase), pub.Id);
+
             // 3) reassign category
             var existing = db.PublicationCategories.Where(pc => pc.PublicationId == id);
             db.PublicationCategories.RemoveRange(existing);
@@ -192,6 +205,7 @@ namespace BlazorWebApp.Services
         {
             Id           = p.Id,
             Title        = p.Title,
+            Slug         = p.Slug,
             Html         = p.Html,
             Status       = p.Status.ToString(),
             IsFeatured   = p.IsFeatured,
@@ -201,6 +215,21 @@ namespace BlazorWebApp.Services
             CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
             CategoryName = p.PublicationCategories.FirstOrDefault()?.Category.Name
         };
+
+        private static async Task<string> GenerateUniqueSlugAsync(
+            ApplicationDbContext db,
+            string baseSlug,
+            Guid? excludeId = null)
+        {
+            var slug = baseSlug;
+            var counter = 1;
+            while (await db.Publications.AnyAsync(p => p.Slug == slug &&
+                                                    (excludeId == null || p.Id != excludeId)))
+            {
+                slug = $"{baseSlug}-{counter++}";
+            }
+            return slug;
+        }
            public async Task<List<PublicationReadDto>> ListFeaturedInCategoryAsync(Guid categoryId)
     {
         await using var db = CreateDb();

@@ -363,6 +363,12 @@ namespace BlazorWebApp.Migrations
                 column: "PublicationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Publications_Slug",
+                table: "Publications",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Publications_CreatedAt",
                 table: "Publications",
                 column: "CreatedAt");

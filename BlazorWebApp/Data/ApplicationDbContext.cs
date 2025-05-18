@@ -80,6 +80,8 @@ namespace BlazorWebApp.Data
             {
                 e.HasKey(p => p.Id);
                 e.Property(p => p.Title).IsRequired();
+                e.Property(p => p.Slug).IsRequired();
+                e.HasIndex(p => p.Slug).IsUnique();
                 e.Property(p => p.Html)
                  .HasDefaultValue(string.Empty);
                 e.Property(p => p.Status)
