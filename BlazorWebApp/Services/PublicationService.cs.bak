@@ -80,16 +80,6 @@ namespace BlazorWebApp.Services
             await db.SaveChangesAsync();
         }
 
-        /// <inheritdoc/>
-        public async Task DeleteAsync(Guid id)
-        {
-            await using var db = CreateDb();
-            var p = await db.Publications.FindAsync(id)
-                      ?? throw new KeyNotFoundException();
-            db.Publications.Remove(p);
-            await db.SaveChangesAsync();
-        }
-
         public async Task UpdateAsync(Guid id, PublicationWriteDto dto)
         {
             await using var db = CreateDb();

@@ -40,21 +40,6 @@ namespace BlazorWebApp.Modules.Cms
             {
                 await svc.UnpublishAsync(id);
                 return NoContent();
-
-            // Unpublish
-            endpoints.MapPost("/api/publications/{id:guid}/unpublish", async (Guid id, IPublicationService svc) =>
-            {
-                await svc.UnpublishAsync(id);
-                return NoContent();
-            });
-
-            // Delete
-            endpoints.MapDelete("/api/publications/{id:guid}", async (Guid id, IPublicationService svc) =>
-            {
-                await svc.DeleteAsync(id);
-                return NoContent();
-            });
-
             });
 
             // Delete
@@ -85,28 +70,6 @@ namespace BlazorWebApp.Modules.Cms
                 var featured = await svc.ListFeaturedInCategoryAsync(categoryId);
                 return Ok(featured);
             });
-
-            // Revision history
-            endpoints.MapGet("/api/publications/{id:guid}/revisions", async (Guid id, IPublicationService svc) =>
-            {
-                var revs = await svc.ListRevisionsAsync(id);
-                return Ok(revs);
-            });
-
-            // Restore a revision
-            endpoints.MapPost("/api/publications/revisions/{revisionId:guid}/restore", async (Guid revisionId, IPublicationService svc) =>
-            {
-                var restored = await svc.RestoreRevisionAsync(revisionId);
-                return Ok(restored);
-            });
-
-            // Featured in-category
-            endpoints.MapGet("/api/categories/{categoryId:guid}/publications/featured", async (Guid categoryId, IPublicationService svc) =>
-            {
-                var featured = await svc.ListFeaturedInCategoryAsync(categoryId);
-                return Ok(featured);
-            });
-
             return endpoints;
         }
     }
