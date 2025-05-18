@@ -80,10 +80,9 @@ fi
 dotnet run > "$LOGFILE" 2>&1 &
 SERVER_PID=$!
 
-# Wait for server to be ready
+# Wait for server to be ready (HTTPS)
 TIMEOUT=40
 until curl -fsSL --cacert "/srv/shared/aspnet/cert/aspnet.lan-ca.crt" "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
-#until curl -fsSL -k "$APP_URL" &>/dev/null || [ $TIMEOUT -le 0 ]; do
     echo "Waiting for server to start..."
     sleep 1
     ((TIMEOUT--))
@@ -95,6 +94,32 @@ if [ $TIMEOUT -le 0 ]; then
 fi
 
 echo "✅ Server running on $APP_URL"
+
+# ─── Determine HTTP URL from env-var or user-secrets (or fail) ───
+if [ -n "$Kestrel__Endpoints__Http__Url" ]; then
+    APP_URL_HTTP="$Kestrel__Endpoints__Http__Url"
+elif SECRET_LINE=$(dotnet user-secrets list | grep '^Kestrel:Endpoints:Http:Url ' || true) && [ -n "$SECRET_LINE" ]; then
+    APP_URL_HTTP=$(printf "%s" "$SECRET_LINE" | cut -d '=' -f2- | sed 's/^ *//')
+else
+    echo "❌ Neither env-var Kestrel__Endpoints__Http__Url nor user-secret Kestrel:Endpoints:Http:Url is set."
+    cleanup 1
+fi
+
+# ─── Smoke-test HTTP /cert endpoint ───
+CERT_URL="$APP_URL_HTTP/cert"
+TIMEOUT=20
+until curl --fail --silent "$CERT_URL" > /dev/null || [ $TIMEOUT -le 0 ]; do
+    echo "Waiting for HTTP cert endpoint at $CERT_URL…"
+    sleep 1
+    ((TIMEOUT--))
+done
+
+if [ $TIMEOUT -le 0 ]; then
+    echo "❌ HTTP cert endpoint failed at $CERT_URL"
+    cleanup 1
+fi
+
+echo "✅ HTTP cert endpoint reachable at $CERT_URL"
 
 # Install frontend dependencies
 cd "$scriptdir"
