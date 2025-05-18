@@ -29,8 +29,24 @@ else
         </ul>
     }
 
+    @if (featured.Any())
+    {
+        <h4>Featured</h4>
+        <ul class="list-unstyled">
+            @foreach (var p in featured)
+            {
+                <li class="mb-2">
+                    <NavLink href="@($"/publications/{p.Id}")" Match="NavLinkMatch.Prefix">
+                        <strong>@p.Title</strong>
+                    </NavLink>
+                    <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
+                </li>
+            }
+        </ul>
+    }
+
     <h4>Articles</h4>
-    @if (!posts.Any())
+    @if (!featured.Any() && !posts.Any())
     {
         <p><em>No published articles in this category.</em></p>
     }
