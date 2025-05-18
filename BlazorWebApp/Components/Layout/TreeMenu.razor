@@ -14,7 +14,7 @@
           <button type="button"
                   class="btn btn-sm p-0 me-1"
                   @onclick:stopPropagation
-                  @onclick="() => OnChevronClick(item.Slug)"
+                  @onclick="() => OnChevronClick(item)"
                   aria-label="Toggle">
             @if (IsExpanded(item.Slug))
             {
@@ -79,15 +79,33 @@
     }
   }
 
-  private Task OnChevronClick(string slug) => ToggleAsync(slug);
+  private Task OnChevronClick(MenuItemDto item) => ToggleAsync(item);
 
-  private async Task ToggleAsync(string slug)
+  private async Task ToggleAsync(MenuItemDto item)
   {
-    if (_expanded.Contains(slug)) _expanded.Remove(slug);
-    else                          _expanded.Add(slug);
+    var slug = item.Slug;
+    if (_expanded.Contains(slug))
+    {
+      _expanded.Remove(slug);
+      RemoveDescendants(item);
+    }
+    else
+    {
+      _expanded.Add(slug);
+    }
 
     var toStore = JsonSerializer.Serialize(_expanded.ToList());
     await JS.InvokeVoidAsync("localStorage.setItem", StorageKey, toStore);
+  }
+
+  private void RemoveDescendants(MenuItemDto item)
+  {
+    if (item.Children == null) return;
+    foreach (var child in item.Children)
+    {
+      _expanded.Remove(child.Slug);
+      RemoveDescendants(child);
+    }
   }
 
   private bool IsExpanded(string slug) => _expanded.Contains(slug);
