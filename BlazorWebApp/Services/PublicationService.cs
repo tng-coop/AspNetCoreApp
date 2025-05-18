@@ -20,10 +20,12 @@ namespace BlazorWebApp.Services
             await using var db = CreateDb();
             var pub = new Publication
             {
-                Id        = Guid.NewGuid(),
-                Title     = dto.Title,
-                Html      = dto.Html,
-                CreatedAt = DateTimeOffset.UtcNow
+                Id           = Guid.NewGuid(),
+                Title        = dto.Title,
+                Html         = dto.Html,
+                IsFeatured   = dto.IsFeatured,
+                FeaturedOrder = dto.FeaturedOrder,
+                CreatedAt    = DateTimeOffset.UtcNow
             };
             db.Publications.Add(pub);
             await db.SaveChangesAsync();
@@ -111,8 +113,10 @@ namespace BlazorWebApp.Services
             });
 
             // 2) apply the update
-            pub.Title = dto.Title;
-            pub.Html  = dto.Html;
+            pub.Title        = dto.Title;
+            pub.Html         = dto.Html;
+            pub.IsFeatured   = dto.IsFeatured;
+            pub.FeaturedOrder = dto.FeaturedOrder;
 
             // 3) reassign category
             var existing = db.PublicationCategories.Where(pc => pc.PublicationId == id);
@@ -190,6 +194,8 @@ namespace BlazorWebApp.Services
             Title        = p.Title,
             Html         = p.Html,
             Status       = p.Status.ToString(),
+            IsFeatured   = p.IsFeatured,
+            FeaturedOrder = p.FeaturedOrder,
             CreatedAt    = p.CreatedAt,
             PublishedAt  = p.PublishedAt,
             CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
