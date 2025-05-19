@@ -221,9 +221,9 @@ namespace BlazorWebApp.Services
             FeaturedOrder = p.FeaturedOrder,
             CreatedAt    = p.CreatedAt,
             PublishedAt  = p.PublishedAt,
-           CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
-            CategoryName = p.PublicationCategories.FirstOrDefault()?.Category.Name,
-            CategorySlug = p.PublicationCategories.FirstOrDefault()?.Category.Slug
+            CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
+            CategoryName = p.PublicationCategories.FirstOrDefault()?.Category?.Name,
+            CategorySlug = p.PublicationCategories.FirstOrDefault()?.Category?.Slug
         };
 
         private static async Task<string> GenerateUniqueSlugAsync(
