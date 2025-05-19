@@ -1,10 +1,13 @@
 ﻿@inherits LayoutComponentBase
 @layout BlazorWebApp.Components.Layout.MainLayout
+@using Microsoft.Extensions.Localization
 
-<h1>Manage your account</h1>
+@inject IStringLocalizer<ManageLayout> L
+
+<h1>@L["Manage your account"]</h1>
 
 <div>
-    <h2>Change your account settings</h2>
+    <h2>@L["Change your account settings"]</h2>
     <hr />
     <div class="row">
         <div class="col-lg-3">

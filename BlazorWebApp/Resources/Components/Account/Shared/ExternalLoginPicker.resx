@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="There are no external authentication services configured." xml:space="preserve"><value>There are no external authentication services configured.</value></data>
+  <data name="See this" xml:space="preserve"><value>See this</value></data>
+  <data name="article" xml:space="preserve"><value>article</value></data>
+  <data name="about setting up this ASP.NET application to support logging in via external services." xml:space="preserve"><value>about setting up this ASP.NET application to support logging in via external services.</value></data>
+  <data name="Log in using your {0} account" xml:space="preserve"><value>Log in using your {0} account</value></data>
+</root>
