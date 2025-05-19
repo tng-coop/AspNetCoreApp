@@ -1,4 +1,4 @@
-@page "/publications"
+@page "/_cms/publications"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @inject IPublicationService PublicationService
@@ -20,7 +20,7 @@
     @foreach (var p in draftPubs)
     {
         <li>
-            <a href="/editor/@p.Id"><strong>@p.Title</strong></a>
+            <a href="/_cms/editor/@p.Id"><strong>@p.Title</strong></a>
             <small class="text-muted ms-2">@p.CreatedAt:g</small>
             @if (!string.IsNullOrEmpty(GetCategoryPath(p)))
             {
@@ -35,7 +35,7 @@
     @foreach (var p in publishedPubs)
     {
         <li>
-            <a href="/@GetCatSlug(p)/@p.Slug"><strong>@p.Title</strong></a>
+            <a href="/_cms/@GetCatSlug(p)/@p.Slug"><strong>@p.Title</strong></a>
             <small class="text-muted ms-2">@p.PublishedAt!.Value:g</small>
             @if (!string.IsNullOrEmpty(GetCategoryPath(p)))
             {
