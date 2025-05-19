@@ -2,8 +2,10 @@
 @using System.Net
 @using BlazorWebApp.Models
 @using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
 @inject IJSRuntime JS
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IStringLocalizer<TreeMenu> L
 
 <ul class="nav flex-column tree-menu">
   @foreach (var item in Items)
@@ -17,7 +19,7 @@
                   class="btn btn-sm p-0 me-1"
                   @onclick:stopPropagation
                   @onclick="() => OnChevronClick(item)"
-                  aria-label="Toggle">
+                  aria-label='@L["Toggle"]'>
             @if (IsExpanded(item.Slug))
             {
               <!-- chevron-down -->

@@ -1,10 +1,12 @@
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using Microsoft.Extensions.Localization
 @implements IDisposable
 @rendermode InteractiveServer
 
 @inject NavigationManager NavigationManager
 @inject ITreeMenuService    TreeMenuService
+@inject IStringLocalizer<NavMenu> L
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -14,7 +16,7 @@
 
 <input
     type="checkbox"
-    title="Navigation menu"
+    title='@L["Navigation menu"]'
     class="navbar-toggler"
     @bind="isMenuOpen" />
 
@@ -26,7 +28,7 @@
           <Authorized>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @L["Dashboard"]
                 </NavLink>
             </div>
           </Authorized>
@@ -36,7 +38,7 @@
         <div class="nav-item px-3">
             @if (treeItems is null)
             {
-                <em>Loading…</em>
+                <em>@L["Loading…"]</em>
             }
             else
             {
@@ -49,12 +51,12 @@
           <Authorized>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="_cms/publications" Match="NavLinkMatch.All">
-                    <span class="bi bi-book"></span> Publications
+                    <span class="bi bi-book"></span> @L["Publications"]
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="_cms/editor">
-                    <span class="bi bi-plus-circle"></span> New Publication
+                    <span class="bi bi-plus-circle"></span> @L["New Publication"]
                 </NavLink>
             </div>
           </Authorized>
@@ -74,7 +76,7 @@
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="@currentUrl" />
                         <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> @L["Logout"]
                         </button>
                     </form>
                 </div>
@@ -82,12 +84,12 @@
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> @L["Register"]
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> @L["Login"]
                     </NavLink>
                 </div>
             </NotAuthorized>

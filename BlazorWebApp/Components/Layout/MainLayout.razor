@@ -2,8 +2,10 @@
 @inject BlazorWebApp.Services.ICategoryService    CategoryService
 
 @using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
 @inject BlazorWebApp.Services.ITenantProvider TenantProvider
 @inject NavigationManager Nav
+@inject IStringLocalizer<MainLayout> L
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
@@ -29,8 +31,8 @@
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
+    @L["An unhandled error has occurred."]
+    <a href="." class="reload">@L["Reload"]</a>
     <span class="dismiss">🗙</span>
 </div>
 
