@@ -8,10 +8,11 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject IStringLocalizer<Index> L
 
-<PageTitle>Profile</PageTitle>
+<PageTitle>@L["Profile"]</PageTitle>
 
-<h3>Profile</h3>
+<h3>@L["Profile"]</h3>
 <StatusMessage />
 
 <div class="row">
@@ -65,7 +66,7 @@
         }
 
         await SignInManager.RefreshSignInAsync(user);
-        RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
+        RedirectManager.RedirectToCurrentPageWithStatus(L["Your profile has been updated"], HttpContext);
     }
 
     private sealed class InputModel

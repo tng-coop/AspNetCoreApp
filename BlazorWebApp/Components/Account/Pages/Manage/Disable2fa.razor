@@ -6,12 +6,13 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject IStringLocalizer<Disable2fa> L
 @inject ILogger<Disable2fa> Logger
 
-<PageTitle>Disable two-factor authentication (2FA)</PageTitle>
+<PageTitle>@L["Disable two-factor authentication (2FA)"]</PageTitle>
 
 <StatusMessage />
-<h3>Disable two-factor authentication (2FA)</h3>
+<h3>@L["Disable two-factor authentication (2FA)"]</h3>
 
 <div class="alert alert-warning" role="alert">
     <p>
@@ -26,7 +27,7 @@
 <div>
     <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
         <AntiforgeryToken />
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
+        <button class="btn btn-danger" type="submit">@L["Disable 2FA"]</button>
     </form>
 </div>
 
@@ -58,7 +59,7 @@
         Logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", userId);
         RedirectManager.RedirectToWithStatus(
             "Account/Manage/TwoFactorAuthentication",
-            "2fa has been disabled. You can reenable 2fa when you setup an authenticator app",
+            L["2fa has been disabled. You can reenable 2fa when you setup an authenticator app"],
             HttpContext);
     }
 }

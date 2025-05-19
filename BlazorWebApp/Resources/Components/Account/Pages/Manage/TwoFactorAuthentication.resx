@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Two-factor authentication (2FA)" xml:space="preserve"><value>Two-factor authentication (2FA)</value></data>
+  <data name="Forget this browser" xml:space="preserve"><value>Forget this browser</value></data>
+  <data name="Disable 2FA" xml:space="preserve"><value>Disable 2FA</value></data>
+  <data name="Reset recovery codes" xml:space="preserve"><value>Reset recovery codes</value></data>
+  <data name="Add authenticator app" xml:space="preserve"><value>Add authenticator app</value></data>
+  <data name="Set up authenticator app" xml:space="preserve"><value>Set up authenticator app</value></data>
+  <data name="Reset authenticator app" xml:space="preserve"><value>Reset authenticator app</value></data>
+  <data name="The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code." xml:space="preserve"><value>The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.</value></data>
+</root>

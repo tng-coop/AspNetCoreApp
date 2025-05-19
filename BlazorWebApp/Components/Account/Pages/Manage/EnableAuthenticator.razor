@@ -14,8 +14,9 @@
 @inject UrlEncoder UrlEncoder
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
+@inject IStringLocalizer<EnableAuthenticator> L
 
-<PageTitle>Configure authenticator app</PageTitle>
+<PageTitle>@L["Configure authenticator app"]</PageTitle>
 
 @if (recoveryCodes is not null)
 {
@@ -24,7 +25,7 @@
 else
 {
     <StatusMessage Message="@message" />
-    <h3>Configure authenticator app</h3>
+    <h3>@L["Configure authenticator app"]</h3>
     <div>
         <p>To use an authenticator app go through the following steps:</p>
         <ol class="list">
@@ -66,7 +67,7 @@ else
                                 <label for="Input.Code" class="control-label form-label">Verification Code</label>
                                 <ValidationMessage For="() => Input.Code" class="text-danger" />
                             </div>
-                            <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
+                            <button type="submit" class="w-100 btn btn-lg btn-primary">@L["Verify"]</button>
                             <ValidationSummary class="text-danger" role="alert" />
                         </EditForm>
                     </div>
