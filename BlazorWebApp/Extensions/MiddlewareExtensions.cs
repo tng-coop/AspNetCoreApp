@@ -1,4 +1,5 @@
 using Microsoft.Extensions.FileProviders;
+using System.Globalization;
 
 namespace BlazorWebApp.Extensions;
 
@@ -27,6 +28,18 @@ public static class MiddlewareExtensions
                 RequestPath = "/cert"
             });
         }
+
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Cookies.TryGetValue("blazorCulture", out var culture))
+            {
+                var cultureInfo = new CultureInfo(culture);
+                CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+                CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+            }
+
+            await next();
+        });
 
         // Migrations and error handling
         if (app.Environment.IsDevelopment())

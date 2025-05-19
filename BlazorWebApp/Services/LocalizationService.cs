@@ -22,9 +22,10 @@ public class LocalizationService
         _js = js;
         _authStateProvider = authStateProvider;
         _userManager = userManager;
+        CurrentCulture = CultureInfo.CurrentCulture;
     }
 
-    public CultureInfo CurrentCulture { get; private set; } = new("en");
+    public CultureInfo CurrentCulture { get; private set; }
 
     public async Task LoadCultureAsync()
     {

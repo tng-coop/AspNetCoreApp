@@ -9,10 +9,13 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject BlazorWebApp.Services.LocalizationService Localization
+@implements IDisposable
 
 <PageTitle>Log in</PageTitle>
 
 <h1>Log in</h1>
+<p class="current-language">@GetCurrentCultureLabel()</p>
 <div class="row">
     <div class="col-lg-6">
         <section>
@@ -67,6 +70,8 @@
 @code {
     private string? errorMessage;
 
+    private bool initialized = false;
+
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
@@ -75,6 +80,17 @@
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            await Localization.LoadCultureAsync();
+            Localization.OnChange += StateHasChanged;
+            initialized = true;
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,5 +140,15 @@
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+    }
+
+    private string GetCurrentCultureLabel()
+    {
+        return Localization.CurrentCulture.Name == "en" ? "EN" : "JA";
+    }
+
+    public void Dispose()
+    {
+        Localization.OnChange -= StateHasChanged;
     }
 }
