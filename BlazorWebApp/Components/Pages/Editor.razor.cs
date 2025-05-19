@@ -143,7 +143,7 @@ private async Task HandleSubmit()
         var categories = await CategoryService.ListAsync();
         catSlug = categories.FirstOrDefault(c => c.Id == catId)?.Slug ?? string.Empty;
       }
-      var target = $"/{catSlug}/{pub?.Slug}".Replace("//", "/");
+      var target = $"/_cms/{catSlug}/{pub?.Slug}".Replace("//", "/");
       Nav.NavigateTo(target);
     }
   }
