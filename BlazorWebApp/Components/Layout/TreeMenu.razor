@@ -1,7 +1,9 @@
 @using System.Text.Json
+@using System.Net
 @using BlazorWebApp.Models
 @using Microsoft.AspNetCore.Components
 @inject IJSRuntime JS
+@inject IHttpContextAccessor HttpContextAccessor
 
 <ul class="nav flex-column tree-menu">
   @foreach (var item in Items)
@@ -65,17 +67,36 @@
   private HashSet<string> _expanded = new();
   private const string StorageKey = "treeMenuExpanded";
 
+  protected override void OnInitialized()
+  {
+    var cookie = HttpContextAccessor.HttpContext?.Request.Cookies[StorageKey];
+    if (!string.IsNullOrEmpty(cookie))
+    {
+      try
+      {
+        var saved = JsonSerializer.Deserialize<List<string>>(WebUtility.UrlDecode(cookie))!;
+        _expanded = new HashSet<string>(saved);
+      }
+      catch { }
+    }
+  }
+
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
     if (firstRender)
     {
-      var json = await JS.InvokeAsync<string>("localStorage.getItem", StorageKey);
-      if (!string.IsNullOrEmpty(json))
+      if (_expanded.Count == 0)
       {
-        var saved = JsonSerializer.Deserialize<List<string>>(json)!;
-        _expanded = new HashSet<string>(saved);
-        StateHasChanged();
+        var json = await JS.InvokeAsync<string>("treeMenuState.load");
+        if (!string.IsNullOrEmpty(json))
+        {
+          var saved = JsonSerializer.Deserialize<List<string>>(json)!;
+          _expanded = new HashSet<string>(saved);
+          StateHasChanged();
+        }
       }
+
+      await JS.InvokeVoidAsync("treeMenuState.save", _expanded.ToList());
     }
   }
 
@@ -94,8 +115,7 @@
       _expanded.Add(slug);
     }
 
-    var toStore = JsonSerializer.Serialize(_expanded.ToList());
-    await JS.InvokeVoidAsync("localStorage.setItem", StorageKey, toStore);
+    await JS.InvokeVoidAsync("treeMenuState.save", _expanded.ToList());
   }
 
   private void RemoveDescendants(MenuItemDto item)
