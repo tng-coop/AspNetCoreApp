@@ -136,7 +136,15 @@ private async Task HandleSubmit()
     if (loadedExisting && Id.HasValue)
     {
       await PublicationService.PublishAsync(Id.Value);
-      Nav.NavigateTo($"/publications/{Id}");
+      var pub = await PublicationService.GetAsync(Id.Value);
+      string catSlug = string.Empty;
+      if (pub?.CategoryId is Guid catId)
+      {
+        var categories = await CategoryService.ListAsync();
+        catSlug = categories.FirstOrDefault(c => c.Id == catId)?.Slug ?? string.Empty;
+      }
+      var target = $"/{catSlug}/{pub?.Slug}".Replace("//", "/");
+      Nav.NavigateTo(target);
     }
   }
 

@@ -47,7 +47,7 @@ namespace BlazorWebApp.Services
                         {
                             Id            = pub.Id,
                             Title         = pub.Title,
-                            Slug          = $"publications/{pub.Id}",
+                            Slug          = $"{cat.Slug}/{pub.Slug}",
                             IconCss       = "bi-file-earmark-text",
                             SortOrder     = 0,
                             ContentItemId = pub.Id,

@@ -36,7 +36,7 @@ else
         {
             <article class="mb-4">
                 <h5>
-                    <NavLink href="@($"/publications/{p.Id}")" Match="NavLinkMatch.Prefix">
+                    <NavLink href="@($"/{Slug}/{p.Slug}")" Match="NavLinkMatch.Prefix">
                         @p.Title
                     </NavLink>
                 </h5>
@@ -61,7 +61,7 @@ else
             var firstPost = posts[0];
             <article>
                 <h5>
-                    <NavLink href="@($"/publications/{firstPost.Id}")" Match="NavLinkMatch.Prefix">
+                    <NavLink href="@($"/{Slug}/{firstPost.Slug}")" Match="NavLinkMatch.Prefix">
                         @firstPost.Title
                     </NavLink>
                 </h5>
@@ -80,7 +80,7 @@ else
                 {
                     var p = posts[i];
                     <li class="mb-2">
-                        <NavLink href="@($"/publications/{p.Id}")" Match="NavLinkMatch.Prefix">
+                        <NavLink href="@($"/{Slug}/{p.Slug}")" Match="NavLinkMatch.Prefix">
                             <strong>@p.Title</strong>
                         </NavLink>
                         <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>

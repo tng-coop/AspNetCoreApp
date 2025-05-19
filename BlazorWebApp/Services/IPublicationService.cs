@@ -10,6 +10,7 @@ namespace BlazorWebApp.Services
         Task<PublicationReadDto> CreateAsync(PublicationWriteDto dto);
         Task<List<PublicationReadDto>> ListAsync();
         Task<PublicationReadDto?> GetAsync(Guid id);
+        Task<PublicationReadDto?> GetBySlugAsync(string slug);
         Task PublishAsync(Guid id);
         Task UpdateAsync(Guid id, PublicationWriteDto dto);
         Task UnpublishAsync(Guid id);

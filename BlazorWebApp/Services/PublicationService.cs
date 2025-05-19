@@ -69,6 +69,15 @@ namespace BlazorWebApp.Services
             return p == null ? null : ToDto(p);
         }
 
+        public async Task<PublicationReadDto?> GetBySlugAsync(string slug)
+        {
+            await using var db = CreateDb();
+            var p = await db.Publications
+                .Include(pu => pu.PublicationCategories).ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(pu => pu.Slug == slug);
+            return p == null ? null : ToDto(p);
+        }
+
         public async Task PublishAsync(Guid id)
         {
             await using var db = CreateDb();
@@ -212,8 +221,9 @@ namespace BlazorWebApp.Services
             FeaturedOrder = p.FeaturedOrder,
             CreatedAt    = p.CreatedAt,
             PublishedAt  = p.PublishedAt,
-            CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
-            CategoryName = p.PublicationCategories.FirstOrDefault()?.Category.Name
+           CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
+            CategoryName = p.PublicationCategories.FirstOrDefault()?.Category.Name,
+            CategorySlug = p.PublicationCategories.FirstOrDefault()?.Category.Slug
         };
 
         private static async Task<string> GenerateUniqueSlugAsync(

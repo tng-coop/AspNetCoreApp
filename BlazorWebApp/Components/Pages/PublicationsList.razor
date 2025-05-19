@@ -35,7 +35,7 @@
     @foreach (var p in publishedPubs)
     {
         <li>
-            <a href="/publications/@p.Id"><strong>@p.Title</strong></a>
+            <a href="/@GetCatSlug(p)/@p.Slug"><strong>@p.Title</strong></a>
             <small class="text-muted ms-2">@p.PublishedAt!.Value:g</small>
             @if (!string.IsNullOrEmpty(GetCategoryPath(p)))
             {
@@ -49,10 +49,12 @@
     private List<PublicationReadDto> draftPubs = new();
     private List<PublicationReadDto> publishedPubs = new();
     private Dictionary<Guid, string> _categoryPaths = new();
+    private Dictionary<Guid, string> _categorySlugs = new();
 
     protected override async Task OnInitializedAsync()
     {
         var pubs = await PublicationService.ListAsync();
+        var categories = await CategoryService.ListAsync();
 
         // Build full category paths
         foreach (var p in pubs.Where(x => x.CategoryId.HasValue))
@@ -64,6 +66,9 @@
                                  .Append(p.CategoryName!)
                                  .ToList();
             _categoryPaths[p.Id] = string.Join(" > ", crumbs);
+            var catSlug = categories.FirstOrDefault(c => c.Id == p.CategoryId.Value)?.Slug;
+            if (!string.IsNullOrEmpty(catSlug))
+                _categorySlugs[p.Id] = catSlug;
         }
 
         // Sort and split by status
@@ -82,4 +87,7 @@
 
     private string GetCategoryPath(PublicationReadDto p)
         => _categoryPaths.TryGetValue(p.Id, out var path) ? path : string.Empty;
+
+    private string GetCatSlug(PublicationReadDto p)
+        => _categorySlugs.TryGetValue(p.Id, out var slug) ? slug : string.Empty;
 }

@@ -15,7 +15,8 @@ public int    FeaturedOrder { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? PublishedAt { get; set; }
         // Category info 
-        public Guid? CategoryId { get; set; } 
+        public Guid? CategoryId { get; set; }
         public string? CategoryName { get; set; }
+        public string? CategorySlug { get; set; }
     }
 }

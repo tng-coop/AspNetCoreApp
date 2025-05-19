@@ -1,3 +1,4 @@
+@page "/{CategorySlug}/{Slug}"
 @page "/publications/{Id:guid}"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
@@ -44,14 +45,27 @@ else
 }
 
 @code {
-    [Parameter] public Guid Id { get; set; }
+    [Parameter] public Guid? Id { get; set; }
+    [Parameter] public string CategorySlug { get; set; } = string.Empty;
+    [Parameter] public string Slug { get; set; } = string.Empty;
 
     private PublicationReadDto? pub;
     private string fullCategoryPath = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
-        pub = await PublicationService.GetAsync(Id);
+        if (Id.HasValue)
+        {
+            pub = await PublicationService.GetAsync(Id.Value);
+        }
+        else if (!string.IsNullOrEmpty(Slug))
+        {
+            pub = await PublicationService.GetBySlugAsync(Slug);
+        }
+        else
+        {
+            pub = null;
+        }
 
         if (pub?.CategoryId != null)
         {
