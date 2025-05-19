@@ -1,5 +1,4 @@
 using BlazorWebApp.Components;
-using BlazorWebApp.Modules.Cms;
 
 namespace BlazorWebApp.Extensions;
 
@@ -10,8 +9,7 @@ public static class EndpointMappingExtensions
 
         app.MapGet("/api/hello", () => Results.Ok("Hello from API!"));
 
-        // ⬇️ Ensure this is added:
-        app.MapCmsEndpoints();
+        // Additional API endpoints can be added here
     
         // Blazor render
         app.MapRazorComponents<App>()

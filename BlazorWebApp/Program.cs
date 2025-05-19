@@ -26,7 +26,7 @@ var app = builder.Build();
 // Configure middleware and endpoints via extension methods
 app
   .UseCustomMiddleware()
-  .MapEndpoints();  // which now internally calls MapCmsEndpoints
+  .MapEndpoints();
 
 // Seed data
 await DataSeeder.SeedAsync(app);
