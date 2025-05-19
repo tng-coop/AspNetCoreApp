@@ -31,8 +31,8 @@ namespace BlazorWebApp.Data.Seeders
 
             var now = DateTimeOffset.UtcNow;
 
-            // define raw publications: (slug, html, status, createdOffsetDays, publishedOffsetDays?)
-            var rawPubs = new (string? Slug, string Html, PublicationStatus Status, int CreatedOffset, int? PublishedOffset)[]
+            // define raw publications: (categorySlug, html, status, createdOffsetDays, publishedOffsetDays?)
+            var rawPubs = new (string? CategorySlug, string Html, PublicationStatus Status, int CreatedOffset, int? PublishedOffset)[]
             {
                 ("about",         "<h1>Welcome</h1><p>This is your first post. Edit me!</p>",          PublicationStatus.Published,   -7, -6),
                 ("ministries",    "<h2>Ministries Begin</h2><p>Ministries launch details...</p>",   PublicationStatus.Published,   -5, -4),
@@ -58,18 +58,18 @@ namespace BlazorWebApp.Data.Seeders
                 var pub = new Publication
                 {
                     Id = Guid.NewGuid(),
-                    Title = GenerateTitle(entry.Slug, i),
-                    Slug = entry.Slug ?? Utils.SlugGenerator.Generate(GenerateTitle(entry.Slug, i)),
+                    Title = GenerateTitle(entry.CategorySlug, i),
+                    Slug = Utils.SlugGenerator.Generate(GenerateTitle(entry.CategorySlug, i)),
                     Html = WrapWithImage(entry.Html, file),
                     Status = entry.Status,
-                      IsFeatured    = entry.Slug == "about",      // or whatever logic
-  FeaturedOrder = entry.Slug == "about" ? 1 : 0,
+                    IsFeatured    = entry.CategorySlug == "about",
+                    FeaturedOrder = entry.CategorySlug == "about" ? 1 : 0,
                     CreatedAt = now.AddDays(entry.CreatedOffset),
                     PublishedAt = entry.PublishedOffset.HasValue
                                   ? now.AddDays(entry.PublishedOffset.Value)
                                   : (DateTimeOffset?)null
                 };
-                return (Pub: pub, CategorySlug: entry.Slug);
+                return (Pub: pub, CategorySlug: entry.CategorySlug);
             }).ToList();
 
             // save publications
