@@ -64,8 +64,8 @@
                 var cat    = cats.FirstOrDefault(c => c.Id == pub.CategoryId.Value);
                 var catSlug = cat?.Slug ?? "";
 
-                // generate a URL‐friendly slug from the title
-                var pubSlug = GenerateSlug(pub.Title);
+                // use the stored slug, which may include an override
+                var pubSlug = pub.Slug;
 
                 previewUrl = $"/{tenant}/{catSlug}/{pubSlug}";
                 return;
@@ -78,30 +78,6 @@
         else
             previewUrl = $"/{tenant}/{relative}";
     }
-
-    // simple slugify helper
-    private static string GenerateSlug(string title)
-    {
-        var slug = title
-            .ToLowerInvariant()
-            .Replace(" ", "-")
-            .Replace(":", "")
-            .Replace("’", "")
-            .Replace("'", "")
-            .Replace("…", "")
-            .Replace("--", "-")
-            .Trim('-');
-        return slug;
-    }
-
-
-
-
-
-
-
-
-
 
     protected override void OnInitialized()
     {
