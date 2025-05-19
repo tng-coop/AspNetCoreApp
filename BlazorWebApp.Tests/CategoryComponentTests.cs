@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BlazorWebApp.Components.Pages;
 using BlazorWebApp.Models;
@@ -29,6 +30,8 @@ public class CategoryComponentTests : TestContext
         }
         public Task<List<PublicationReadDto>> ListAsync() => Task.FromResult(_all);
         public Task<List<PublicationReadDto>> ListFeaturedInCategoryAsync(Guid categoryId) => Task.FromResult(_featured);
+        public Task<PublicationReadDto?> GetBySlugAsync(string slug)
+            => Task.FromResult(_all.FirstOrDefault(p => p.Slug == slug));
         // Unused interface members
         public Task<PublicationReadDto> CreateAsync(PublicationWriteDto dto) => throw new NotImplementedException();
         public Task<PublicationReadDto?> GetAsync(Guid id) => throw new NotImplementedException();
@@ -50,6 +53,7 @@ public class CategoryComponentTests : TestContext
         {
             Id = Guid.NewGuid(),
             Title = "Featured Post",
+            Slug = "featured-post",
             PublishedAt = DateTimeOffset.Now,
             CategoryId = catId
         };
