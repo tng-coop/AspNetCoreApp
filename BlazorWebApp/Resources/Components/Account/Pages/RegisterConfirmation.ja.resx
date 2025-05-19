@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Register confirmation" xml:space="preserve"><value>登録確認</value></data>
+  <data name="This app does not currently have a real email sender registered, see" xml:space="preserve"><value>このアプリには実際のメール送信機能がありません。詳細は</value></data>
+  <data name="these docs" xml:space="preserve"><value>こちらのドキュメント</value></data>
+  <data name="for how to configure a real email sender." xml:space="preserve"><value>を参照してください。</value></data>
+  <data name="Normally this would be emailed:" xml:space="preserve"><value>通常はメールで送信されます：</value></data>
+  <data name="Click here to confirm your account" xml:space="preserve"><value>アカウントを確認するにはこちらをクリック</value></data>
+  <data name="Please check your email to confirm your account." xml:space="preserve"><value>アカウントを確認するためにメールを確認してください。</value></data>
+</root>

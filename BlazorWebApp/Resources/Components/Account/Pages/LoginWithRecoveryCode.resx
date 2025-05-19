@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Recovery code verification" xml:space="preserve"><value>Recovery code verification</value></data>
+  <data name="You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again." xml:space="preserve"><value>You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again.</value></data>
+  <data name="RecoveryCode" xml:space="preserve"><value>RecoveryCode</value></data>
+  <data name="Recovery Code" xml:space="preserve"><value>Recovery Code</value></data>
+  <data name="Log in" xml:space="preserve"><value>Log in</value></data>
+  <data name="Error: Invalid recovery code entered." xml:space="preserve"><value>Error: Invalid recovery code entered.</value></data>
+</root>
