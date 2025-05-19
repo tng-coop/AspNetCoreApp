@@ -12,3 +12,8 @@ This file outlines future plans for slug handling in the project.
 
 After modifying slug-related logic, run the existing test suite to ensure everything functions as expected. Use `dotnet test` for unit tests and `npm test` for any JavaScript-based checks.
 
+## EF Migration Handling
+
+- dotnet EF migrations are not automatically managed by the agent.
+- Do not run `dotnet ef migrations` or related commands. The project maintainer manually runs the `reset-db-and-migrations.sh` script via their CLI.
+
