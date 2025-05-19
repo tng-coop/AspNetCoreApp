@@ -1,6 +1,7 @@
 @using BlazorWebApp.Services
 @implements IDisposable
 @inject LocalizationService Localization
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <div class="dropdown lang-switch">
@@ -45,6 +46,12 @@
     {
         isDropdownOpen = false;
         await Localization.SetCultureAsync(culture);
+
+        var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (relative.StartsWith("Account", StringComparison.OrdinalIgnoreCase))
+        {
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        }
     }
 
     private string GetCurrentCultureLabel()
