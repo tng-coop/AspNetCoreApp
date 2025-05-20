@@ -67,4 +67,43 @@ public class CategoryComponentTests : TestContext
         Assert.Contains("Featured Post", cut.Markup);
         Assert.DoesNotContain("No published articles in this category", cut.Markup);
     }
+
+    [Fact]
+    public void DraftPostsAreNotRendered()
+    {
+        // Arrange services
+        var catId = Guid.NewGuid();
+        var categories = new List<CategoryDto> { new() { Id = catId, Name = "Test", Slug = "test-cat" } };
+
+        var published = new PublicationReadDto
+        {
+            Id = Guid.NewGuid(),
+            Title = "Published Post",
+            Slug = "published-post",
+            PublishedAt = DateTimeOffset.Now,
+            Status = "Published",
+            CategoryId = catId
+        };
+
+        var draft = new PublicationReadDto
+        {
+            Id = Guid.NewGuid(),
+            Title = "Draft Post",
+            Slug = "draft-post",
+            Status = "Draft",
+            CategoryId = catId
+        };
+
+        Services.AddSingleton<ICategoryService>(new StubCategoryService(categories));
+        Services.AddSingleton<IPublicationService>(new StubPublicationService(
+            new List<PublicationReadDto> { published, draft },
+            new List<PublicationReadDto>()));
+
+        // Act
+        var cut = RenderComponent<Category>(parameters => parameters.Add(p => p.Slug, "test-cat"));
+
+        // Assert
+        Assert.Contains("Published Post", cut.Markup);
+        Assert.DoesNotContain("Draft Post", cut.Markup);
+    }
 }

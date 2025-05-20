@@ -114,7 +114,8 @@ else
 
         // 2) load all published posts in this category
         var all = (await PublicationService.ListAsync())
-                    .Where(p => p.CategoryId == category.Id)
+                    .Where(p => p.CategoryId == category.Id
+                                && p.Status == "Published")
                     .OrderByDescending(p => p.PublishedAt)
                     .ToList();
 
