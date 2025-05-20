@@ -23,6 +23,19 @@
 <div class="nav-scrollable" @onclick="CollapseMenu">
     <nav class="nav flex-column">
 
+
+        <!-- CMS tree (always visible) -->
+        <div class="nav-item px-3">
+            @if (treeItems is null)
+            {
+                <em>@L["Loading…"]</em>
+            }
+            else
+            {
+        <TreeMenu Items="treeItems" />
+        }
+    </div>
+
         <!-- Dashboard (only for logged-in users) -->
         <AuthorizeView>
           <Authorized>
@@ -33,18 +46,6 @@
             </div>
           </Authorized>
         </AuthorizeView>
-
-        <!-- CMS tree (always visible) -->
-        <div class="nav-item px-3">
-            @if (treeItems is null)
-            {
-                <em>@L["Loading…"]</em>
-            }
-            else
-            {
-                <TreeMenu Items="treeItems" />
-            }
-        </div>
 
         <!-- Publication links (only for logged-in users) -->
         <AuthorizeView>
