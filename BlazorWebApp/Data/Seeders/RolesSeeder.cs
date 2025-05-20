@@ -5,7 +5,7 @@ namespace BlazorWebApp.Data.Seeders
 {
     public static class RolesSeeder
     {
-        private static readonly string[] DefaultRoles = { "Member", "Admin" };
+        private static readonly string[] DefaultRoles = { "Member", "Admin", "SuperAdmin" };
 
         public static async Task SeedAsync(RoleManager<IdentityRole> roleMgr)
         {
