@@ -55,6 +55,18 @@
     }
   </div>
 
+  <!-- Featured -->
+  <div class="form-check mb-3">
+    <InputCheckbox class="form-check-input" @bind-Value="dto.IsFeatured" id="isFeatured" />
+    <label class="form-check-label" for="isFeatured">Featured</label>
+  </div>
+
+  <!-- Featured Order -->
+  <div class="mb-3">
+    <label class="form-label" for="featuredOrder">Featured Order</label>
+    <InputNumber class="form-control" @bind-Value="dto.FeaturedOrder" id="featuredOrder" />
+  </div>
+
   <!-- TinyMCE Editor -->
   <div class="mb-3">
     <label class="form-label">Content</label>

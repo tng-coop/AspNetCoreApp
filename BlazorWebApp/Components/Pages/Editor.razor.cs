@@ -99,6 +99,8 @@ function(data, resolve) {
         dto.Title = existing.Title;
         dto.Slug = existing.Slug;
         dto.Html = existing.Html;
+        dto.IsFeatured = existing.IsFeatured;
+        dto.FeaturedOrder = existing.FeaturedOrder;
         // load revisions
         revisions = await PublicationService.ListRevisionsAsync(Id.Value);
       }
@@ -160,6 +162,8 @@ private async Task HandleSubmit()
     dto.Title = updated.Title;
     dto.Html = updated.Html;
     dto.CategoryId = updated.CategoryId;
+    dto.IsFeatured = updated.IsFeatured;
+    dto.FeaturedOrder = updated.FeaturedOrder;
 
     // reload history
     if (Id is Guid pubId)
