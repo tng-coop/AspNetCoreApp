@@ -42,6 +42,12 @@ else
             </button>
         </div>
     </AuthorizeView>
+
+    <div class="mt-4">
+        <NavLink href="@($"/_cms/{pub?.CategorySlug}")" Match="NavLinkMatch.Prefix">
+            Back to @pub?.CategoryName
+        </NavLink>
+    </div>
 }
 
 @code {
