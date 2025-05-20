@@ -37,15 +37,13 @@ namespace BlazorWebApp.Services
             db.Publications.Add(pub);
             await db.SaveChangesAsync();
 
-            if (dto.CategoryId.HasValue)
+            var catId = dto.CategoryId ?? await GetUncategorizedIdAsync(db);
+            db.PublicationCategories.Add(new PublicationCategory
             {
-                db.PublicationCategories.Add(new PublicationCategory
-                {
-                    PublicationId = pub.Id,
-                    CategoryId    = dto.CategoryId.Value
-                });
-                await db.SaveChangesAsync();
-            }
+                PublicationId = pub.Id,
+                CategoryId    = catId
+            });
+            await db.SaveChangesAsync();
 
             return ToDto(pub);
         }
@@ -143,12 +141,12 @@ namespace BlazorWebApp.Services
             // 3) reassign category
             var existing = db.PublicationCategories.Where(pc => pc.PublicationId == id);
             db.PublicationCategories.RemoveRange(existing);
-            if (dto.CategoryId.HasValue)
-                db.PublicationCategories.Add(new PublicationCategory
-                {
-                    PublicationId = id,
-                    CategoryId    = dto.CategoryId.Value
-                });
+            var catId = dto.CategoryId ?? await GetUncategorizedIdAsync(db);
+            db.PublicationCategories.Add(new PublicationCategory
+            {
+                PublicationId = id,
+                CategoryId    = catId
+            });
 
             await db.SaveChangesAsync();
         }
@@ -197,14 +195,12 @@ namespace BlazorWebApp.Services
             // reassign category
             var existing = db.PublicationCategories.Where(pc => pc.PublicationId == pub.Id);
             db.PublicationCategories.RemoveRange(existing);
-            if (rev.CategoryId.HasValue)
+            var catId = rev.CategoryId ?? await GetUncategorizedIdAsync(db);
+            db.PublicationCategories.Add(new PublicationCategory
             {
-                db.PublicationCategories.Add(new PublicationCategory
-                {
-                    PublicationId = pub.Id,
-                    CategoryId    = rev.CategoryId.Value
-                });
-            }
+                PublicationId = pub.Id,
+                CategoryId    = catId
+            });
 
             await db.SaveChangesAsync();
             return ToDto(pub);
@@ -240,7 +236,16 @@ namespace BlazorWebApp.Services
             }
             return slug;
         }
-           public async Task<List<PublicationReadDto>> ListFeaturedInCategoryAsync(Guid categoryId)
+
+        private static async Task<Guid> GetUncategorizedIdAsync(ApplicationDbContext db)
+        {
+            var cat = await db.Categories.FirstOrDefaultAsync(c => c.Slug == "uncategorized");
+            if (cat == null)
+                throw new InvalidOperationException("Uncategorized category missing");
+            return cat.Id;
+        }
+
+        public async Task<List<PublicationReadDto>> ListFeaturedInCategoryAsync(Guid categoryId)
     {
         await using var db = CreateDb();
         return await db.Publications

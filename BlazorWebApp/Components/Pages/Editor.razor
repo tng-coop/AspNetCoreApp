@@ -30,7 +30,6 @@
   <div class="mb-3">
     <label class="form-label">Category</label>
     <InputSelect class="form-select" @bind-Value="dto.CategoryId">
-      <option value="">-- None --</option>
       @foreach (var opt in categoryOptions)
       {
         <option value="@opt.Id">@opt.DisplayName</option>

@@ -84,6 +84,11 @@ function(data, resolve) {
     categoryOptions.Sort((a, b) =>
       string.Compare(a.DisplayName, b.DisplayName, StringComparison.CurrentCulture));
 
+    // Preselect the "Uncategorized" category for new posts
+    var uncategorized = categories.FirstOrDefault(c => c.Slug == "uncategorized");
+    if (!Id.HasValue && dto.CategoryId == null && uncategorized != null)
+      dto.CategoryId = uncategorized.Id;
+
     if (Id.HasValue)
     {
       var existing = await PublicationService.GetAsync(Id.Value);
