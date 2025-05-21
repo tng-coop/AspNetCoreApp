@@ -59,14 +59,15 @@
         // Build full category paths
         foreach (var p in pubs.Where(x => x.CategoryId.HasValue))
         {
-            var ancestry = p.CategoryId.HasValue 
-                ? await CategoryService.GetAncestryAsync(p.CategoryId.Value) 
+            var ancestry = p.CategoryId.HasValue
+                ? await CategoryService.GetAncestryAsync(p.CategoryId.Value)
                 : new List<CategoryDto>();
             var crumbs = ancestry.Select(c => c.Name ?? throw new InvalidOperationException("Category name cannot be null"))
                                  .Append(p.CategoryName!)
                                  .ToList();
             _categoryPaths[p.Id] = string.Join(" > ", crumbs);
-            var catSlug = categories.FirstOrDefault(c => c.Id == p.CategoryId.Value)?.Slug;
+            var categoryId = p.CategoryId ?? throw new InvalidOperationException("CategoryId cannot be null");
+            var catSlug = categories.FirstOrDefault(c => c.Id == categoryId)?.Slug;
             if (!string.IsNullOrEmpty(catSlug))
                 _categorySlugs[p.Id] = catSlug;
         }
