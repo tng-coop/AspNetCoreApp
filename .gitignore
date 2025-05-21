@@ -509,6 +509,7 @@ Uploader/images/*.mp4
 
 BlazorWebApp/a.sh
 /a.sh
+/a.patch
 
 imgcache
 
