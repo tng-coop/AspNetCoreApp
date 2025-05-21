@@ -4,6 +4,7 @@
 @using BlazorWebApp.Utils
 @using Microsoft.AspNetCore.Components
 @using Microsoft.Extensions.Localization
+@using BlazorWebApp.Components.Layout
 @inject IJSRuntime JS
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IStringLocalizer<TreeMenu> L
@@ -58,7 +59,7 @@
       @if (item.Children?.Any() == true && IsExpanded(item.Slug))
       {
         <ul class="nav flex-column ps-2">
-          <TreeMenu Items="item.Children" Prefix="Prefix" />
+          <TreeMenu Items="item.Children" Prefix="@Prefix" />
         </ul>
       }
     </li>

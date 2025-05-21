@@ -1,5 +1,6 @@
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using BlazorWebApp.Utils
 @using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Options
 @implements IDisposable
@@ -38,7 +39,7 @@
             }
             else
             {
-                <TreeMenu Items="treeItems" Prefix="cmsPrefix" />
+                <TreeMenu Items="treeItems" Prefix="@cmsPrefix" />
             }
         </div>
 
