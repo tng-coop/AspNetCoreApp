@@ -2,6 +2,38 @@
 
 <PageTitle>Home</PageTitle>
 
+@using BlazorWebApp.Models
+
+@inject BlazorWebApp.Services.ITenantService TenantService
+
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<h3>Tenants</h3>
+@if (tenants is null)
+{
+    <em>Loading…</em>
+}
+else if (tenants.Count == 0)
+{
+    <em>No tenants found.</em>
+}
+else
+{
+    <ul>
+    @foreach (var t in tenants)
+    {
+        <li>@t.Name (@t.Slug)</li>
+    }
+    </ul>
+}
+
+@code {
+    private List<TenantDto>? tenants;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tenants = await TenantService.ListAsync();
+    }
+}

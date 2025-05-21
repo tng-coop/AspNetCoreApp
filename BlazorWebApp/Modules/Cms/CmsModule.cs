@@ -16,6 +16,7 @@ namespace BlazorWebApp.Modules.Cms
             // Core CMS application services
             services.AddScoped<IPublicationService, PublicationService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<ITreeMenuService, TreeMenuService>();
 
             return services;
