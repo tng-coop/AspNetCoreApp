@@ -1,11 +1,13 @@
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Options
 @implements IDisposable
 @rendermode InteractiveServer
 
 @inject NavigationManager NavigationManager
 @inject ITreeMenuService    TreeMenuService
+@inject IOptions<StubTenantProviderOptions> TenantOptions
 @inject IStringLocalizer<NavMenu> L
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -26,15 +28,19 @@
 
         <!-- CMS tree (always visible) -->
         <div class="nav-item px-3">
-            @if (treeItems is null)
+            @if (!hasDefaultTenant)
+            {
+                <em>@L["NoDefaultTenant"]</em>
+            }
+            else if (treeItems is null)
             {
                 <em>@L["Loading…"]</em>
             }
             else
             {
-        <TreeMenu Items="treeItems" />
-        }
-    </div>
+                <TreeMenu Items="treeItems" />
+            }
+        </div>
 
         <!-- Dashboard (only for logged-in users) -->
         <AuthorizeView>
@@ -103,10 +109,15 @@
     private string? currentUrl;
     private List<MenuItemDto>? treeItems;
     private bool isMenuOpen;
+    private bool hasDefaultTenant;
 
     protected override async Task OnInitializedAsync()
     {
-        treeItems = await TreeMenuService.GetMenuAsync();
+        hasDefaultTenant = !string.IsNullOrWhiteSpace(TenantOptions.Value.DefaultTenantSlug);
+        if (hasDefaultTenant)
+        {
+            treeItems = await TreeMenuService.GetMenuAsync();
+        }
     }
 
     protected override void OnInitialized()
