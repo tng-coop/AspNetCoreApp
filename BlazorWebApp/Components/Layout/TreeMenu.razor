@@ -45,7 +45,7 @@
 
         <NavLink class="nav-link flex-grow-1 px-0"
                  style="height:auto; line-height:2;"
-                 href="@CmsRoutes.Combine(item.Slug)"
+                 href="@CmsRoutes.CombinePrefixed(Prefix, item.Slug)"
                  Match="NavLinkMatch.All">
           @if (!string.IsNullOrEmpty(item.IconCss))
           {
@@ -58,7 +58,7 @@
       @if (item.Children?.Any() == true && IsExpanded(item.Slug))
       {
         <ul class="nav flex-column ps-2">
-          <TreeMenu Items="item.Children" />
+          <TreeMenu Items="item.Children" Prefix="Prefix" />
         </ul>
       }
     </li>
@@ -67,6 +67,7 @@
 
 @code {
   [Parameter] public List<MenuItemDto> Items { get; set; } = new();
+  [Parameter] public string Prefix { get; set; } = string.Empty;
   private HashSet<string> _expanded = new();
   private const string StorageKey = "treeMenuExpanded";
 
