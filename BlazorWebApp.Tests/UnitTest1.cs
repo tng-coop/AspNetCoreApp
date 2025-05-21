@@ -1,4 +1,4 @@
-﻿using Bunit;
+using Bunit;
 using BlazorWebApp.Components.Pages; // Ensure this matches your project's namespace
 
 public class HomeComponentTests : TestContext
