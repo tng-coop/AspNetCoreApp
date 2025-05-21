@@ -13,7 +13,7 @@ public static class CmsRoutes
     }
 
     /// <summary>
-    /// Combine segments with a tenant prefix (e.g., "/_zzz").
+    /// Combine segments with a tenant prefix (e.g., "/acme").
     /// </summary>
     public static string CombinePrefixed(string prefix, params string[] segments)
     {
@@ -24,7 +24,7 @@ public static class CmsRoutes
     }
 
     /// <summary>
-    /// Extract tenant prefix from a path (e.g., "_zzz/_cms/foo" -> "/_zzz").
+    /// Extract tenant prefix from a path (e.g., "acme/_cms/foo" -> "/acme").
     /// </summary>
     public static string ExtractPrefix(string relativePath)
     {
@@ -34,7 +34,7 @@ public static class CmsRoutes
         var parts = relativePath.TrimStart('/')
                                  .Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-        if (parts.Length >= 2 && parts[0].StartsWith("_") && parts[1] == Base.TrimStart('/'))
+        if (parts.Length >= 2 && parts[1] == Base.TrimStart('/'))
         {
             return "/" + parts[0];
         }

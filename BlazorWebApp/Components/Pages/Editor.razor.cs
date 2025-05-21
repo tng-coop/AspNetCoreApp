@@ -14,6 +14,7 @@ namespace BlazorWebApp.Components.Pages
     public partial class Editor
     {
   [Parameter] public Guid? Id { get; set; }
+  [Parameter] public string? Tenant { get; set; }
 
   private PublicationWriteDto dto = new();
   private List<CategoryDto> categories = new();

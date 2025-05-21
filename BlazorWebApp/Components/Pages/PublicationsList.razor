@@ -1,5 +1,5 @@
 @page "/_cms/publications"
-@page "/_zzz/_cms/publications"
+@page "/{Tenant}/_cms/publications"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @inject IPublicationService PublicationService
@@ -47,6 +47,7 @@
 </ul>
 
 @code {
+    [Parameter] public string? Tenant { get; set; }
     private List<PublicationReadDto> draftPubs = new();
     private List<PublicationReadDto> publishedPubs = new();
     private Dictionary<Guid, string> _categoryPaths = new();
