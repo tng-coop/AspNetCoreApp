@@ -1,6 +1,7 @@
 @page "/_cms/{Slug}"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using BlazorWebApp.Utils
 @inject ICategoryService CategoryService
 @inject IPublicationService PublicationService
 
@@ -20,7 +21,7 @@ else
             {
                 <li class="list-inline-item">
                     <NavLink class="btn btn-outline-primary btn-sm"
-                             href="@($"/_cms/{sub.Slug}")"
+                             href="@CmsRoutes.Combine(sub.Slug)"
                              Match="NavLinkMatch.Prefix">
                         @sub.Name
                     </NavLink>
@@ -35,7 +36,7 @@ else
         {
             <article class="mb-4">
                 <h5>
-                    <NavLink href="@($"/_cms/{Slug}/{p.Slug}")" Match="NavLinkMatch.Prefix">
+                    <NavLink href="@CmsRoutes.Combine(Slug, p.Slug)" Match="NavLinkMatch.Prefix">
                         @p.Title
                     </NavLink>
                 </h5>
@@ -60,7 +61,7 @@ else
             var firstPost = posts[0];
             <article>
                 <h5>
-                    <NavLink href="@($"/_cms/{Slug}/{firstPost.Slug}")" Match="NavLinkMatch.Prefix">
+                    <NavLink href="@CmsRoutes.Combine(Slug, firstPost.Slug)" Match="NavLinkMatch.Prefix">
                         @firstPost.Title
                     </NavLink>
                 </h5>
@@ -79,7 +80,7 @@ else
                 {
                     var p = posts[i];
                     <li class="mb-2">
-                        <NavLink href="@($"/_cms/{Slug}/{p.Slug}")" Match="NavLinkMatch.Prefix">
+                        <NavLink href="@CmsRoutes.Combine(Slug, p.Slug)" Match="NavLinkMatch.Prefix">
                             <strong>@p.Title</strong>
                         </NavLink>
                         <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>

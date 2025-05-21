@@ -1,6 +1,7 @@
 @using System.Text.Json
 @using System.Net
 @using BlazorWebApp.Models
+@using BlazorWebApp.Utils
 @using Microsoft.AspNetCore.Components
 @using Microsoft.Extensions.Localization
 @inject IJSRuntime JS
@@ -44,7 +45,7 @@
 
         <NavLink class="nav-link flex-grow-1 px-0"
                  style="height:auto; line-height:2;"
-                 href="@($"/_cms/{item.Slug}")"
+                 href="@CmsRoutes.Combine(item.Slug)"
                  Match="NavLinkMatch.All">
           @if (!string.IsNullOrEmpty(item.IconCss))
           {
