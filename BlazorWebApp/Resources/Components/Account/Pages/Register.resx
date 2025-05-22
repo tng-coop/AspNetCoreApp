@@ -8,7 +8,7 @@
   <data name="Create a new account." xml:space="preserve"><value>Create a new account.</value></data>
   <data name="name@example.com" xml:space="preserve"><value>name@example.com</value></data>
   <data name="Email" xml:space="preserve"><value>Email</value></data>
-  <data name="password" xml:space="preserve"><value>password</value></data>
+  <data name="PasswordPlaceholder" xml:space="preserve"><value>password</value></data>
   <data name="Password" xml:space="preserve"><value>Password</value></data>
   <data name="Confirm Password" xml:space="preserve"><value>Confirm Password</value></data>
   <data name="Use another service to register." xml:space="preserve"><value>Use another service to register.</value></data>
