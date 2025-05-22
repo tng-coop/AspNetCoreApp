@@ -3,6 +3,8 @@ using BlazorWebApp.Data;
 using BlazorWebApp.Services;
 using MudBlazor.Services;
 using BlazorWebApp.Modules.Cms;
+using Microsoft.AspNetCore.Components.Web;
+using BlazorWebApp.Components;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,15 @@ builder.Services.AddControllers();
 
 builder.Services.Configure<StubTenantProviderOptions>(
     builder.Configuration.GetSection("StubTenantProviderOptions"));
+
+builder.Services
+    .AddRazorComponents()
+    .AddInteractiveServerComponents(options =>
+    {
+        // Registers MyComponent as the <my-component> web component
+        options.RootComponents.RegisterCustomElement<MyComponent>("my-component");
+    });
+ 
 
 var app = builder.Build();
 

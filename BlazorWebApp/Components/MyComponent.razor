@@ -1,0 +1,22 @@
+@namespace BlazorWebApp.Components
+
+<div class="card m-3" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Simple Counter</h5>
+    <p class="card-text">
+      Current count: <strong>@currentCount</strong>
+    </p>
+    <button class="btn btn-primary" @onclick="IncrementCount">
+      Click me
+    </button>
+  </div>
+</div>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
