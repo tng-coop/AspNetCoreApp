@@ -31,43 +31,20 @@ namespace BlazorWebApp.Components.Pages
   private bool slugAscii => SlugGenerator.ContainsOnlyAscii(dto.Slug);
 
   // TinyMCE configuration dictionary—with YouTube paste/embed support
-  private readonly Dictionary<string, object> editorConfig = new()
-  {
-    ["height"] = 300,
-    ["menubar"] = "file edit view insert format tools media table help",
-    ["plugins"] = new[] { "link", "lists", "code", "image", "paste", "table", "media" },
-    ["toolbar"] =
-      "undo redo | bold italic underline | alignleft aligncenter | " +
-      "bullist numlist | link image media | code",
-    ["table_toolbar"] =
-      "tableprops tabledelete | tableinsertrowbefore tableinsertrowafter | " +
-      "tableinsertcolbefore tableinsertcolafter",
-    ["images_upload_url"] = "/api/images/upload",
-    ["automatic_uploads"] = true,
-    ["paste_data_images"] = false,
-    ["promotion"] = false,
-    ["branding"] = false,
+private readonly Dictionary<string, object> editorConfig = new()
+{
+    ["height"]                  = 300,
+    ["menubar"]                 = "file edit view insert format tools media table help",
+    ["plugins"]                 = new[] { "link", "lists", "code", "image", "paste", "table", "media" },
+    ["toolbar"]                 = "undo redo | bold italic underline | alignleft aligncenter | bullist numlist | link image media | code",
+    ["images_upload_url"]       = "/api/images/upload",
+    ["automatic_uploads"]       = true,
+    ["paste_data_images"]       = false,
 
+    // allow iframes and your custom element
     ["custom_elements"]         = "my-component",
-    ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen]," +
-                                  "my-component[*]",
-
-    // convert pasted YouTube links into embed iframes
-    ["media_url_resolver"] = @"
-function(data, resolve) {
-    var youtubeMatch = data.url.match(/(?:youtu\.be\/|youtube\.com\/.*v=)([\w-_-]+)/);
-    if (youtubeMatch) {
-        var id = youtubeMatch[1];
-        var embedUrl = 'https://www.youtube.com/embed/' + id;
-        resolve({
-            html: '<iframe width=""560"" height=""315"" src=""' + embedUrl + '"" frameborder=""0"" allowfullscreen></iframe>'
-        });
-    } else {
-        resolve({ html: '' });
-    }
-}
-"
-  };
+    ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen],my-component[*]"
+};
 
   protected override async Task OnInitializedAsync()
   {
