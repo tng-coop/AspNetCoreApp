@@ -17,6 +17,8 @@ builder.Services
     .AddMudServices()                              // MudBlazor
     .AddCmsModule();
 
+builder.Services.AddControllers();
+
 builder.Services.Configure<StubTenantProviderOptions>(
     builder.Configuration.GetSection("StubTenantProviderOptions"));
 
