@@ -48,8 +48,9 @@ namespace BlazorWebApp.Components.Pages
     ["promotion"] = false,
     ["branding"] = false,
 
-    // allow iframes through sanitizer
-    ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen]",
+    ["custom_elements"]         = "my-component",
+    ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen]," +
+                                  "my-component[*]",
 
     // convert pasted YouTube links into embed iframes
     ["media_url_resolver"] = @"
