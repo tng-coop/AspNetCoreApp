@@ -30,16 +30,15 @@ class MenuItem:
     content_item_id: Optional[str]
     children: List['MenuItem'] = field(default_factory=list)
 
+
 def slugify(text: str) -> str:
     slug = text.lower()
-    slug = slug.replace(" ", "-")
-    slug = slug.replace(":", "")
-    slug = slug.replace("’", "")
-    slug = slug.replace("'", "")
-    slug = slug.replace("…", "")
-    while "--" in slug:
-        slug = slug.replace("--", "-")
+    for ch in [' ', ':', '’', "'", '…']:
+        slug = slug.replace(ch, '-')
+    while '--' in slug:
+        slug = slug.replace('--', '-')
     return slug.strip('-')
+
 
 def build_menu(categories: List[Category], publications: List[Publication]) -> List[MenuItem]:
     cat_by_parent: dict[Optional[str], List[Category]] = {}
@@ -81,10 +80,12 @@ def build_menu(categories: List[Category], publications: List[Publication]) -> L
 
     return map_cats(cat_by_parent.get(None, []))
 
+
 def print_menu(items: List[MenuItem], indent: int = 0) -> None:
     for item in items:
         print("    " * indent + f"- {item.title} ({item.slug})")
         print_menu(item.children, indent + 1)
+
 
 def sample_data() -> tuple[List[Category], List[Publication]]:
     cats = [
@@ -99,7 +100,7 @@ def sample_data() -> tuple[List[Category], List[Publication]]:
     ]
 
     now = datetime.utcnow()
-    pubs = []
+    pubs: List[Publication] = []
     titles = [
         ("about", "Getting Started with Our CMS"),
         ("ministries", "Annual Ministries Kickoff"),
@@ -122,7 +123,68 @@ def sample_data() -> tuple[List[Category], List[Publication]]:
         ))
     return cats, pubs
 
+
+def interactive_menu(categories: List[Category], publications: List[Publication]) -> None:
+    """
+    Simple CLI to interactively manage categories and publications
+    """
+    while True:
+        print("\nOptions:")
+        print("1. Show menu tree")
+        print("2. List categories")
+        print("3. List publications")
+        print("4. Add category")
+        print("5. Add publication")
+        print("6. Exit")
+        choice = input("Enter choice [1-6]: ").strip()
+
+        if choice == '1':
+            menu = build_menu(categories, publications)
+            print("\nMenu Tree:")
+            print_menu(menu)
+        elif choice == '2':
+            print("\nCategories:")
+            for cat in categories:
+                parent = next((c.name for c in categories if c.id == cat.parent_id), None)
+                print(f"- {cat.name} (slug: {cat.slug}, parent: {parent})")
+        elif choice == '3':
+            print("\nPublications:")
+            for pub in publications:
+                print(f"- {pub.title} (slug: {pub.slug}, category: {pub.category_slug}, published: {pub.published_at.isoformat()})")
+        elif choice == '4':
+            name = input("Category name: ").strip()
+            parent_slug = input("Parent category slug (leave blank for none): ").strip() or None
+            parent = next((c for c in categories if c.slug == parent_slug), None) if parent_slug else None
+            new_cat = Category(
+                id=str(uuid.uuid4()),
+                name=name,
+                slug=slugify(name),
+                parent_id=parent.id if parent else None
+            )
+            categories.append(new_cat)
+            print(f"Added category: {new_cat.name} (slug: {new_cat.slug})")
+        elif choice == '5':
+            title = input("Publication title: ").strip()
+            cat_slug = input("Category slug: ").strip()
+            if not any(c.slug == cat_slug for c in categories):
+                print("Category slug not found. Please add the category first.")
+                continue
+            new_pub = Publication(
+                id=str(uuid.uuid4()),
+                title=title,
+                slug=slugify(title),
+                category_slug=cat_slug,
+                published_at=datetime.utcnow()
+            )
+            publications.append(new_pub)
+            print(f"Added publication: {new_pub.title} (slug: {new_pub.slug})")
+        elif choice == '6':
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+
 if __name__ == "__main__":
     categories, publications = sample_data()
-    menu = build_menu(categories, publications)
-    print_menu(menu)
+    interactive_menu(categories, publications)
