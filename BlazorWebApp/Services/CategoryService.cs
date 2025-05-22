@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using BlazorWebApp.Data;
 using BlazorWebApp.Models;
+using BlazorWebApp.Utils;
 
 namespace BlazorWebApp.Services
 {
@@ -66,6 +67,51 @@ namespace BlazorWebApp.Services
             // Reverse to get from root to immediate parent
             result.Reverse();
             return result;
+        }
+
+        public async Task<CategoryDto> CreateAsync(CategoryWriteDto dto)
+        {
+            await using var db = CreateDb();
+
+            var slugBase = string.IsNullOrWhiteSpace(dto.Slug)
+                ? dto.Name
+                : dto.Slug;
+            var slug = await GenerateUniqueSlugAsync(db,
+                SlugGenerator.Generate(slugBase));
+
+            var cat = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                Slug = slug,
+                ParentCategoryId = dto.ParentCategoryId
+            };
+
+            db.Categories.Add(cat);
+            await db.SaveChangesAsync();
+
+            return new CategoryDto
+            {
+                Id = cat.Id,
+                Name = cat.Name,
+                ParentCategoryId = cat.ParentCategoryId,
+                Slug = cat.Slug
+            };
+        }
+
+        private static async Task<string> GenerateUniqueSlugAsync(
+            ApplicationDbContext db,
+            string baseSlug,
+            Guid? excludeId = null)
+        {
+            var slug = baseSlug;
+            var counter = 1;
+            while (await db.Categories.AnyAsync(c => c.Slug == slug &&
+                                                    (excludeId == null || c.Id != excludeId)))
+            {
+                slug = $"{baseSlug}-{counter++}";
+            }
+            return slug;
         }
     }
 }

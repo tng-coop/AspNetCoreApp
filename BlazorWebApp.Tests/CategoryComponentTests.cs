@@ -17,6 +17,7 @@ public class CategoryComponentTests : TestContext
         public StubCategoryService(List<CategoryDto> categories) => _categories = categories;
         public Task<List<CategoryDto>> ListAsync() => Task.FromResult(_categories);
         public Task<List<CategoryDto>> GetAncestryAsync(Guid categoryId) => Task.FromResult(new List<CategoryDto>());
+        public Task<CategoryDto> CreateAsync(CategoryWriteDto dto) => throw new NotImplementedException();
     }
 
     private class StubPublicationService : IPublicationService
