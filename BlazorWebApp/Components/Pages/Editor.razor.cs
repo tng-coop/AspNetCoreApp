@@ -33,17 +33,21 @@ namespace BlazorWebApp.Components.Pages
   // TinyMCE configuration dictionary—with YouTube paste/embed support
 private readonly Dictionary<string, object> editorConfig = new()
 {
-    ["height"]                  = 300,
-    ["menubar"]                 = "file edit view insert format tools media table help",
-    ["plugins"]                 = new[] { "link", "lists", "code", "image", "paste", "table", "media" },
-    ["toolbar"]                 = "undo redo | bold italic underline | alignleft aligncenter | bullist numlist | link image media | code",
-    ["images_upload_url"]       = "/api/images/upload",
-    ["automatic_uploads"]       = true,
-    ["paste_data_images"]       = false,
+  ["height"] = 300,
+  ["menubar"] = "file edit view insert format tools media table help",
+  ["plugins"] = new[] { "link", "lists", "code", "image", "paste", "table", "media" },
+  ["toolbar"] = "undo redo | bold italic underline | alignleft aligncenter | bullist numlist | link image media | code",
+  ["images_upload_url"] = "/api/images/upload",
+  ["automatic_uploads"] = true,
+  ["paste_data_images"] = true,
+  ["promotion"] = false,
+  ["branding"] = false,
 
-    // allow iframes and your custom element
-    ["custom_elements"]         = "my-component",
-    ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen],my-component[*]"
+  // allow iframes and your custom element
+  ["custom_elements"] = "my-component",
+  ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen],my-component[*]",
+  // ["skin"] = "oxide-dark",
+  // ["content_css"] = "dark",
 };
 
   protected override async Task OnInitializedAsync()
