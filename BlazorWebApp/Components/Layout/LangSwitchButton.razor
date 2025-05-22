@@ -48,10 +48,7 @@
         await Localization.SetCultureAsync(culture);
 
         var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        if (relative.StartsWith("Account", StringComparison.OrdinalIgnoreCase))
-        {
-            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-        }
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 
     private string GetCurrentCultureLabel()
