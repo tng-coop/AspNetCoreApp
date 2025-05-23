@@ -31,67 +31,41 @@ else
         </ul>
     }
 
-    @if (featured.Any())
+    @if (primaryPost != null)
     {
-        @foreach (var p in featured)
-        {
-            <article class="mb-4">
-                <h5>
-                    <NavLink href="@CmsRoutes.Combine(Slug, p.Slug)" Match="NavLinkMatch.Prefix">
-                        @p.Title
-                    </NavLink>
-                </h5>
-                <small class="text-muted">@p.PublishedAt?.ToString("f")</small>
-                <p>MCE01</p>
-                <div class="mt-3 mce-content-body">
-                    @((MarkupString)GetFirstParagraph(p.Html))
-                </div>
-            </article>
-        }
+        <article class="mb-4">
+            <h5>
+                <NavLink href="@CmsRoutes.Combine(Slug, primaryPost.Slug)" Match="NavLinkMatch.Prefix">
+                    @primaryPost.Title
+                </NavLink>
+            </h5>
+            <small class="text-muted">@primaryPost.PublishedAt?.ToString("f")</small>
+            <p>MCE01</p>
+            <div class="mt-3 mce-content-body">
+                @((MarkupString)GetFirstParagraph(primaryPost.Html))
+            </div>
+        </article>
     }
 
     <h4>Articles</h4>
-    @if (!featured.Any() && !posts.Any())
+    @if (!otherPosts.Any())
     {
         <p>MCE04</p>
         <p><em>No published articles in this category.</em></p>
     }
     else
     {
-        <!-- 1) Full display of the most‐recent -->
-        @if (posts.Count > 0)
-        {
-            var firstPost = posts[0];
-            <article>
-                <h5>
-                    <NavLink href="@CmsRoutes.Combine(Slug, firstPost.Slug)" Match="NavLinkMatch.Prefix">
-                        @firstPost.Title
+        <ul class="list-unstyled">
+            @foreach (var p in otherPosts)
+            {
+                <li class="mb-2">
+                    <NavLink href="@CmsRoutes.Combine(Slug, p.Slug)" Match="NavLinkMatch.Prefix">
+                        <strong>@p.Title</strong>
                     </NavLink>
-                </h5>
-                <small class="text-muted">@firstPost.PublishedAt?.ToString("f")</small>
-                <p>MCE02</p>
-                <div class="mt-3 mce-content-body">
-                    @((MarkupString)firstPost.Html)
-                </div>
-            </article>
-        }
-
-        <!-- 2) List the rest by title/date -->
-        @if (posts.Count > 1)
-        {
-            <ul class="list-unstyled">
-                @for (int i = 1; i < posts.Count; i++)
-                {
-                    var p = posts[i];
-                    <li class="mb-2">
-                        <NavLink href="@CmsRoutes.Combine(Slug, p.Slug)" Match="NavLinkMatch.Prefix">
-                            <strong>@p.Title</strong>
-                        </NavLink>
-                        <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
-                    </li>
-                }
-            </ul>
-        }
+                    <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
+                </li>
+            }
+        </ul>
     }
 }
 
@@ -101,8 +75,8 @@ else
 
     private CategoryDto? category;
     private List<CategoryDto> subcats = new();
-    private List<PublicationReadDto> posts = new();
-            private List<PublicationReadDto> featured = new();
+    private PublicationReadDto? primaryPost;
+    private List<PublicationReadDto> otherPosts = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -115,20 +89,15 @@ else
             .Where(c => c.ParentCategoryId == category.Id)
             .ToList();
 
-        // 1) load featured posts for this category
-        featured = await PublicationService.ListFeaturedInCategoryAsync(category.Id);
-
-        // 2) load all published posts in this category
         var all = (await PublicationService.ListAsync())
                     .Where(p => p.CategoryId == category.Id
                                 && p.Status == "Published")
-                    .OrderByDescending(p => p.PublishedAt)
+                    .OrderBy(p => p.FeaturedOrder == 0 ? int.MaxValue : p.FeaturedOrder)
+                    .ThenByDescending(p => p.PublishedAt ?? DateTimeOffset.MinValue)
                     .ToList();
 
-        // 3) the rest are those not already featured
-        posts = all
-                .Where(p => !featured.Any(f => f.Id == p.Id))
-                .ToList();
+        primaryPost = all.FirstOrDefault();
+        otherPosts = all.Skip(1).ToList();
     }
 
     private string GetFirstParagraph(string html)
