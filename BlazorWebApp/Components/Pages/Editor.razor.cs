@@ -67,7 +67,7 @@ private readonly Dictionary<string, object> editorConfig = new()
     categoryOptions.Sort((a, b) =>
       string.Compare(a.DisplayName, b.DisplayName, StringComparison.CurrentCulture));
 
-    // Preselect the "Uncategorized" category for new posts
+    // Preselect the "Home" category for new posts
     var uncategorized = categories.FirstOrDefault(c => c.Slug == "uncategorized");
     if (!Id.HasValue && dto.CategoryId == null && uncategorized != null)
       dto.CategoryId = uncategorized.Id;

@@ -11,7 +11,7 @@ namespace BlazorWebApp.Data.Seeders
                 return;
 
             // Top-level categories
-            var uncategorized = new Category { Id = Guid.NewGuid(), Name = "Uncategorized", Slug = "uncategorized" };
+            var uncategorized = new Category { Id = Guid.NewGuid(), Name = "Home", Slug = "uncategorized" };
             var about         = new Category { Id = Guid.NewGuid(), Name = "About",            Slug = "about" };
             var ministries    = new Category { Id = Guid.NewGuid(), Name = "Ministries",       Slug = "ministries" };
 

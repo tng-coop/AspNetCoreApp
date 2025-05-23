@@ -238,7 +238,7 @@ namespace BlazorWebApp.Services
         {
             var cat = await db.Categories.FirstOrDefaultAsync(c => c.Slug == "uncategorized");
             if (cat == null)
-                throw new InvalidOperationException("Uncategorized category missing");
+                throw new InvalidOperationException("Home category missing");
             return cat.Id;
         }
 
