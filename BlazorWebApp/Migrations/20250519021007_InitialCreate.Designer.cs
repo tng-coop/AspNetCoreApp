@@ -201,10 +201,6 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("text")
                         .HasDefaultValue("");
 
-                    b.Property<bool>("IsFeatured")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
 
                     b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("timestamp with time zone");
@@ -229,7 +225,7 @@ namespace BlazorWebApp.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.HasIndex("IsFeatured", "FeaturedOrder");
+                    b.HasIndex("FeaturedOrder");
 
                     b.ToTable("Publications");
                 });

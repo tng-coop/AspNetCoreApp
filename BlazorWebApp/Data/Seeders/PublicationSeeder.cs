@@ -62,7 +62,6 @@ namespace BlazorWebApp.Data.Seeders
                     Slug = Utils.SlugGenerator.Generate(GenerateTitle(entry.CategorySlug, i)),
                     Html = WrapWithImage(entry.Html, file),
                     Status = entry.Status,
-                    IsFeatured    = entry.CategorySlug == "about",
                     FeaturedOrder = entry.CategorySlug == "about" ? 1 : 0,
                     CreatedAt = now.AddDays(entry.CreatedOffset),
                     PublishedAt = entry.PublishedOffset.HasValue

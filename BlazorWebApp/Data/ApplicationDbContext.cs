@@ -91,11 +91,9 @@ namespace BlazorWebApp.Data
                 e.Property(p => p.PublishedAt)
                  .IsRequired(false);
                 e.HasIndex(p => p.CreatedAt);
-                    e.Property(p => p.IsFeatured)
-     .HasDefaultValue(false);
-    e.Property(p => p.FeaturedOrder)
-     .HasDefaultValue(0);
-    e.HasIndex(p => new { p.IsFeatured, p.FeaturedOrder });
+                e.Property(p => p.FeaturedOrder)
+                    .HasDefaultValue(0);
+                e.HasIndex(p => p.FeaturedOrder);
             });
 
             // --- Tenant entity configuration ---

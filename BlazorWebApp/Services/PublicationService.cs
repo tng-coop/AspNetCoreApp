@@ -30,7 +30,6 @@ namespace BlazorWebApp.Services
                 Title        = dto.Title,
                 Slug         = slug,
                 Html         = dto.Html,
-                IsFeatured   = dto.IsFeatured,
                 FeaturedOrder = dto.FeaturedOrder,
                 CreatedAt    = DateTimeOffset.UtcNow
             };
@@ -129,7 +128,6 @@ namespace BlazorWebApp.Services
             // 2) apply the update
             pub.Title        = dto.Title;
             pub.Html         = dto.Html;
-            pub.IsFeatured   = dto.IsFeatured;
             pub.FeaturedOrder = dto.FeaturedOrder;
 
             var slugBase = string.IsNullOrWhiteSpace(dto.Slug)
@@ -213,7 +211,6 @@ namespace BlazorWebApp.Services
             Slug         = p.Slug,
             Html         = p.Html,
             Status       = p.Status.ToString(),
-            IsFeatured   = p.IsFeatured,
             FeaturedOrder = p.FeaturedOrder,
             CreatedAt    = p.CreatedAt,
             PublishedAt  = p.PublishedAt,
@@ -251,7 +248,7 @@ namespace BlazorWebApp.Services
         return await db.Publications
             .Where(p => p.Status == PublicationStatus.Published
                      && p.PublicationCategories.Any(pc => pc.CategoryId == categoryId)
-                     && p.IsFeatured)
+                     && p.FeaturedOrder != 0)
             .OrderBy(p => p.FeaturedOrder)
             .ThenByDescending(p => p.PublishedAt)
             .Select(p => ToDto(p))

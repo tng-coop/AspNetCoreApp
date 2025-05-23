@@ -117,7 +117,6 @@ namespace BlazorWebApp.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
                     Html = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
-                    IsFeatured = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     FeaturedOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     Status = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
@@ -368,9 +367,9 @@ namespace BlazorWebApp.Migrations
                 column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Publications_IsFeatured_FeaturedOrder",
+                name: "IX_Publications_FeaturedOrder",
                 table: "Publications",
-                columns: new[] { "IsFeatured", "FeaturedOrder" });
+                column: "FeaturedOrder");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Publications_Slug",
