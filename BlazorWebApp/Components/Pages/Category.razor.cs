@@ -44,7 +44,12 @@ namespace BlazorWebApp.Components.Pages
             }
             else
             {
-                Console.WriteLine($"Loading category for {CategorySlug}");
+                //  BUG12345
+                var all = await PublicationService.ListAsync();
+                var pub = all.FirstOrDefault(p => p.Slug == CategorySlug);
+                ArticleSlug = pub?.Slug;
+                Console.WriteLine($"Discovered article slug {ArticleSlug}");
+
                 await LoadCategoryAsync();
             }
 
