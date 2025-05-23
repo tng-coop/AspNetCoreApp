@@ -61,7 +61,7 @@ else
                    -type d -name bin )
 
   # extensions to skip
-  skip_exts=(txt md mjs env ps1)
+  skip_exts=(txt md mjs env ps1 pyc)
 
   find_cmd=(find . "(" "${prune_clause[@]}" ")" -prune -o -type f)
   for ext in "${skip_exts[@]}"; do
