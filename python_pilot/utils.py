@@ -61,5 +61,16 @@ def build_menu(
 def print_menu(items: List[MenuItem], indent: int = 0) -> None:
     from rich import print
     for item in items:
-        print("    " * indent + f"- {item.title} ({item.slug})")
-        print_menu(item.children, indent + 1)
+        prefix = "    " * indent + f"- {item.title} ({item.slug})"
+        if item.content_item_id is None:
+            first_pub = next((c for c in item.children if c.content_item_id), None)
+            if first_pub:
+                print(prefix + f" -> {first_pub.title}")
+                remaining = [c for c in item.children if c is not first_pub]
+                print_menu(remaining, indent + 1)
+            else:
+                print(prefix)
+                print_menu(item.children, indent + 1)
+        else:
+            print(prefix)
+            print_menu(item.children, indent + 1)
