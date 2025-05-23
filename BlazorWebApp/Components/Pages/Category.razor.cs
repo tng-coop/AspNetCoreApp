@@ -81,7 +81,7 @@ namespace BlazorWebApp.Components.Pages
             }
             else if (!string.IsNullOrEmpty(ArticleSlug))
             {
-                pub = await PublicationService.GetBySlugAsync(ArticleSlug);
+                pub = await PublicationService.GetBySlugAsync(CategorySlug, ArticleSlug!);
             }
             else
             {

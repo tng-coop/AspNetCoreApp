@@ -66,12 +66,13 @@ namespace BlazorWebApp.Services
             return p == null ? null : ToDto(p);
         }
 
-        public async Task<PublicationReadDto?> GetBySlugAsync(string slug)
+        public async Task<PublicationReadDto?> GetBySlugAsync(string categorySlug, string slug)
         {
             await using var db = CreateDb();
             var p = await db.Publications
                 .Include(pu => pu.PublicationCategories).ThenInclude(pc => pc.Category)
-                .FirstOrDefaultAsync(pu => pu.Slug == slug);
+                .FirstOrDefaultAsync(pu => pu.Slug == slug &&
+                                           pu.PublicationCategories.Any(pc => pc.Category.Slug == categorySlug));
             return p == null ? null : ToDto(p);
         }
 
