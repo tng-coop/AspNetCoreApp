@@ -31,6 +31,8 @@ def show_raw_data(categories: List[Category], publications: List[Publication]) -
     pub_table.add_column("Slug", style="magenta")
     pub_table.add_column("Category", style="yellow")
     pub_table.add_column("Published At", style="blue")
+    pub_table.add_column("Featured", style="green")
+    pub_table.add_column("Order", style="cyan")
     for pub in publications:
         pub_table.add_row(
             pub.id,
@@ -38,6 +40,8 @@ def show_raw_data(categories: List[Category], publications: List[Publication]) -
             pub.slug,
             pub.category_slug,
             pub.published_at.isoformat(),
+            str(pub.is_featured),
+            str(pub.featured_order),
         )
     print(pub_table)
 

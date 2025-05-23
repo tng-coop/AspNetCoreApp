@@ -19,6 +19,8 @@ class Publication:
     category_slug: str
     tenant_slug: str
     published_at: datetime
+    is_featured: bool = False
+    featured_order: int = 0
 
 @dataclass
 class MenuItem:

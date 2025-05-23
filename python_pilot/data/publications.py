@@ -28,6 +28,7 @@ def sample_publications(now: datetime | None = None) -> List[Publication]:
     titles = publication_titles()
     pubs: List[Publication] = []
     for i, (cat_slug, title) in enumerate(titles):
+        is_feat = cat_slug == "about"
         pubs.append(
             Publication(
                 id=str(uuid.uuid4()),
@@ -36,6 +37,8 @@ def sample_publications(now: datetime | None = None) -> List[Publication]:
                 category_slug=cat_slug,
                 tenant_slug="acme",
                 published_at=now - timedelta(days=len(titles) - i),
+                is_featured=is_feat,
+                featured_order=1 if is_feat else 0,
             )
         )
 
@@ -47,6 +50,8 @@ def sample_publications(now: datetime | None = None) -> List[Publication]:
             category_slug="home",
             tenant_slug="beta",
             published_at=now,
+            is_featured=False,
+            featured_order=0,
         )
     )
     return pubs
