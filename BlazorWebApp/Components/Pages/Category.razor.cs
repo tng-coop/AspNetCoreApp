@@ -12,7 +12,6 @@ namespace BlazorWebApp.Components.Pages
 {
     public partial class Category
     {
-        [Parameter] public Guid? Id { get; set; }
         [Parameter] public string CategorySlug { get; set; } = string.Empty;
         [Parameter] public string? ArticleSlug { get; set; }
         [Parameter] public string? Tenant { get; set; }
@@ -36,11 +35,11 @@ namespace BlazorWebApp.Components.Pages
                 displayPublication = true;
             }
 
-            displayPublication = Id.HasValue || !string.IsNullOrEmpty(ArticleSlug);
+            displayPublication = !string.IsNullOrEmpty(ArticleSlug);
 
             if (displayPublication)
             {
-                Console.WriteLine($"Loading publication for {Id} or {ArticleSlug}");
+                Console.WriteLine($"Loading publication for {ArticleSlug}");
                 await LoadPublicationAsync();
             }
             else
@@ -75,23 +74,7 @@ namespace BlazorWebApp.Components.Pages
 
         private async Task LoadPublicationAsync()
         {
-            if (Id.HasValue)
-            {
-                //raise exception
-                throw new InvalidOperationException("XXXXXXXXXXXXXX");
-
-
-                pub = await PublicationService.GetAsync(Id.Value);
-            }
-            else if (!string.IsNullOrEmpty(ArticleSlug))
-            {  
-                Console.WriteLine($"Loading publication by slug {ArticleSlug}");
-                pub = await PublicationService.GetBySlugAsync(CategorySlug, ArticleSlug!);
-            }
-            else
-            {
-                pub = null;
-            }
+            pub = await PublicationService.GetBySlugAsync(CategorySlug, ArticleSlug!);
 
             if (pub?.CategoryId != null)
             {
