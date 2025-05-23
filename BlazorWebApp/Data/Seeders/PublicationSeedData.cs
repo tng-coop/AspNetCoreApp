@@ -8,7 +8,8 @@ namespace BlazorWebApp.Data.Seeders
         string Html,
         PublicationStatus Status,
         int CreatedOffset,
-        int? PublishedOffset);
+        int? PublishedOffset,
+        bool IncludeFractalImage = true);
 
     public static class PublicationSeedData
     {
@@ -24,7 +25,7 @@ namespace BlazorWebApp.Data.Seeders
             new("mobile-pantry",  "Mobile Pantry Route Announced",      "<h2>Mobile Pantry</h2><p>Route details for this week...</p>",      PublicationStatus.Published,    0, +1),
             new("outreach",       "Community Outreach Recap",           "<h2>Recap</h2><p>Here's what happened…</p>",                    PublicationStatus.Published,   -2, -1),
             new("outreach",       "Volunteer Spotlight",                "<h2>Meet our volunteer</h2><p>Spotlight on Jane Doe…</p>",          PublicationStatus.Published,   -1,  0),
-            new(null,              "Draft Post Example",                 "<p>This post is still a draft.</p>",                               PublicationStatus.Draft,         0, null)
+            new(null,              "Draft Post Example",                 "<p>This post is still a draft.</p>",                               PublicationStatus.Draft,         0, null, false)
         };
     }
 }

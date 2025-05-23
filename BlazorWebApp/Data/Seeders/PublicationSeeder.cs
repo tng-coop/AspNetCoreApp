@@ -18,12 +18,15 @@ namespace BlazorWebApp.Data.Seeders
             // grab category IDs by slug
             var cats = await db.Categories.ToDictionaryAsync(c => c.Slug, c => c.Id);
 
-            // collect all fractal image filenames (expected 10: fractal_0.png through fractal_9.png)
-            var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "fractals");
+            // collect fractal image filenames (expected 10: fractal_0.png through fractal_9.png)
+            var imagesFolder = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot", "images", "fractals");
+
             var fractalFiles = Directory.GetFiles(imagesFolder, "fractal_*.png")
-                                       .Select(Path.GetFileName)
-                                       .OrderBy(name => name)
-                                       .ToList();
+                                   .Select(Path.GetFileName)
+                                   .OrderBy(name => name)
+                                   .ToList();
 
             // helper to wrap HTML with a specific <img>
             string WrapWithImage(string bodyHtml, string filename) =>
@@ -35,13 +38,20 @@ namespace BlazorWebApp.Data.Seeders
             // load raw publication seed data
             var rawPubs = PublicationSeedData.Entries;
 
-            // build Publication entities with one-to-one image mapping
+            // build Publication entities with optional fractal images per entry
             var pubs = rawPubs.Select((entry, i) =>
             {
-                var file = fractalFiles.Count > i ? fractalFiles[i] : fractalFiles[0];
-                if (string.IsNullOrEmpty(file))
+                string html = entry.Html;
+                if (entry.IncludeFractalImage)
                 {
-                    throw new InvalidOperationException("Fractal file name cannot be null or empty.");
+                    if (fractalFiles.Count == 0)
+                        throw new InvalidOperationException("Fractal file name cannot be null or empty.");
+
+                    var file = fractalFiles.Count > i ? fractalFiles[i] : fractalFiles[0];
+                    if (string.IsNullOrEmpty(file))
+                        throw new InvalidOperationException("Fractal file name cannot be null or empty.");
+
+                    html = WrapWithImage(html, file);
                 }
 
                 var pub = new Publication
@@ -49,7 +59,7 @@ namespace BlazorWebApp.Data.Seeders
                     Id = Guid.NewGuid(),
                     Title = entry.Title,
                     Slug = Utils.SlugGenerator.Generate(entry.Title),
-                    Html = WrapWithImage(entry.Html, file),
+                    Html = html,
                     Status = entry.Status,
                     FeaturedOrder = entry.CategorySlug == "about" ? 1 : 0,
                     CreatedAt = now.AddDays(entry.CreatedOffset),
