@@ -43,16 +43,23 @@ namespace BlazorWebApp.Services
 
                     if (pubsByCat.TryGetValue(cat.Id, out var posts))
                     {
-                        children.AddRange(posts.Select(pub => new MenuItemDto
+                        // The first (highest priority) article is reserved for
+                        // the category page itself. Skip it in the tree menu
+                        // so only articles starting from the second one are
+                        // displayed under the category.
+                        foreach (var pub in posts.Skip(1))
                         {
-                            Id            = pub.Id,
-                            Title         = pub.Title,
-                            Slug          = $"{cat.Slug}/{pub.Slug}",
-                            IconCss       = "bi-file-earmark-text",
-                            SortOrder     = 0,
-                            ContentItemId = pub.Id,
-                            Children      = new List<MenuItemDto>()
-                        }));
+                            children.Add(new MenuItemDto
+                            {
+                                Id            = pub.Id,
+                                Title         = pub.Title,
+                                Slug          = $"{cat.Slug}/{pub.Slug}",
+                                IconCss       = "bi-file-earmark-text",
+                                SortOrder     = 0,
+                                ContentItemId = pub.Id,
+                                Children      = new List<MenuItemDto>()
+                            });
+                        }
                     }
 
                     return new MenuItemDto
