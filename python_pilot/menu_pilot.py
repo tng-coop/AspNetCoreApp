@@ -91,49 +91,16 @@ def print_menu(items: List[MenuItem], indent: int = 0) -> None:
         print_menu(item.children, indent + 1)
 
 
-def sample_data() -> tuple[List[Category], List[Publication]]:
-    cats = [
-        Category("1", "Uncategorized", "uncategorized"),
-        Category("2", "About", "about"),
-        Category("3", "Ministries", "ministries"),
-        Category("4", "Service", "service", parent_id="3"),
-        Category("5", "Outreach", "outreach", parent_id="3"),
-        Category("6", "Food Pantry", "food-pantry", parent_id="4"),
-        Category("7", "Clothing Drive", "clothing-drive", parent_id="4"),
-        Category("8", "Mobile Pantry", "mobile-pantry", parent_id="6"),
-    ]
-
-    now = datetime.utcnow()
-    pubs: List[Publication] = []
-    titles = [
-        ("about", "Getting Started with Our CMS"),
-        ("ministries", "Annual Ministries Kickoff"),
-        ("service", "Service Opportunities Update"),
-        ("outreach", "Outreach Team Training"),
-        ("food-pantry", "Food Pantry Schedule"),
-        ("clothing-drive", "Clothing Drive Recap"),
-        ("mobile-pantry", "Mobile Pantry Route Announced"),
-        ("outreach", "Community Outreach Recap"),
-        ("outreach", "Volunteer Spotlight"),
-    ]
-    for i, (cat_slug, title) in enumerate(titles):
-        pub_slug = slugify(title)
-        pubs.append(Publication(
-            id=str(uuid.uuid4()),
-            title=title,
-            slug=pub_slug,
-            category_slug=cat_slug,
-            published_at=now - timedelta(days=len(titles) - i)
-        ))
-    return cats, pubs
-
-
 def interactive_menu(categories: List[Category], publications: List[Publication]) -> None:
     """
-    Simple CLI to interactively manage categories and publications
+    Simple CLI to interactively manage categories and publications,
+    with login/logout functionality.
     """
+    current_user: str = 'anonymous'
+
     while True:
-        print("\nOptions:")
+        print(f"\nCurrent user: {current_user}\n")
+        print("Options:")
         print("1. Show menu tree")
         print("2. List categories")
         print("3. List publications")
@@ -143,9 +110,22 @@ def interactive_menu(categories: List[Category], publications: List[Publication]
         print("7. Show raw data")
         print("8. Update category parent")
         print("9. Exit")
-        choice = input("Enter choice [1-9]: ").strip()
+        print("L. Login")
+        print("O. Logout")
 
-        if choice == '1':
+        choice = input("Enter choice [1-9, L, O]: ").strip().lower()
+
+        if choice == 'l':
+            role = input("Enter role to login as (admin/superadmin): ").strip().lower()
+            if role in ('admin', 'superadmin'):
+                current_user = role
+                print(f"Logged in as {role}.")
+            else:
+                print("Invalid role. Please choose 'admin' or 'superadmin'.")
+        elif choice == 'o':
+            current_user = 'anonymous'
+            print("Logged out. Current user is now anonymous.")
+        elif choice == '1':
             menu = build_menu(categories, publications)
             print("\nMenu Tree:")
             print_menu(menu)
@@ -159,7 +139,6 @@ def interactive_menu(categories: List[Category], publications: List[Publication]
             for pub in publications:
                 print(f"- {pub.title} (slug: {pub.slug}, category: {pub.category_slug}, published: {pub.published_at.isoformat()})")
         elif choice == '4':
-            # Show existing categories for reference
             if categories:
                 print("\nExisting Categories:")
                 for cat in categories:
@@ -178,7 +157,6 @@ def interactive_menu(categories: List[Category], publications: List[Publication]
             print(f"Added category: {new_cat.name} (slug: {new_cat.slug}, parent: {parent.name if parent else 'None'})")
         elif choice == '5':
             title = input("Publication title: ").strip()
-            # Show categories to choose from
             if categories:
                 print("\nAvailable category slugs:")
                 print(", ".join(c.slug for c in categories))
@@ -200,7 +178,6 @@ def interactive_menu(categories: List[Category], publications: List[Publication]
             publications.clear()
             print("All data cleared.")
         elif choice == '7':
-            # Pretty print raw data with Rich
             if categories:
                 table = Table(title="Categories")
                 table.add_column("ID", style="cyan", no_wrap=True)
