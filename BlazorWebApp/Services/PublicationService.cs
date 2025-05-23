@@ -36,7 +36,7 @@ namespace BlazorWebApp.Services
             db.Publications.Add(pub);
             await db.SaveChangesAsync();
 
-            var catId = dto.CategoryId ?? await GetUncategorizedIdAsync(db);
+            var catId = dto.CategoryId ?? await GetHomeIdAsync(db);
             db.PublicationCategories.Add(new PublicationCategory
             {
                 PublicationId = pub.Id,
@@ -139,7 +139,7 @@ namespace BlazorWebApp.Services
             // 3) reassign category
             var existing = db.PublicationCategories.Where(pc => pc.PublicationId == id);
             db.PublicationCategories.RemoveRange(existing);
-            var catId = dto.CategoryId ?? await GetUncategorizedIdAsync(db);
+            var catId = dto.CategoryId ?? await GetHomeIdAsync(db);
             db.PublicationCategories.Add(new PublicationCategory
             {
                 PublicationId = id,
@@ -193,7 +193,7 @@ namespace BlazorWebApp.Services
             // reassign category
             var existing = db.PublicationCategories.Where(pc => pc.PublicationId == pub.Id);
             db.PublicationCategories.RemoveRange(existing);
-            var catId = rev.CategoryId ?? await GetUncategorizedIdAsync(db);
+            var catId = rev.CategoryId ?? await GetHomeIdAsync(db);
             db.PublicationCategories.Add(new PublicationCategory
             {
                 PublicationId = pub.Id,
@@ -234,9 +234,9 @@ namespace BlazorWebApp.Services
             return slug;
         }
 
-        private static async Task<Guid> GetUncategorizedIdAsync(ApplicationDbContext db)
+        private static async Task<Guid> GetHomeIdAsync(ApplicationDbContext db)
         {
-            var cat = await db.Categories.FirstOrDefaultAsync(c => c.Slug == "uncategorized");
+            var cat = await db.Categories.FirstOrDefaultAsync(c => c.Slug == "home");
             if (cat == null)
                 throw new InvalidOperationException("Home category missing");
             return cat.Id;

@@ -11,11 +11,11 @@ namespace BlazorWebApp.Data.Seeders
                 return;
 
             // Top-level categories
-            var uncategorized = new Category { Id = Guid.NewGuid(), Name = "Home", Slug = "uncategorized" };
+            var home = new Category { Id = Guid.NewGuid(), Name = "Home", Slug = "home" };
             var about         = new Category { Id = Guid.NewGuid(), Name = "About",            Slug = "about" };
             var ministries    = new Category { Id = Guid.NewGuid(), Name = "Ministries",       Slug = "ministries" };
 
-            db.Categories.AddRange(uncategorized, about, ministries);
+            db.Categories.AddRange(home, about, ministries);
 
             // Second-level under Ministries
             var service     = new Category { Id = Guid.NewGuid(), Name = "Service",          Slug = "service", ParentCategoryId = ministries.Id };

@@ -8,7 +8,7 @@ from ..models import Category
 def category_definitions() -> List[Tuple[str, str, str, Optional[str]]]:
     """Static list of category definitions."""
     return [
-        ("Home", "uncategorized", "acme", None),
+        ("Home", "home", "acme", None),
         ("About", "about", "acme", None),
         ("Ministries", "ministries", "acme", None),
         ("Service", "service", "acme", "ministries"),

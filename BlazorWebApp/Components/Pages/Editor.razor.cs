@@ -68,9 +68,9 @@ private readonly Dictionary<string, object> editorConfig = new()
       string.Compare(a.DisplayName, b.DisplayName, StringComparison.CurrentCulture));
 
     // Preselect the "Home" category for new posts
-    var uncategorized = categories.FirstOrDefault(c => c.Slug == "uncategorized");
-    if (!Id.HasValue && dto.CategoryId == null && uncategorized != null)
-      dto.CategoryId = uncategorized.Id;
+    var home = categories.FirstOrDefault(c => c.Slug == "home");
+    if (!Id.HasValue && dto.CategoryId == null && home != null)
+      dto.CategoryId = home.Id;
 
     if (Id.HasValue)
     {

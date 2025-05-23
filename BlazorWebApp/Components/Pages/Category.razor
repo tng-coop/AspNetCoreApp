@@ -96,14 +96,9 @@ else
             </ul>
         }
 
-        <h4>Articles</h4>
-        if (!otherPosts.Any())
+        if (otherPosts.Any())
         {
-            <p>MCE04</p>
-            <p><em>No published articles in this category.</em></p>
-        }
-        else
-        {
+        <h4>Other Articles in this category</h4>
             <ul class="list-unstyled">
                 @foreach (var p in otherPosts)
                 {
