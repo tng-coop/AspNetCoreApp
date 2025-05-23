@@ -1,85 +1,159 @@
-@page "/_cms/{Slug}"
-@page "/{Tenant}/_cms/{Slug}"
+@page "/_cms/{CategorySlug}"
+@page "/{Tenant}/_cms/{CategorySlug}"
+@page "/_cms/{CategorySlug}/{ArticleSlug}"
+@page "/{Tenant}/_cms/{CategorySlug}/{ArticleSlug}"
+@page "/publications/{Id:guid}"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @using BlazorWebApp.Utils
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
 @inject ICategoryService CategoryService
 @inject IPublicationService PublicationService
 
-@if (category == null)
+@if (displayPublication)
 {
-    <h2>Category not found</h2>
-}
-else
-{
-    @if (primaryPost != null)
+    if (pub == null)
     {
-        <article class="mb-4">
-            <div class="mt-3 mce-content-body">
-                @((MarkupString)GetFirstParagraph(primaryPost.Html))
-            </div>
-            <h5>
-                <NavLink href="@CmsRoutes.Combine(Slug, primaryPost.Slug)" Match="NavLinkMatch.Prefix">
-                    @primaryPost.Title
-                </NavLink>
-            </h5>
-            <small class="text-muted">@primaryPost.PublishedAt?.ToString("f")</small>
-            <p>MCE01</p>
-        </article>
-    }
-    @if (subcats.Any())
-    {
-        <h4>Sub-categories</h4>
-        <ul class="list-inline">
-            @foreach (var sub in subcats)
-            {
-                <li class="list-inline-item">
-                    <NavLink class="btn btn-outline-primary btn-sm"
-                             href="@CmsRoutes.Combine(sub.Slug)"
-                             Match="NavLinkMatch.Prefix">
-                        @sub.Name
-                    </NavLink>
-                </li>
-            }
-        </ul>
-    }
-
-
-    <h4>Articles</h4>
-    @if (!otherPosts.Any())
-    {
-        <p>MCE04</p>
-        <p><em>No published articles in this category.</em></p>
+        <p><em>Publication not found.</em></p>
     }
     else
     {
-        <ul class="list-unstyled">
-            @foreach (var p in otherPosts)
-            {
-                <li class="mb-2">
-                    <NavLink href="@CmsRoutes.Combine(Slug, p.Slug)" Match="NavLinkMatch.Prefix">
-                        <strong>@p.Title</strong>
+        <h1>@pub.Title</h1>
+
+        @if (!string.IsNullOrEmpty(fullArticlePath))
+        {
+            <p class="text-muted mb-4">
+                <small>Category: @fullArticlePath</small>
+            </p>
+        }
+
+        <!-- direct HTML render, styled by TinyMCE's content CSS -->
+        <p>MCE03</p>
+        <div class="mce-content-body">
+            @((MarkupString)pub.Html)
+        </div>
+
+        <p><small>Created: @pub.CreatedAt:f</small></p>
+
+        @if (pub.PublishedAt.HasValue)
+        {
+            <p><small>Published: @pub.PublishedAt.Value:f</small></p>
+        }
+
+        <AuthorizeView Roles="Admin">
+            <div class="mt-3">
+                <button class="btn btn-secondary" @onclick="SetAsDraft">
+                    Set as Draft
+                </button>
+            </div>
+        </AuthorizeView>
+
+        <div class="mt-4">
+            <NavLink href="@CmsRoutes.Combine(pub?.CategorySlug)" Match="NavLinkMatch.Prefix">
+                Back to @pub?.CategoryName
+            </NavLink>
+        </div>
+    }
+}
+else
+{
+    if (category == null)
+    {
+        <h2>Category not found</h2>
+    }
+    else
+    {
+        if (primaryPost != null)
+        {
+            <article class="mb-4">
+                <div class="mt-3 mce-content-body">
+                    @((MarkupString)GetFirstParagraph(primaryPost.Html))
+                </div>
+                <h5>
+                    <NavLink href="@CmsRoutes.Combine(CategorySlug, primaryPost.Slug)" Match="NavLinkMatch.Prefix">
+                        @primaryPost.Title
                     </NavLink>
-                    <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
-                </li>
-            }
-        </ul>
+                </h5>
+                <small class="text-muted">@primaryPost.PublishedAt?.ToString("f")</small>
+                <p>MCE01</p>
+            </article>
+        }
+        if (subcats.Any())
+        {
+            <h4>Sub-categories</h4>
+            <ul class="list-inline">
+                @foreach (var sub in subcats)
+                {
+                    <li class="list-inline-item">
+                        <NavLink class="btn btn-outline-primary btn-sm"
+                                 href="@CmsRoutes.Combine(sub.Slug)"
+                                 Match="NavLinkMatch.Prefix">
+                            @sub.Name
+                        </NavLink>
+                    </li>
+                }
+            </ul>
+        }
+
+        <h4>Articles</h4>
+        if (!otherPosts.Any())
+        {
+            <p>MCE04</p>
+            <p><em>No published articles in this category.</em></p>
+        }
+        else
+        {
+            <ul class="list-unstyled">
+                @foreach (var p in otherPosts)
+                {
+                    <li class="mb-2">
+                        <NavLink href="@CmsRoutes.Combine(CategorySlug, p.Slug)" Match="NavLinkMatch.Prefix">
+                            <strong>@p.Title</strong>
+                        </NavLink>
+                        <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
+                    </li>
+                }
+            </ul>
+        }
     }
 }
 
 @code {
-    [Parameter] public string Slug { get; set; } = string.Empty;
+    [Parameter] public Guid? Id { get; set; }
+    [Parameter] public string CategorySlug { get; set; } = string.Empty;
+    [Parameter] public string? ArticleSlug { get; set; }
     [Parameter] public string? Tenant { get; set; }
+
+    private bool displayPublication;
 
     private CategoryDto? category;
     private List<CategoryDto> subcats = new();
     private PublicationReadDto? primaryPost;
     private List<PublicationReadDto> otherPosts = new();
 
+    private PublicationReadDto? pub;
+    private string fullCategoryPath = string.Empty;
+    private string fullArticlePath = string.Empty;
+
     protected override async Task OnParametersSetAsync()
     {
+        displayPublication = Id.HasValue || !string.IsNullOrEmpty(ArticleSlug);
+
+        if (displayPublication)
+        {
+            await LoadPublicationAsync();
+        }
+        else
+        {
+            await LoadCategoryAsync();
+        }
+    }
+
+    private async Task LoadCategoryAsync()
+    {
         var allCats = await CategoryService.ListAsync();
-        category = allCats.FirstOrDefault(c => c.Slug == Slug);
+        category = allCats.FirstOrDefault(c => c.Slug == CategorySlug);
         if (category == null)
             return;
 
@@ -96,6 +170,47 @@ else
 
         primaryPost = all.FirstOrDefault();
         otherPosts = all.Skip(1).ToList();
+    }
+
+    private async Task LoadPublicationAsync()
+    {
+        if (Id.HasValue)
+        {
+            pub = await PublicationService.GetAsync(Id.Value);
+        }
+        else if (!string.IsNullOrEmpty(ArticleSlug))
+        {
+            pub = await PublicationService.GetBySlugAsync(ArticleSlug);
+        }
+        else
+        {
+            pub = null;
+        }
+
+        if (pub?.CategoryId != null)
+        {
+            var ancestry = await CategoryService.GetAncestryAsync(pub.CategoryId.Value);
+            var crumbs = ancestry
+                          .Select(c => c.Name)
+                          .Append(pub.CategoryName!)
+                          .ToList();
+            var crumbs2 = new List<string>(crumbs)
+                          {
+                              pub.Title
+                          };
+
+            fullCategoryPath = string.Join(" > ", crumbs);
+            fullArticlePath = string.Join(" > ", crumbs2);
+        }
+    }
+
+    private async Task SetAsDraft()
+    {
+        if (pub == null) return;
+
+        await PublicationService.UnpublishAsync(pub.Id);
+        pub = await PublicationService.GetAsync(pub.Id);
+        StateHasChanged();
     }
 
     private string GetFirstParagraph(string html)
