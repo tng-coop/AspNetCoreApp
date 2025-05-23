@@ -7,6 +7,7 @@ from rich.table import Table
 from .models import Category, Publication, MenuItem
 from .builder import build_menu, slugify
 from .printer import print_menu
+from .data import sample_data
 
 
 def interactive_menu(
@@ -119,6 +120,14 @@ def interactive_menu(
             for pub in publications:
                 pub_table.add_row(pub.id, pub.title, pub.slug, pub.category_slug, pub.published_at.isoformat())
             print(pub_table)
+
+            # Show tenants as well
+            tenants, _, _ = sample_data()
+            tenant_table = Table(title="Tenants")
+            tenant_table.add_column("Slug", style="cyan")
+            for t in tenants:
+                tenant_table.add_row(t)
+            print(tenant_table)
         elif choice == '8':
             print("\nUpdate Category Parent:")
             for cat in categories:
