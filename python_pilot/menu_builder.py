@@ -25,25 +25,27 @@ def build_menu(
         items: List[MenuItem] = []
         for cat in sorted(cats, key=lambda c: c.name):
             children = map_cats(cat_by_parent.get(cat.id, []))
-            # Append publications under this category. Items with a
-            # non-zero featured_order come first in ascending order,
-            # followed by the rest sorted by published_at descending.
-            for pub in sorted(
+
+            # Publications are ordered by published date (newest first). The
+            # top article is considered the category's main page and is not
+            # included in the tree menu, mirroring the Blazor logic.
+            posts = sorted(
                 pubs_by_cat.get(cat.id, []),
-                key=lambda p: (
-                    p.featured_order if p.featured_order != 0 else 10**9,
-                    -p.published_at.timestamp(),
-                ),
-            ):
-                children.append(MenuItem(
-                    id=pub.id,
-                    title=pub.title,
-                    slug=f"{cat.slug}/{pub.slug}",
-                    icon_css="bi-file-earmark-text",
-                    sort_order=0,
-                    content_item_id=pub.id,
-                    children=[]
-                ))
+                key=lambda p: p.published_at,
+                reverse=True,
+            )
+            for pub in posts[1:]:
+                children.append(
+                    MenuItem(
+                        id=pub.id,
+                        title=pub.title,
+                        slug=f"{cat.slug}/{pub.slug}",
+                        icon_css="bi-file-earmark-text",
+                        sort_order=0,
+                        content_item_id=pub.id,
+                        children=[],
+                    )
+                )
             items.append(MenuItem(
                 id=cat.id,
                 title=cat.name,
