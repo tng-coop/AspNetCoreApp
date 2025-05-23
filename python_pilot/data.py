@@ -7,17 +7,39 @@ from .utils import slugify
 def sample_data() -> Tuple[List[str], List[Category], List[Publication]]:
     tenants = ["acme", "beta"]
     now = datetime.utcnow()
-    cats: List[Category] = [
-        Category("1", "Uncategorized", "uncategorized", "acme"),
-        Category("2", "About", "about", "acme"),
-        Category("3", "Ministries", "ministries", "acme"),
-        Category("4", "Service", "service", "acme", parent_id="3"),
-        Category("5", "Outreach", "outreach", "acme", parent_id="3"),
-        Category("6", "Food Pantry", "food-pantry", "acme", parent_id="4"),
-        Category("7", "Clothing Drive", "clothing-drive", "acme", parent_id="4"),
-        Category("8", "Mobile Pantry", "mobile-pantry", "acme", parent_id="6"),
-        Category("9", "Home", "home", "beta"),
+
+    # Define categories with parent referenced by slug
+    defs = [
+        ("Uncategorized", "uncategorized", "acme", None),
+        ("About", "about", "acme", None),
+        ("Ministries", "ministries", "acme", None),
+        ("Service", "service", "acme", "ministries"),
+        ("Outreach", "outreach", "acme", "ministries"),
+        ("Food Pantry", "food-pantry", "acme", "service"),
+        ("Clothing Drive", "clothing-drive", "acme", "service"),
+        ("Mobile Pantry", "mobile-pantry", "acme", "food-pantry"),
+        ("Home", "home", "beta", None),
     ]
+
+    # First pass: create categories without parent_id
+    cats: List[Category] = []
+    for name, slug, tenant, _ in defs:
+        cats.append(Category(
+            id=str(uuid.uuid4()),
+            name=name,
+            slug=slug,
+            tenant_slug=tenant,
+            parent_id=None
+        ))
+
+    # Build mapping from slug to generated ID
+    slug_to_id = {c.slug: c.id for c in cats}
+
+    # Second pass: assign parent_id by slug lookup
+    for cat, (_, _, _, parent_slug) in zip(cats, defs):
+        cat.parent_id = slug_to_id.get(parent_slug) if parent_slug else None
+
+    # Publications (same as before)
     pubs: List[Publication] = []
     titles = [
         ("about", "Getting Started with Our CMS"),
@@ -39,6 +61,8 @@ def sample_data() -> Tuple[List[str], List[Category], List[Publication]]:
             tenant_slug="acme",
             published_at=now - timedelta(days=len(titles) - i)
         ))
+
+    # Add a beta publication
     pubs.append(Publication(
         id=str(uuid.uuid4()),
         title="Beta Industries Overview",
@@ -47,4 +71,5 @@ def sample_data() -> Tuple[List[str], List[Category], List[Publication]]:
         tenant_slug="beta",
         published_at=now
     ))
+
     return tenants, cats, pubs
