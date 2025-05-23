@@ -1,3 +1,4 @@
+using System;
 using BlazorWebApp.Data;
 using BlazorWebApp.Models;
 using Microsoft.EntityFrameworkCore;
@@ -67,7 +68,9 @@ namespace BlazorWebApp.Services
                         Id            = cat.Id,
                         Title         = cat.Name,
                         Slug          = cat.Slug,
-                        IconCss       = "bi-list-nested",
+                        IconCss       = cat.Slug.Equals("home", StringComparison.OrdinalIgnoreCase)
+                                       ? "house"
+                                       : "list-nested",
                         SortOrder     = 0,
                         ContentItemId = null,
                         Children      = children
