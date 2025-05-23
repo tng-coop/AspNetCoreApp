@@ -77,10 +77,15 @@ namespace BlazorWebApp.Components.Pages
         {
             if (Id.HasValue)
             {
+                //raise exception
+                throw new InvalidOperationException("XXXXXXXXXXXXXX");
+
+
                 pub = await PublicationService.GetAsync(Id.Value);
             }
             else if (!string.IsNullOrEmpty(ArticleSlug))
-            {
+            {  
+                Console.WriteLine($"Loading publication by slug {ArticleSlug}");
                 pub = await PublicationService.GetBySlugAsync(CategorySlug, ArticleSlug!);
             }
             else
