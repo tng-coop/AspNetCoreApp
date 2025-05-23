@@ -50,8 +50,9 @@
                  Match="NavLinkMatch.All">
           @if (!string.IsNullOrEmpty(item.IconCss))
           {
-            <i class="bi bi-@item.IconCss me-1"></i>
+            <span class="bi bi-@item.IconCss" aria-hidden="true"></span>
           }
+
           @item.Title
         </NavLink>
       </div>

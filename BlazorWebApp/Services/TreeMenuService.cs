@@ -69,8 +69,8 @@ namespace BlazorWebApp.Services
                         Title         = cat.Name,
                         Slug          = cat.Slug,
                         IconCss       = cat.Slug.Equals("home", StringComparison.OrdinalIgnoreCase)
-                                       ? "house"
-                                       : "list-nested",
+                                       ? "house-door-fill-nav-menu"
+                                       : "",
                         SortOrder     = 0,
                         ContentItemId = null,
                         Children      = children
