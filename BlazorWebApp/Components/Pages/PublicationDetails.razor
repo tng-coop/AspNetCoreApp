@@ -18,10 +18,10 @@ else
 {
     <h1>@pub.Title</h1>
 
-    @if (!string.IsNullOrEmpty(fullCategoryPath))
+    @if (!string.IsNullOrEmpty(fullArticlePath))
     {
         <p class="text-muted mb-4">
-            <small>Category: @fullCategoryPath</small>
+            <small>Category: @fullArticlePath</small>
         </p>
     }
 
@@ -61,6 +61,7 @@ else
 
     private PublicationReadDto? pub;
     private string fullCategoryPath = string.Empty;
+    private string fullArticlePath = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -84,7 +85,14 @@ else
                           .Select(c => c.Name)
                           .Append(pub.CategoryName!)
                           .ToList();
+            // crumbs2 adds the article name to the path
+            var crumbs2 = new List<string>(crumbs)
+                          {
+                              pub.Title
+                          };
+                          
             fullCategoryPath = string.Join(" > ", crumbs);
+            fullArticlePath = string.Join(" > ", crumbs2);
         }
     }
 

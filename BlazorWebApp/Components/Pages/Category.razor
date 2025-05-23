@@ -12,8 +12,21 @@
 }
 else
 {
-    <h1>@category.Name</h1>
-
+    @if (primaryPost != null)
+    {
+        <article class="mb-4">
+            <div class="mt-3 mce-content-body">
+                @((MarkupString)GetFirstParagraph(primaryPost.Html))
+            </div>
+            <h5>
+                <NavLink href="@CmsRoutes.Combine(Slug, primaryPost.Slug)" Match="NavLinkMatch.Prefix">
+                    @primaryPost.Title
+                </NavLink>
+            </h5>
+            <small class="text-muted">@primaryPost.PublishedAt?.ToString("f")</small>
+            <p>MCE01</p>
+        </article>
+    }
     @if (subcats.Any())
     {
         <h4>Sub-categories</h4>
@@ -31,21 +44,6 @@ else
         </ul>
     }
 
-    @if (primaryPost != null)
-    {
-        <article class="mb-4">
-            <h5>
-                <NavLink href="@CmsRoutes.Combine(Slug, primaryPost.Slug)" Match="NavLinkMatch.Prefix">
-                    @primaryPost.Title
-                </NavLink>
-            </h5>
-            <small class="text-muted">@primaryPost.PublishedAt?.ToString("f")</small>
-            <p>MCE01</p>
-            <div class="mt-3 mce-content-body">
-                @((MarkupString)GetFirstParagraph(primaryPost.Html))
-            </div>
-        </article>
-    }
 
     <h4>Articles</h4>
     @if (!otherPosts.Any())
