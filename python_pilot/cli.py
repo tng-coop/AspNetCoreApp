@@ -34,7 +34,7 @@ Options:")
             break
 
 if __name__ == "__main__":
-    # Run using module: python3 -m python_playground
+    # Run using module: python3 -m python_pilot
     tenants, categories, publications = sample_data()
     print("Available tenants: ", ", ".join(tenants))
     selected = input("Enter tenant slug: ").strip()

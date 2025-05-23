@@ -1,4 +1,4 @@
-# Python Playground
+# Python Pilot
 
 This small script reproduces the menu-building algorithm used in the
 ASP.NET Core app. It lets you experiment with the category tree and
@@ -7,13 +7,13 @@ sample publications entirely in Python.
 Run it from the package root:
 
 ```bash
-python -m python_playground
+python -m python_pilot
 ```
 
-You can also run the simplified playground directly:
+You can also run the simplified pilot directly:
 
 ```bash
-python menu_playground.py
+python menu_pilot.py
 ```
 
 Both commands will print a simple text-based tree of categories and the
