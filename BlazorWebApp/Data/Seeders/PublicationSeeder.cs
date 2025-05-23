@@ -31,19 +31,20 @@ namespace BlazorWebApp.Data.Seeders
 
             var now = DateTimeOffset.UtcNow;
 
-            // define raw publications: (categorySlug, html, status, createdOffsetDays, publishedOffsetDays?)
-            var rawPubs = new (string? CategorySlug, string Html, PublicationStatus Status, int CreatedOffset, int? PublishedOffset)[]
+            // define raw publications: (categorySlug, title, html, status, createdOffsetDays, publishedOffsetDays?)
+            var rawPubs = new (string? CategorySlug, string Title, string Html, PublicationStatus Status, int CreatedOffset, int? PublishedOffset)[]
             {
-                ("about",         "<h1>Welcome</h1><p>This is your first post. Edit me!</p>",          PublicationStatus.Published,   -7, -6),
-                ("ministries",    "<h2>Ministries Begin</h2><p>Ministries launch details...</p>",   PublicationStatus.Published,   -5, -4),
-                ("service",       "<h2>Volunteer Service</h2><p>Latest service opportunities...</p>", PublicationStatus.Published,   -4, -3),
-                ("outreach",      "<h2>Training</h2><p>Upcoming outreach training...</p>",         PublicationStatus.Published,   -3, -2),
-                ("food-pantry",   "<h2>Food Pantry</h2><p>Monthly schedule for food pantry...</p>", PublicationStatus.Published,   -2, -1),
-                ("clothing-drive", "<h2>Clothing Drive</h2><p>Recap of the clothing drive...</p>",     PublicationStatus.Published,   -1,  0),
-                ("mobile-pantry", "<h2>Mobile Pantry</h2><p>Route details for this week...</p>",      PublicationStatus.Published,    0, +1),
-                ("outreach",      "<h2>Recap</h2><p>Here's what happened…</p>",                    PublicationStatus.Published,   -2, -1),
-                ("outreach",      "<h2>Meet our volunteer</h2><p>Spotlight on Jane Doe…</p>",          PublicationStatus.Published,   -1,  0),
-                (null,             "<p>This post is still a draft.</p>",                               PublicationStatus.Draft,         0, null)
+                ("about",          "Getting Started with Our CMS",        "<h1>Welcome</h1><p>This is your first post. Edit me!</p>",          PublicationStatus.Published,   -7, -6),
+                ("home",          "defraul",        "<h1>Welcome Homepage</h1><p>Homepage</p>",          PublicationStatus.Published,   -7, -6),
+                ("ministries",     "Annual Ministries Kickoff",          "<h2>Ministries Begin</h2><p>Ministries launch details...</p>",   PublicationStatus.Published,   -5, -4),
+                ("service",        "Service Opportunities Update",       "<h2>Volunteer Service</h2><p>Latest service opportunities...</p>", PublicationStatus.Published,   -4, -3),
+                ("outreach",       "Outreach Team Training",             "<h2>Training</h2><p>Upcoming outreach training...</p>",         PublicationStatus.Published,   -3, -2),
+                ("food-pantry",    "Food Pantry Schedule",              "<h2>Food Pantry</h2><p>Monthly schedule for food pantry...</p>", PublicationStatus.Published,   -2, -1),
+                ("clothing-drive", "Clothing Drive Recap",               "<h2>Clothing Drive</h2><p>Recap of the clothing drive...</p>",     PublicationStatus.Published,   -1,  0),
+                ("mobile-pantry",  "Mobile Pantry Route Announced",      "<h2>Mobile Pantry</h2><p>Route details for this week...</p>",      PublicationStatus.Published,    0, +1),
+                ("outreach",       "Community Outreach Recap",           "<h2>Recap</h2><p>Here's what happened…</p>",                    PublicationStatus.Published,   -2, -1),
+                ("outreach",       "Volunteer Spotlight",                "<h2>Meet our volunteer</h2><p>Spotlight on Jane Doe…</p>",          PublicationStatus.Published,   -1,  0),
+                (null,              "Draft Post Example",                 "<p>This post is still a draft.</p>",                               PublicationStatus.Draft,         0, null)
             };
 
             // build Publication entities with one-to-one image mapping
@@ -58,8 +59,8 @@ namespace BlazorWebApp.Data.Seeders
                 var pub = new Publication
                 {
                     Id = Guid.NewGuid(),
-                    Title = GenerateTitle(entry.CategorySlug, i),
-                    Slug = Utils.SlugGenerator.Generate(GenerateTitle(entry.CategorySlug, i)),
+                    Title = entry.Title,
+                    Slug = Utils.SlugGenerator.Generate(entry.Title),
                     Html = WrapWithImage(entry.Html, file),
                     Status = entry.Status,
                     FeaturedOrder = entry.CategorySlug == "about" ? 1 : 0,
@@ -89,22 +90,6 @@ namespace BlazorWebApp.Data.Seeders
                 }
             }
             await db.SaveChangesAsync();
-
-            // local helper to generate a title
-            static string GenerateTitle(string? slug, int index) => slug switch
-            {
-                null => "Draft Post Example",
-                _ when index == 0 => "Getting Started with Our CMS",
-                _ when slug == "ministries" => "Annual Ministries Kickoff",
-                _ when slug == "service" => "Service Opportunities Update",
-                _ when slug == "outreach" && index == 3 => "Outreach Team Training",
-                _ when slug == "food-pantry" => "Food Pantry Schedule",
-                _ when slug == "clothing-drive" => "Clothing Drive Recap",
-                _ when slug == "mobile-pantry" => "Mobile Pantry Route Announced",
-                _ when slug == "outreach" && index == 7 => "Community Outreach Recap",
-                _ when slug == "outreach" && index == 8 => "Volunteer Spotlight",
-                _ => $"Post {index + 1}"
-            };
         }
     }
 }
