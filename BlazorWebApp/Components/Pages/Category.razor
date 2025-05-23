@@ -1,3 +1,5 @@
+@page "/"
+@page "/{Tenant}/"
 @page "/_cms/{CategorySlug}"
 @page "/{Tenant}/_cms/{CategorySlug}"
 @page "/_cms/{CategorySlug}/{ArticleSlug}"
@@ -10,6 +12,8 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject ICategoryService CategoryService
 @inject IPublicationService PublicationService
+@inject NavigationManager Nav
+
 
 @if (displayPublication)
 {
@@ -133,16 +137,25 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+      if (Nav.Uri.TrimEnd('/').EndsWith(Nav.BaseUri.TrimEnd('/')))
+      {
+          CategorySlug  = "home";
+          displayPublication = true;
+      }
+
         displayPublication = Id.HasValue || !string.IsNullOrEmpty(ArticleSlug);
 
         if (displayPublication)
         {
+            Console.WriteLine($"Loading publication for {Id} or {ArticleSlug}");
             await LoadPublicationAsync();
         }
         else
         {
+            Console.WriteLine($"Loading category for {CategorySlug}");
             await LoadCategoryAsync();
         }
+
     }
 
     private async Task LoadCategoryAsync()
