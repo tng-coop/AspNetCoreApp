@@ -14,7 +14,7 @@ def list_publications(publications: List[Publication]) -> None:
         print(
             f"- {pub.title} (slug: {pub.slug}, category: {pub.category_slug}, "
             f"published: {pub.published_at.isoformat()}, "
-            f"featured: {pub.is_featured}, order: {pub.featured_order})"
+            f"featured order: {pub.featured_order})"
         )
 
 
@@ -30,11 +30,11 @@ def add_publication(
     if not any(c.slug == cat_slug for c in categories):
         print("Category not found.")
         return
-    feat = input("Featured? [y/N]: ").strip().lower() == "y"
+    order_str = input("Featured order (blank for none): ").strip()
     order = 0
-    if feat:
+    if order_str:
         try:
-            order = int(input("Featured order: ").strip())
+            order = int(order_str)
         except ValueError:
             print("Invalid order, defaulting to 0")
     new_pub = Publication(
@@ -44,7 +44,6 @@ def add_publication(
         category_slug=cat_slug,
         published_at=datetime.utcnow(),
         tenant_slug=tenant_slug,
-        is_featured=feat,
         featured_order=order,
     )
     publications.append(new_pub)

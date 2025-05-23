@@ -25,11 +25,15 @@ def build_menu(
         items: List[MenuItem] = []
         for cat in sorted(cats, key=lambda c: c.name):
             children = map_cats(cat_by_parent.get(cat.id, []))
-            # Append publications under this category, newest first
+            # Append publications under this category. Items with a
+            # non-zero featured_order come first in ascending order,
+            # followed by the rest sorted by published_at descending.
             for pub in sorted(
                 pubs_by_cat.get(cat.id, []),
-                key=lambda p: p.published_at,
-                reverse=True
+                key=lambda p: (
+                    p.featured_order if p.featured_order != 0 else 10**9,
+                    -p.published_at.timestamp(),
+                ),
             ):
                 children.append(MenuItem(
                     id=pub.id,
