@@ -6,7 +6,8 @@ from rich import print
 from rich.table import Table
 
 from ..models import Category, Publication
-from ..builder import build_menu, slugify
+from ..menu_builder import build_menu
+from ..slug_utils import slugify
 from ..printer import print_menu
 from ..data import sample_data
 
