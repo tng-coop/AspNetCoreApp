@@ -12,9 +12,7 @@ def interactive_menu(
     publications: List[Publication]
 ) -> None:
     while True:
-        print(f"
-Tenant: {tenant_slug}
-Options:")
+        print(f"Tenant: {tenant_slug}\nOptions:")
         options = [
             "1. Show menu tree",
             "2. List categories",
