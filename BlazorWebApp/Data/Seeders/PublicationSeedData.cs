@@ -14,9 +14,9 @@ namespace BlazorWebApp.Data.Seeders
     public static class PublicationSeedData
     {
         public static readonly PublicationSeedEntry[] Entries =
-        {
+        [
             new("about",          "Getting Started with Our CMS",        "<h1>Welcome</h1><p>This is your first post. Edit me!</p>",          PublicationStatus.Published,   -7, -6),
-            new("home",          "defraul",        "<h1>Welcome Homepage</h1><p>Homepage</p>",          PublicationStatus.Published,   -7, -6),
+            new("home",          "defraul",        "<h1>Welcome Homepage</h1><p>Homepage</p>",          PublicationStatus.Published,   -7, -6, false),
             new("ministries",     "Annual Ministries Kickoff",          "<h2>Ministries Begin</h2><p>Ministries launch details...</p>",   PublicationStatus.Published,   -5, -4),
             new("service",        "Service Opportunities Update",       "<h2>Volunteer Service</h2><p>Latest service opportunities...</p>", PublicationStatus.Published,   -4, -3),
             new("outreach",       "Outreach Team Training",             "<h2>Training</h2><p>Upcoming outreach training...</p>",         PublicationStatus.Published,   -3, -2),
@@ -26,6 +26,6 @@ namespace BlazorWebApp.Data.Seeders
             new("outreach",       "Community Outreach Recap",           "<h2>Recap</h2><p>Here's what happened…</p>",                    PublicationStatus.Published,   -2, -1),
             new("outreach",       "Volunteer Spotlight",                "<h2>Meet our volunteer</h2><p>Spotlight on Jane Doe…</p>",          PublicationStatus.Published,   -1,  0),
             new(null,              "Draft Post Example",                 "<p>This post is still a draft.</p>",                               PublicationStatus.Draft,         0, null, false)
-        };
+        ];
     }
 }
