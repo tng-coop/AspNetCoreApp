@@ -58,7 +58,7 @@ namespace BlazorWebApp.Data.Seeders
                 {
                     Id = Guid.NewGuid(),
                     Title = entry.Title,
-                    Slug = Utils.SlugGenerator.Generate(entry.Title),
+                    Slug = entry.Slug,
                     Html = html,
                     Status = entry.Status,
                     FeaturedOrder = entry.CategorySlug == "about" ? 1 : 0,

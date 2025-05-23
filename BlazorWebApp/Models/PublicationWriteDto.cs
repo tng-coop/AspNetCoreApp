@@ -7,8 +7,8 @@ namespace BlazorWebApp.Models
         [Required]
         public string Title { get; set; } = string.Empty;
 
-        // optional custom slug (if empty we generate from Title)
-        public string Slug { get; set; } = string.Empty;
+        // Manual slug entry; defaults to "default" when unspecified
+        public string Slug { get; set; } = "default";
 
         // capture rendered HTML
         public string Html { get; set; } = string.Empty;

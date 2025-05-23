@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using TinyMCE.Blazor;
 using BlazorWebApp.Models;
 using BlazorWebApp.Services;
-using BlazorWebApp.Utils;
 
 namespace BlazorWebApp.Components.Pages
 {
@@ -28,7 +27,8 @@ namespace BlazorWebApp.Components.Pages
     !string.IsNullOrWhiteSpace(dto.Title) &&
     !string.IsNullOrWhiteSpace(dto.Html);
 
-  private bool slugAscii => SlugGenerator.ContainsOnlyAscii(dto.Slug);
+  private static bool ContainsOnlyAscii(string text) => text.All(c => c <= sbyte.MaxValue);
+  private bool slugAscii => ContainsOnlyAscii(dto.Slug);
 
   // TinyMCE configuration dictionary—with YouTube paste/embed support
 private readonly Dictionary<string, object> editorConfig = new()
@@ -114,8 +114,6 @@ private async Task HandleSubmit()
   private void TitleChanged(ChangeEventArgs e)
   {
     dto.Title = e.Value?.ToString() ?? string.Empty;
-    if (string.IsNullOrWhiteSpace(dto.Slug))
-      dto.Slug = SlugGenerator.Generate(dto.Title);
   }
 
 

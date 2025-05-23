@@ -19,8 +19,8 @@ python menu_pilot.py
 Both commands will print a simple text-based tree of categories and the
 published posts associated with each category.
 
-### Slug generation
+### Slug handling
 
-Slugs are produced using `slugify()` which mirrors the Blazor app's
-`SlugGenerator`. Colons are removed entirely while spaces and certain
-punctuation are converted to hyphens.
+Publications provide their slugs explicitly. When a slug is omitted,
+the literal value `default` is used. Slugs should contain only ASCII
+letters, numbers and hyphens.

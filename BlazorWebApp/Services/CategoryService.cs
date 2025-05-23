@@ -73,11 +73,11 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
 
+            // Manual slug entry; ensure a slug value exists
             var slugBase = string.IsNullOrWhiteSpace(dto.Slug)
-                ? dto.Name
+                ? "default"
                 : dto.Slug;
-            var slug = await GenerateUniqueSlugAsync(db,
-                SlugGenerator.Generate(slugBase));
+            var slug = await GenerateUniqueSlugAsync(db, slugBase);
 
             var cat = new Category
             {

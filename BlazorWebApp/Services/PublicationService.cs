@@ -19,10 +19,11 @@ namespace BlazorWebApp.Services
         public async Task<PublicationReadDto> CreateAsync(PublicationWriteDto dto)
         {
             await using var db = CreateDb();
+            // Manual slug entry; ensure a slug value exists
             var slugBase = string.IsNullOrWhiteSpace(dto.Slug)
-                ? dto.Title
+                ? "default"
                 : dto.Slug;
-            var slug = await GenerateUniqueSlugAsync(db, SlugGenerator.Generate(slugBase));
+            var slug = await GenerateUniqueSlugAsync(db, slugBase);
 
             var pub = new Publication
             {
@@ -131,11 +132,11 @@ namespace BlazorWebApp.Services
             pub.Html         = dto.Html;
             pub.FeaturedOrder = dto.FeaturedOrder;
 
+            // Manual slug entry; ensure a slug value exists
             var slugBase = string.IsNullOrWhiteSpace(dto.Slug)
-                ? dto.Title
+                ? "default"
                 : dto.Slug;
-            pub.Slug = await GenerateUniqueSlugAsync(db,
-                SlugGenerator.Generate(slugBase), pub.Id);
+            pub.Slug = await GenerateUniqueSlugAsync(db, slugBase, pub.Id);
 
             // 3) reassign category
             var existing = db.PublicationCategories.Where(pc => pc.PublicationId == id);

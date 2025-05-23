@@ -8,8 +8,8 @@ namespace BlazorWebApp.Models
         [Required]
         public string Name { get; set; } = string.Empty;
 
-        // Optional custom slug; if empty we generate from Name
-        public string Slug { get; set; } = string.Empty;
+        // Manual slug entry; defaults to "default" when unspecified
+        public string Slug { get; set; } = "default";
 
         public Guid? ParentCategoryId { get; set; }
     }
