@@ -13,107 +13,106 @@
 @inject IPublicationService PublicationService
 @inject NavigationManager Nav
 
-
-@if (displayPublication)
-{
-    if (pub == null)
+@{
+    if (displayPublication)
     {
-        <p><em>Publication not found.</em></p>
-    }
-    else
-    {
-        <h1>@pub.Title</h1>
-
-        @if (!string.IsNullOrEmpty(fullArticlePath))
+        if (pub == null)
         {
-            <p class="text-muted mb-4">
-                <small>Category: @fullArticlePath</small>
-            </p>
+            <p><em>Publication not found.</em></p>
         }
-
-        <!-- direct HTML render, styled by TinyMCE's content CSS -->
-        <p>MCE03</p>
-        <div class="mce-content-body">
-            @((MarkupString)pub.Html)
-        </div>
-
-        <p><small>Created: @pub.CreatedAt:f</small></p>
-
-        @if (pub.PublishedAt.HasValue)
+        else
         {
-            <p><small>Published: @pub.PublishedAt.Value:f</small></p>
-        }
+            <h1>@pub.Title</h1>
 
-        <AuthorizeView Roles="Admin">
-            <div class="mt-3">
-                <button class="btn btn-secondary" @onclick="SetAsDraft">
-                    Set as Draft
-                </button>
+            @if (!string.IsNullOrEmpty(fullArticlePath))
+            {
+                <p class="text-muted mb-4">
+                    <small>Category: @fullArticlePath</small>
+                </p>
+            }
+
+            <!-- direct HTML render, styled by TinyMCE's content CSS -->
+            <p>MCE03</p>
+            <div class="mce-content-body">
+                @((MarkupString)pub.Html)
             </div>
-        </AuthorizeView>
 
-        <div class="mt-4">
-            <NavLink href="@CmsRoutes.Combine(pub?.CategorySlug)" Match="NavLinkMatch.Prefix">
-                Back to @pub?.CategoryName
-            </NavLink>
-        </div>
-    }
-}
-else
-{
-    if (category == null)
-    {
-        <h2>Category not found</h2>
+            <p><small>Created: @pub.CreatedAt:f</small></p>
+
+            @if (pub.PublishedAt.HasValue)
+            {
+                <p><small>Published: @pub.PublishedAt.Value:f</small></p>
+            }
+
+            <AuthorizeView Roles="Admin">
+                <div class="mt-3">
+                    <button class="btn btn-secondary" @onclick="SetAsDraft">
+                        Set as Draft
+                    </button>
+                </div>
+            </AuthorizeView>
+
+            <div class="mt-4">
+                <NavLink href="@CmsRoutes.Combine(pub?.CategorySlug)" Match="NavLinkMatch.Prefix">
+                    Back to @pub?.CategoryName
+                </NavLink>
+            </div>
+        }
     }
     else
     {
-        if (primaryPost != null)
+        if (category == null)
         {
-            <article class="mb-4">
-                <div class="mt-3 mce-content-body">
-                    @((MarkupString)GetFirstParagraph(primaryPost.Html))
-                </div>
-                <h5>
-                    <NavLink href="@CmsRoutes.Combine(CategorySlug, primaryPost.Slug)" Match="NavLinkMatch.Prefix">
-                        @primaryPost.Title
-                    </NavLink>
-                </h5>
-                <small class="text-muted">@primaryPost.PublishedAt?.ToString("f")</small>
-                <p>MCE01</p>
-            </article>
+            <h2>Category not found</h2>
         }
-        if (subcats.Any())
+        else
         {
-            <h4>Sub-categories</h4>
-            <ul class="list-inline">
-                @foreach (var sub in subcats)
-                {
-                    <li class="list-inline-item">
-                        <NavLink class="btn btn-outline-primary btn-sm"
-                                 href="@CmsRoutes.Combine(sub.Slug)"
-                                 Match="NavLinkMatch.Prefix">
-                            @sub.Name
+            if (primaryPost != null)
+            {
+                <article class="mb-4">
+                    <div class="mt-3 mce-content-body">
+                        @((MarkupString)GetFirstParagraph(primaryPost.Html))
+                    </div>
+                    <h5>
+                        <NavLink href="@CmsRoutes.Combine(CategorySlug, primaryPost.Slug)" Match="NavLinkMatch.Prefix">
+                            @primaryPost.Title
                         </NavLink>
-                    </li>
-                }
-            </ul>
-        }
+                    </h5>
+                    <small class="text-muted">@primaryPost.PublishedAt?.ToString("f")</small>
+                    <p>MCE01</p>
+                </article>
+            }
+            if (subcats.Any())
+            {
+                <h4>Sub-categories</h4>
+                <ul class="list-inline">
+                    @foreach (var sub in subcats)
+                    {
+                        <li class="list-inline-item">
+                            <NavLink class="btn btn-outline-primary btn-sm" href="@CmsRoutes.Combine(sub.Slug)" Match="NavLinkMatch.Prefix">
+                                @sub.Name
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            }
 
-        if (otherPosts.Any())
-        {
-        <h4>Other Articles in this category</h4>
-            <ul class="list-unstyled">
-                @foreach (var p in otherPosts)
-                {
-                    <li class="mb-2">
-                        <NavLink href="@CmsRoutes.Combine(CategorySlug, p.Slug)" Match="NavLinkMatch.Prefix">
-                            <strong>@p.Title</strong>
-                        </NavLink>
-                        <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
-                    </li>
-                }
-            </ul>
+            if (otherPosts.Any())
+            {
+                <h4>Other Articles in this category</h4>
+                <ul class="list-unstyled">
+                    @foreach (var p in otherPosts)
+                    {
+                        <li class="mb-2">
+                            <NavLink href="@CmsRoutes.Combine(CategorySlug, p.Slug)" Match="NavLinkMatch.Prefix">
+                                <strong>@p.Title</strong>
+                            </NavLink>
+                            <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
+                        </li>
+                    }
+                </ul>
+            }
         }
     }
-}
 
+}
