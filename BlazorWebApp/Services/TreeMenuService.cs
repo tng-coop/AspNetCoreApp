@@ -20,9 +20,12 @@ namespace BlazorWebApp.Services
 
             var allCats = await db.Categories
                 .AsNoTracking()
-                .OrderBy(c => c.SortOrder ?? int.MaxValue)
-                .ThenBy(c => c.Name)
                 .ToListAsync();
+
+            allCats = allCats
+                .OrderBy(c => c.SortOrder ?? int.MaxValue)
+                .ThenBy(CategoryUtils.LocalizedName)
+                .ToList();
             var catLookup = allCats.ToLookup(c => c.ParentCategoryId);
 
             var published = await db.Publications
