@@ -182,6 +182,9 @@ namespace BlazorWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -216,6 +219,8 @@ namespace BlazorWebApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("FeaturedOrder");
@@ -224,24 +229,6 @@ namespace BlazorWebApp.Migrations
                         .IsUnique();
 
                     b.ToTable("Publications");
-                });
-
-            modelBuilder.Entity("BlazorWebApp.Data.PublicationCategory", b =>
-                {
-                    b.Property<Guid>("PublicationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("PublicationId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("PublicationId")
-                        .IsUnique();
-
-                    b.ToTable("PublicationCategories");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.PublicationRevision", b =>
@@ -450,23 +437,15 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.PublicationCategory", b =>
+            modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.Category", "Category")
-                        .WithMany("PublicationCategories")
+                        .WithMany("Publications")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BlazorWebApp.Data.Publication", "Publication")
-                        .WithMany("PublicationCategories")
-                        .HasForeignKey("PublicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
-
-                    b.Navigation("Publication");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.PublicationRevision", b =>
@@ -535,7 +514,7 @@ namespace BlazorWebApp.Migrations
                 {
                     b.Navigation("Children");
 
-                    b.Navigation("PublicationCategories");
+                    b.Navigation("Publications");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.MenuItem", b =>
@@ -545,8 +524,6 @@ namespace BlazorWebApp.Migrations
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
-                    b.Navigation("PublicationCategories");
-
                     b.Navigation("PublicationRevisions");
                 });
 #pragma warning restore 612, 618

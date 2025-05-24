@@ -110,24 +110,6 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Publications",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Slug = table.Column<string>(type: "text", nullable: false),
-                    Html = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
-                    FeaturedOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
-                    Status = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
-                    PublishedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Publications", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tenants",
                 columns: table => new
                 {
@@ -247,27 +229,28 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PublicationCategories",
+                name: "Publications",
                 columns: table => new
                 {
-                    PublicationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false),
+                    Html = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
+                    FeaturedOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    Status = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
+                    PublishedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PublicationCategories", x => new { x.PublicationId, x.CategoryId });
+                    table.PrimaryKey("PK_Publications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PublicationCategories_Categories_CategoryId",
+                        name: "FK_Publications_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PublicationCategories_Publications_PublicationId",
-                        column: x => x.PublicationId,
-                        principalTable: "Publications",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -352,20 +335,14 @@ namespace BlazorWebApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PublicationCategories_CategoryId",
-                table: "PublicationCategories",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PublicationCategories_PublicationId",
-                table: "PublicationCategories",
-                column: "PublicationId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PublicationRevisions_PublicationId",
                 table: "PublicationRevisions",
                 column: "PublicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_CategoryId",
+                table: "Publications",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Publications_CreatedAt",
@@ -415,9 +392,6 @@ namespace BlazorWebApp.Migrations
                 name: "MenuItems");
 
             migrationBuilder.DropTable(
-                name: "PublicationCategories");
-
-            migrationBuilder.DropTable(
                 name: "PublicationRevisions");
 
             migrationBuilder.DropTable(
@@ -430,10 +404,10 @@ namespace BlazorWebApp.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Publications");
 
             migrationBuilder.DropTable(
-                name: "Publications");
+                name: "Categories");
         }
     }
 }
