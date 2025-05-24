@@ -101,7 +101,7 @@ private async Task HandleSubmit()
     Id = created.Id;
     loadedExisting = true;
     // replace the URL so OnInitializedAsync will load our new Id
-    Nav.NavigateTo($"/_cms/editor/{Id}", replace: true);
+    Nav.NavigateTo($"/_cms/_editor/{Id}", replace: true);
   }
 
   // AFTER either branch, refresh the history panel
