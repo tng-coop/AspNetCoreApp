@@ -10,5 +10,8 @@ namespace BlazorWebApp.Models
 
         // Added Slug so we can route and link correctly
         public string Slug { get; set; } = string.Empty;
+
+        // Optional ordering hint
+        public int? SortOrder { get; set; }
     }
 }

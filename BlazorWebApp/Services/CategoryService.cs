@@ -23,13 +23,15 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             return await db.Categories
-                .OrderBy(c => c.Name)
+                .OrderBy(c => c.SortOrder ?? int.MaxValue)
+                .ThenBy(c => c.Name)
                 .Select(c => new CategoryDto
                 {
                     Id = c.Id,
                     Name = c.Name,
                     ParentCategoryId = c.ParentCategoryId,
-                    Slug = c.Slug
+                    Slug = c.Slug,
+                    SortOrder = c.SortOrder
                 })
                 .ToListAsync();
         }
@@ -39,13 +41,15 @@ namespace BlazorWebApp.Services
             await using var db = CreateDb();
             // Load all categories into memory
             var all = await db.Categories
-                .OrderBy(c => c.Name)
+                .OrderBy(c => c.SortOrder ?? int.MaxValue)
+                .ThenBy(c => c.Name)
                 .Select(c => new CategoryDto
                 {
                     Id = c.Id,
                     Name = c.Name,
                     ParentCategoryId = c.ParentCategoryId,
-                    Slug = c.Slug
+                    Slug = c.Slug,
+                    SortOrder = c.SortOrder
                 })
                 .ToListAsync();
 
@@ -82,7 +86,8 @@ namespace BlazorWebApp.Services
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
                 Slug = slug,
-                ParentCategoryId = dto.ParentCategoryId
+                ParentCategoryId = dto.ParentCategoryId,
+                SortOrder = dto.SortOrder
             };
 
             db.Categories.Add(cat);
@@ -93,7 +98,8 @@ namespace BlazorWebApp.Services
                 Id = cat.Id,
                 Name = cat.Name,
                 ParentCategoryId = cat.ParentCategoryId,
-                Slug = cat.Slug
+                Slug = cat.Slug,
+                SortOrder = cat.SortOrder
             };
         }
 

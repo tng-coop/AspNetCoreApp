@@ -28,8 +28,10 @@ namespace BlazorWebApp.Data
                 e.HasKey(c => c.Id);
                 e.Property(c => c.Name).IsRequired();
                 e.Property(c => c.Slug).IsRequired();
+                e.Property(c => c.SortOrder).IsRequired(false);
                 e.HasIndex(c => c.Slug)
                  .IsUnique();
+                e.HasIndex(c => c.SortOrder);
                 e.HasOne(c => c.Parent)
                  .WithMany(c => c.Children)
                  .HasForeignKey(c => c.ParentCategoryId)

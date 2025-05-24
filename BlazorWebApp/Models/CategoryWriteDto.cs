@@ -12,5 +12,7 @@ namespace BlazorWebApp.Models
         public string Slug { get; set; } = "default";
 
         public Guid? ParentCategoryId { get; set; }
+
+        public int? SortOrder { get; set; }
     }
 }

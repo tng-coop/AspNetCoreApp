@@ -19,7 +19,8 @@ namespace BlazorWebApp.Services
 
             var allCats = await db.Categories
                 .AsNoTracking()
-                .OrderBy(c => c.Name)
+                .OrderBy(c => c.SortOrder ?? int.MaxValue)
+                .ThenBy(c => c.Name)
                 .ToListAsync();
             var catLookup = allCats.ToLookup(c => c.ParentCategoryId);
 
@@ -70,7 +71,7 @@ namespace BlazorWebApp.Services
                         IconCss       = cat.Slug.Equals("home", StringComparison.OrdinalIgnoreCase)
                                        ? "house-door-fill-nav-menu"
                                        : "",
-                        SortOrder     = 0,
+                        SortOrder     = cat.SortOrder ?? 0,
                         ContentItemId = null,
                         Children      = children
                     };
