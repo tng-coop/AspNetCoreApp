@@ -80,12 +80,21 @@
 
   <!-- Buttons -->
   <button type="submit" class="btn btn-primary">Save Draft</button>
-  <button type="button"
-          class="btn btn-success ms-2"
-          @onclick="PublishAsync"
-          disabled="@(!canPublish)">
-    Publish
-  </button>
+  <AuthorizeView Roles="Admin">
+    <Authorized Context="authState">
+      <button type="button"
+              class="btn btn-success ms-2"
+              @onclick="PublishAsync"
+              disabled="@(!canPublish)">
+        Publish
+      </button>
+    </Authorized>
+    <NotAuthorized Context="authState">
+      <button type="button" class="btn btn-success ms-2" disabled>
+        Publish
+      </button>
+    </NotAuthorized>
+  </AuthorizeView>
 </EditForm>
 
 @if (loadedExisting)
