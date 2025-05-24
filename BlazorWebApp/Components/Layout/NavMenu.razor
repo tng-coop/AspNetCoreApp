@@ -76,6 +76,13 @@
                     <span class="bi bi-folder"></span> Categories
                 </NavLink>
             </div>
+            <AuthorizeView Roles="Admin" Context="adminCtx">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href='@CmsRoutes.CombinePrefixed(cmsPrefix, "_users")'>
+                        <span class="bi bi-people" aria-hidden="true"></span> Users
+                    </NavLink>
+                </div>
+            </AuthorizeView>
           </Authorized>
         </AuthorizeView>
 
