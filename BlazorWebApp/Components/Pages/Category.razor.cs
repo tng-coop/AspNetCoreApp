@@ -38,7 +38,8 @@ namespace BlazorWebApp.Components.Pages
             if (string.IsNullOrEmpty(ArticleSlug))
             {
                 var all = await PublicationService.ListAsync();
-                var pub = all.FirstOrDefault(p => p.CategorySlug == CategorySlug);
+                var pub = all.FirstOrDefault(p => p.CategorySlug == CategorySlug
+                                                  && p.Status == "Published");
                 if (pub != null)
                 {
                     ArticleSlug = pub.Slug;
@@ -76,6 +77,12 @@ namespace BlazorWebApp.Components.Pages
         private async Task LoadPublicationAsync()
         {
             pub = await PublicationService.GetBySlugAsync(CategorySlug, ArticleSlug!);
+
+            if (pub != null && pub.Status != "Published")
+            {
+                pub = null;
+                return;
+            }
 
             if (pub?.CategoryId != null)
             {
