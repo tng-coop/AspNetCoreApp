@@ -100,6 +100,9 @@ namespace BlazorWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("NameJa")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("ParentCategoryId")
                         .HasColumnType("uuid");
 

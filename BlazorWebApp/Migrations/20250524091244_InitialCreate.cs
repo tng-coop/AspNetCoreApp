@@ -58,6 +58,7 @@ namespace BlazorWebApp.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    NameJa = table.Column<string>(type: "text", nullable: true),
                     Slug = table.Column<string>(type: "text", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: true),
                     ParentCategoryId = table.Column<Guid>(type: "uuid", nullable: true)
