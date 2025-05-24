@@ -238,6 +238,9 @@ namespace BlazorWebApp.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("PublicationId")
+                        .IsUnique();
+
                     b.ToTable("PublicationCategories");
                 });
 
