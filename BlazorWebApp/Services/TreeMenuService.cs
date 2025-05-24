@@ -25,14 +25,13 @@ namespace BlazorWebApp.Services
 
             var published = await db.Publications
                 .Where(p => p.Status == PublicationStatus.Published)
-                .Include(p => p.PublicationCategories)
+                .Include(p => p.Category)
                 .ToListAsync();
             var pubsByCat = published
-                .SelectMany(p => p.PublicationCategories.Select(pc => (pc.CategoryId, p)))
-                .GroupBy(x => x.CategoryId)
+                .GroupBy(p => p.CategoryId)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.Select(x => x.p)
+                    g => g.Select(x => x)
                           .OrderByDescending(p => p.PublishedAt)
                           .ToList()
                 );

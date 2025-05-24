@@ -70,23 +70,17 @@ namespace BlazorWebApp.Data.Seeders
                 return (Pub: pub, CategorySlug: entry.CategorySlug);
             }).ToList();
 
-            // save publications
-            db.Publications.AddRange(pubs.Select(p => p.Pub));
-            await db.SaveChangesAsync();
-
-            // attach each publication to its category
             foreach (var pair in pubs)
             {
                 var slug = pair.CategorySlug;
-                if (slug != null && cats.TryGetValue(slug, out var catId))
+                if (slug == null || !cats.TryGetValue(slug, out var catId))
                 {
-                    db.PublicationCategories.Add(new PublicationCategory
-                    {
-                        PublicationId = pair.Pub.Id,
-                        CategoryId = catId
-                    });
+                    throw new InvalidOperationException($"Unknown category slug '{slug}' in PublicationSeedData.");
                 }
+                pair.Pub.CategoryId = catId;
             }
+            // save publications
+            db.Publications.AddRange(pubs.Select(p => p.Pub));
             await db.SaveChangesAsync();
         }
     }

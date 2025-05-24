@@ -14,7 +14,6 @@ namespace BlazorWebApp.Data
         public DbSet<Publication> Publications   { get; set; } = null!;
         public DbSet<ImageAsset>  Images         { get; set; } = null!;
         public DbSet<Category>    Categories     { get; set; } = null!;
-        public DbSet<PublicationCategory> PublicationCategories { get; set; } = null!;
         public DbSet<PublicationRevision> PublicationRevisions { get; set; } = null!;
         public DbSet<Tenant> Tenants { get; set; } = null!;
 
@@ -63,20 +62,6 @@ namespace BlazorWebApp.Data
                  .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // --- PublicationCategory join table configuration ---
-            builder.Entity<PublicationCategory>(e =>
-            {
-                // enforce at most one category per publication
-                e.HasKey(pc => new { pc.PublicationId, pc.CategoryId });
-                e.HasIndex(pc => pc.PublicationId)
-                 .IsUnique();
-                e.HasOne(pc => pc.Publication)
-                 .WithMany(p => p.PublicationCategories)
-                 .HasForeignKey(pc => pc.PublicationId);
-                e.HasOne(pc => pc.Category)
-                 .WithMany(c => c.PublicationCategories)
-                 .HasForeignKey(pc => pc.CategoryId);
-            });
 
             // --- Publication entity configuration ---
             builder.Entity<Publication>(e =>
@@ -97,6 +82,10 @@ namespace BlazorWebApp.Data
                 e.Property(p => p.FeaturedOrder)
                     .HasDefaultValue(0);
                 e.HasIndex(p => p.FeaturedOrder);
+                e.HasOne(p => p.Category)
+                 .WithMany(c => c.Publications)
+                 .HasForeignKey(p => p.CategoryId)
+                 .OnDelete(DeleteBehavior.Restrict);
             });
 
             // --- Tenant entity configuration ---

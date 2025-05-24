@@ -16,8 +16,8 @@ namespace BlazorWebApp.Data
         public Category? Parent { get; set; }
         public ICollection<Category> Children { get; set; } = new List<Category>();
 
-        // Join table for many-to-many with ContentItem (formerly Publication)
-        public ICollection<PublicationCategory> PublicationCategories { get; set; }
-            = new List<PublicationCategory>();
+        // One-to-many relationship with publications
+        public ICollection<Publication> Publications { get; set; }
+            = new List<Publication>();
     }
 }

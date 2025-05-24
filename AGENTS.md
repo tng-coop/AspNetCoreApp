@@ -14,7 +14,7 @@ This file outlines future plans for slug handling, category assignment, and rela
 
 # Category Assignment
 
-- **Single category per article**: The `PublicationCategory` join entity has a composite key on `(PublicationId, CategoryId)` and a unique index on `PublicationId` to enforce that each publication maps to exactly one category.
+- **Single category per article**: `Publication` has a `CategoryId` foreign key so each article belongs to exactly one category.
 - **Hierarchical categories**: The `Category` entity uses a self-referencing FK (`ParentCategoryId`) with `OnDelete(DeleteBehavior.Restrict)`, allowing multi-level trees but preventing cycles.
 - **Navigation and seeding**:
   - `CategorySeeder` creates a depth-4 hierarchy as example data.

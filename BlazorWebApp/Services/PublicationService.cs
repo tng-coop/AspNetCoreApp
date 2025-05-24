@@ -25,6 +25,7 @@ namespace BlazorWebApp.Services
                 : dto.Slug;
             var slug = await GenerateUniqueSlugAsync(db, slugBase);
 
+            var catId = dto.CategoryId ?? await GetHomeIdAsync(db);
             var pub = new Publication
             {
                 Id           = Guid.NewGuid(),
@@ -32,17 +33,10 @@ namespace BlazorWebApp.Services
                 Slug         = slug,
                 Html         = dto.Html,
                 FeaturedOrder = dto.FeaturedOrder,
-                CreatedAt    = DateTimeOffset.UtcNow
+                CreatedAt    = DateTimeOffset.UtcNow,
+                CategoryId   = catId
             };
             db.Publications.Add(pub);
-            await db.SaveChangesAsync();
-
-            var catId = dto.CategoryId ?? await GetHomeIdAsync(db);
-            db.PublicationCategories.Add(new PublicationCategory
-            {
-                PublicationId = pub.Id,
-                CategoryId    = catId
-            });
             await db.SaveChangesAsync();
 
             return ToDto(pub);
@@ -52,7 +46,7 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             return await db.Publications
-                .Include(p => p.PublicationCategories).ThenInclude(pc => pc.Category)
+                .Include(p => p.Category)
                 .OrderByDescending(p => p.CreatedAt)
                 .Select(p => ToDto(p))
                 .ToListAsync();
@@ -62,7 +56,7 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             var p = await db.Publications
-                .Include(pu => pu.PublicationCategories).ThenInclude(pc => pc.Category)
+                .Include(pu => pu.Category)
                 .FirstOrDefaultAsync(pu => pu.Id == id);
             return p == null ? null : ToDto(p);
         }
@@ -71,9 +65,8 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             var p = await db.Publications
-                .Include(pu => pu.PublicationCategories).ThenInclude(pc => pc.Category)
-                .FirstOrDefaultAsync(pu => pu.Slug == slug &&
-                                           pu.PublicationCategories.Any(pc => pc.Category.Slug == categorySlug));
+                .Include(pu => pu.Category)
+                .FirstOrDefaultAsync(pu => pu.Slug == slug && pu.Category.Slug == categorySlug);
             return p == null ? null : ToDto(p);
         }
 
@@ -111,12 +104,12 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             var pub = await db.Publications
-                .Include(p => p.PublicationCategories)
+                .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == id)
                 ?? throw new KeyNotFoundException($"Publication {id} not found");
 
             // 1) snapshot current state:
-            var oldCategoryId = pub.PublicationCategories.FirstOrDefault()?.CategoryId;
+            var oldCategoryId = pub.CategoryId;
             db.PublicationRevisions.Add(new PublicationRevision
             {
                 Id            = Guid.NewGuid(),
@@ -139,14 +132,8 @@ namespace BlazorWebApp.Services
             pub.Slug = await GenerateUniqueSlugAsync(db, slugBase, pub.Id);
 
             // 3) reassign category
-            var existing = db.PublicationCategories.Where(pc => pc.PublicationId == id);
-            db.PublicationCategories.RemoveRange(existing);
             var catId = dto.CategoryId ?? await GetHomeIdAsync(db);
-            db.PublicationCategories.Add(new PublicationCategory
-            {
-                PublicationId = id,
-                CategoryId    = catId
-            });
+            pub.CategoryId = catId;
 
             await db.SaveChangesAsync();
         }
@@ -173,7 +160,7 @@ namespace BlazorWebApp.Services
                       ?? throw new KeyNotFoundException($"Revision {revisionId} not found");
 
             var pub = await db.Publications
-                .Include(p => p.PublicationCategories).ThenInclude(pc => pc.Category)
+                .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == rev.PublicationId)
                 ?? throw new KeyNotFoundException($"Publication {rev.PublicationId} not found");
 
@@ -184,7 +171,7 @@ namespace BlazorWebApp.Services
                 PublicationId = pub.Id,
                 Title         = pub.Title,
                 Html          = pub.Html,
-                CategoryId    = pub.PublicationCategories.FirstOrDefault()?.CategoryId,
+                CategoryId    = pub.CategoryId,
                 CreatedAt     = DateTimeOffset.UtcNow
             });
 
@@ -193,14 +180,8 @@ namespace BlazorWebApp.Services
             pub.Html  = rev.Html;
 
             // reassign category
-            var existing = db.PublicationCategories.Where(pc => pc.PublicationId == pub.Id);
-            db.PublicationCategories.RemoveRange(existing);
             var catId = rev.CategoryId ?? await GetHomeIdAsync(db);
-            db.PublicationCategories.Add(new PublicationCategory
-            {
-                PublicationId = pub.Id,
-                CategoryId    = catId
-            });
+            pub.CategoryId = catId;
 
             await db.SaveChangesAsync();
             return ToDto(pub);
@@ -216,9 +197,9 @@ namespace BlazorWebApp.Services
             FeaturedOrder = p.FeaturedOrder,
             CreatedAt    = p.CreatedAt,
             PublishedAt  = p.PublishedAt,
-            CategoryId   = p.PublicationCategories.FirstOrDefault()?.CategoryId,
-            CategoryName = p.PublicationCategories.FirstOrDefault()?.Category?.Name,
-            CategorySlug = p.PublicationCategories.FirstOrDefault()?.Category?.Slug
+            CategoryId   = p.CategoryId,
+            CategoryName = p.Category?.Name,
+            CategorySlug = p.Category?.Slug
         };
 
         private static async Task<string> GenerateUniqueSlugAsync(
@@ -249,7 +230,7 @@ namespace BlazorWebApp.Services
         await using var db = CreateDb();
         return await db.Publications
             .Where(p => p.Status == PublicationStatus.Published
-                     && p.PublicationCategories.Any(pc => pc.CategoryId == categoryId)
+                     && p.CategoryId == categoryId
                      && p.FeaturedOrder != 0)
             .OrderBy(p => p.FeaturedOrder)
             .ThenByDescending(p => p.PublishedAt)

@@ -23,9 +23,9 @@ public class Publication
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? PublishedAt { get; set; }
 
-        // Many-to-many join with categories
-        public ICollection<PublicationCategory> PublicationCategories { get; set; }
-            = new List<PublicationCategory>();
+        // Each publication belongs to exactly one category
+        public Guid CategoryId { get; set; }
+        public Category Category { get; set; } = null!;
 
         // Revision history navigation
         public ICollection<PublicationRevision> PublicationRevisions { get; set; }
