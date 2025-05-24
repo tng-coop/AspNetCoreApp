@@ -12,6 +12,9 @@ public class Publication
     [Required]
     public string Title     { get; set; } = string.Empty;
 
+    // Japanese title for localized display
+    public string TitleJa  { get; set; } = string.Empty;
+
     // New slug field (URL‐friendly, unique)
     [Required]
     public string Slug      { get; set; } = string.Empty;

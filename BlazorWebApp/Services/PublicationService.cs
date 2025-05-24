@@ -28,6 +28,7 @@ namespace BlazorWebApp.Services
             {
                 Id           = Guid.NewGuid(),
                 Title        = dto.Title,
+                TitleJa      = dto.TitleJa,
                 Slug         = slug,
                 Html         = dto.Html,
                 FeaturedOrder = dto.FeaturedOrder,
@@ -113,6 +114,7 @@ namespace BlazorWebApp.Services
                 Id            = Guid.NewGuid(),
                 PublicationId = id,
                 Title         = pub.Title,
+                TitleJa       = pub.TitleJa,
                 Html          = pub.Html,
                 CategoryId    = oldCategoryId,
                 CreatedAt     = DateTimeOffset.UtcNow
@@ -120,6 +122,7 @@ namespace BlazorWebApp.Services
 
             // 2) apply the update
             pub.Title        = dto.Title;
+            pub.TitleJa      = dto.TitleJa;
             pub.Html         = dto.Html;
             pub.FeaturedOrder = dto.FeaturedOrder;
 
@@ -144,7 +147,8 @@ namespace BlazorWebApp.Services
                 {
                     Id        = r.Id,
                     CreatedAt = r.CreatedAt,
-                    Title     = r.Title
+                    Title     = r.Title,
+                    TitleJa   = r.TitleJa
                 })
                 .ToListAsync();
         }
@@ -166,6 +170,7 @@ namespace BlazorWebApp.Services
                 Id            = Guid.NewGuid(),
                 PublicationId = pub.Id,
                 Title         = pub.Title,
+                TitleJa       = pub.TitleJa,
                 Html          = pub.Html,
                 CategoryId    = pub.CategoryId,
                 CreatedAt     = DateTimeOffset.UtcNow
@@ -173,6 +178,7 @@ namespace BlazorWebApp.Services
 
             // apply revision
             pub.Title = rev.Title;
+            pub.TitleJa = rev.TitleJa;
             pub.Html  = rev.Html;
 
             // reassign category
@@ -187,6 +193,7 @@ namespace BlazorWebApp.Services
         {
             Id           = p.Id,
             Title        = p.Title,
+            TitleJa      = p.TitleJa,
             Slug         = p.Slug,
             Html         = p.Html,
             Status       = p.Status.ToString(),

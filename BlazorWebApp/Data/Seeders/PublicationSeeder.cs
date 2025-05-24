@@ -58,6 +58,7 @@ namespace BlazorWebApp.Data.Seeders
                 {
                     Id = Guid.NewGuid(),
                     Title = entry.Title,
+                    TitleJa = entry.TitleJa,
                     Slug = entry.Slug,
                     Html = html,
                     Status = entry.Status,

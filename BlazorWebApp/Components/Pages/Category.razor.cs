@@ -86,7 +86,7 @@ namespace BlazorWebApp.Components.Pages
                               .ToList();
                 var crumbs2 = new List<string>(crumbs)
                               {
-                                  pub.Title
+                                  PublicationUtils.LocalizedTitle(pub)
                               };
 
                 fullCategoryPath = string.Join(" > ", crumbs);

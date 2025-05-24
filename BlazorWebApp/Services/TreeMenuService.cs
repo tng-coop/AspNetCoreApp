@@ -54,7 +54,7 @@ namespace BlazorWebApp.Services
                             children.Add(new MenuItemDto
                             {
                                 Id            = pub.Id,
-                                Title         = pub.Title,
+                                Title         = PublicationUtils.LocalizedTitle(pub),
                                 Slug          = $"{cat.Slug}/{pub.Slug}",
                                 IconCss       = "bi-file-earmark-text",
                                 SortOrder     = 0,

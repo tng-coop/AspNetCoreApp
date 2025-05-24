@@ -7,5 +7,6 @@ namespace BlazorWebApp.Models
         public Guid Id { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public string Title { get; set; } = string.Empty;
+        public string TitleJa { get; set; } = string.Empty;
     }
 }

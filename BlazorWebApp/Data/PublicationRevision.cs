@@ -8,6 +8,7 @@ namespace BlazorWebApp.Data
         public Guid Id { get; set; }
         public Guid PublicationId { get; set; }
         public string Title { get; set; } = string.Empty;
+        public string TitleJa { get; set; } = string.Empty;
         public string Html { get; set; } = string.Empty;
         public Guid? CategoryId { get; set; }
         public DateTimeOffset CreatedAt { get; set; }

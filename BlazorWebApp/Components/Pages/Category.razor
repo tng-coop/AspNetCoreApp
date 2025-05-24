@@ -24,7 +24,7 @@ else if (category == null)
 }
 else
 {
-    <h1>@pub.Title</h1>
+    <h1>@PublicationUtils.LocalizedTitle(pub)</h1>
 
     if (primaryPost != null && pub.Slug == primaryPost.Slug)
     {
@@ -77,7 +77,7 @@ else
             {
                 <li class="mb-2">
                     <NavLink href="@CmsRoutes.Combine(CategorySlug, p.Slug)" Match="NavLinkMatch.Prefix">
-                        <strong>@p.Title</strong>
+                        <strong>@PublicationUtils.LocalizedTitle(p)</strong>
                     </NavLink>
                     <small class="text-muted ms-2">@p.PublishedAt?.ToString("g")</small>
                 </li>

@@ -80,6 +80,7 @@ private readonly Dictionary<string, object> editorConfig = new()
         loadedExisting = true;
         dto.CategoryId = existing.CategoryId;
         dto.Title = existing.Title;
+        dto.TitleJa = existing.TitleJa;
         dto.Slug = existing.Slug;
         dto.Html = existing.Html;
         dto.FeaturedOrder = existing.FeaturedOrder;
@@ -140,6 +141,7 @@ private async Task HandleSubmit()
     var updated = await PublicationService.RestoreRevisionAsync(revisionId);
     // update the editor DTO
     dto.Title = updated.Title;
+    dto.TitleJa = updated.TitleJa;
     dto.Html = updated.Html;
     dto.CategoryId = updated.CategoryId;
     dto.FeaturedOrder = updated.FeaturedOrder;

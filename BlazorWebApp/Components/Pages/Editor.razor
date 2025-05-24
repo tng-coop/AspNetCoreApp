@@ -45,6 +45,12 @@
     <ValidationMessage For="@(() => dto.Title)" />
   </div>
 
+  <!-- Title (JA) -->
+  <div class="mb-3">
+    <label class="form-label">Title (JA)</label>
+    <InputText class="form-control" @bind-Value="dto.TitleJa" />
+  </div>
+
   <!-- Slug -->
   <div class="mb-3">
     <label class="form-label">Slug</label>

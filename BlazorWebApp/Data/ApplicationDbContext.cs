@@ -59,6 +59,7 @@ namespace BlazorWebApp.Data
                 e.HasKey(r => r.Id);
                 e.Property(r => r.CreatedAt)
                  .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+                e.Property(r => r.TitleJa).IsRequired(false);
                 e.HasOne(r => r.Publication)
                  .WithMany(p => p.PublicationRevisions)
                  .HasForeignKey(r => r.PublicationId)
@@ -71,6 +72,7 @@ namespace BlazorWebApp.Data
             {
                 e.HasKey(p => p.Id);
                 e.Property(p => p.Title).IsRequired();
+                e.Property(p => p.TitleJa).IsRequired(false);
                 e.Property(p => p.Slug).IsRequired();
                 e.HasIndex(p => p.Slug).IsUnique();
                 e.Property(p => p.Html)

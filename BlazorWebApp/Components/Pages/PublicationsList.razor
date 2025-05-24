@@ -23,7 +23,7 @@
     @foreach (var p in draftPubs)
     {
         <li>
-            <a href="/_cms/_editor/@p.Id"><strong>@p.Title</strong></a>
+            <a href="/_cms/_editor/@p.Id"><strong>@PublicationUtils.LocalizedTitle(p)</strong></a>
             <small class="text-muted ms-2">@p.CreatedAt:g</small>
             @if (!string.IsNullOrEmpty(GetCategoryPath(p)))
             {
@@ -38,7 +38,7 @@
     @foreach (var p in publishedPubs)
     {
         <li>
-            <a href="/_cms/@GetCatSlug(p)/@p.Slug"><strong>@p.Title</strong></a>
+            <a href="/_cms/@GetCatSlug(p)/@p.Slug"><strong>@PublicationUtils.LocalizedTitle(p)</strong></a>
             <small class="text-muted ms-2">@p.PublishedAt!.Value:g</small>
             @if (!string.IsNullOrEmpty(GetCategoryPath(p)))
             {
