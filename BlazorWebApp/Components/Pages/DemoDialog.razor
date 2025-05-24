@@ -1,13 +1,16 @@
 @namespace BlazorWebApp.Components.Pages
 @using MudBlazor
 
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<DemoDialog> L
+
 <MudDialog>
-    <TitleContent>Demo Dialog</TitleContent>
+    <TitleContent>@L["Demo Dialog"]</TitleContent>
     <DialogContent>
-        This is the body of your demo dialog.
+        @L["This is the body of your demo dialog."]
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Close</MudButton>
+        <MudButton OnClick="Cancel">@L["Close"]</MudButton>
     </DialogActions>
 </MudDialog>
 

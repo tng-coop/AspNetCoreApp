@@ -6,19 +6,20 @@
 @inject IPublicationService PublicationService
 @inject ICategoryService    CategoryService
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PublicationsList> L
 
 <AuthorizeView>
   <Authorized>
     <p class="mb-4">
-      👋 Hello, <strong>@context.User.Identity!.Name</strong>!
+      👋 @L["Hello"], <strong>@context.User.Identity!.Name</strong>!
     </p>
   </Authorized>
   <NotAuthorized>
-    <p class="mb-4 text-warning">You’re not logged in.</p>
+    <p class="mb-4 text-warning">@L["You’re not logged in."]</p>
   </NotAuthorized>
 </AuthorizeView>
 
-<h3>Drafts</h3>
+<h3>@L["Drafts"]</h3>
 <ul class="list-unstyled">
     @foreach (var p in draftPubs)
     {
@@ -33,7 +34,7 @@
     }
 </ul>
 
-<h3>Published</h3>
+<h3>@L["Published"]</h3>
 <ul class="list-unstyled">
     @foreach (var p in publishedPubs)
     {

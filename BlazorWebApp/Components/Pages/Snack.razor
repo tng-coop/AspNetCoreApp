@@ -2,7 +2,9 @@
 @page "/mud-demo"
 @using MudBlazor
 @inject ISnackbar Snackbar
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Snack> L
 
-            <MudButton Color="Color.Primary" @onclick='() => Snackbar.Add("Hello Mud")'>
-                Click Me
+            <MudButton Color="Color.Primary" @onclick='() => Snackbar.Add(L["Hello Mud"])'>
+                @L["Click Me"]
             </MudButton>

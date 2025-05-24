@@ -1,32 +1,34 @@
 @page "/_cms/_users"
 @page "/{Tenant}/_cms/_users"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<UserAdmin> L
 
-<PageTitle>User Administration</PageTitle>
+<PageTitle>@L["User Administration"]</PageTitle>
 
 @using Microsoft.AspNetCore.Identity
 @using BlazorWebApp.Data
 @inject UserManager<ApplicationUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 
-<h1>User Administration</h1>
+<h1>@L["User Administration"]</h1>
 
 @if (users is null)
 {
-    <p>Loading users…</p>
+    <p>@L["Loading users…"]</p>
 }
 else if (users.Count == 0)
 {
-    <p>No users found.</p>
+    <p>@L["No users found."]</p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th>@L["Email"]</th>
+                <th>@L["Role"]</th>
+                <th>@L["Status"]</th>
                 <th></th>
             </tr>
         </thead>
@@ -43,10 +45,10 @@ else
                         }
                     </InputSelect>
                 </td>
-                <td>@(row.Disabled ? "Disabled" : "Active")</td>
+                <td>@(row.Disabled ? L["Disabled"].Value : L["Active"].Value)</td>
                 <td>
                     <button class="btn btn-sm @(row.Disabled ? "btn-success" : "btn-warning")" @onclick="() => ToggleDisabledAsync(row)">
-                        @(row.Disabled ? "Enable" : "Disable")
+                        @(row.Disabled ? L["Enable"].Value : L["Disable"].Value)
                     </button>
                 </td>
             </tr>

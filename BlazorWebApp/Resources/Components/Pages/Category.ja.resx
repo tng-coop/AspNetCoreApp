@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Publication not found." xml:space="preserve"><value>記事が見つかりません。</value></data>
+  <data name="Category not found" xml:space="preserve"><value>カテゴリが見つかりません</value></data>
+  <data name="Category:" xml:space="preserve"><value>カテゴリ:</value></data>
+  <data name="Created:" xml:space="preserve"><value>作成日時:</value></data>
+  <data name="Published:" xml:space="preserve"><value>公開日時:</value></data>
+  <data name="Set as Draft" xml:space="preserve"><value>下書きに戻す</value></data>
+  <data name="Sub-categories" xml:space="preserve"><value>サブカテゴリ</value></data>
+  <data name="Other Articles in this category" xml:space="preserve"><value>このカテゴリの他の記事</value></data>
+  <data name="Back to" xml:space="preserve"><value>戻る:</value></data>
+</root>

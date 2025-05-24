@@ -13,14 +13,15 @@
 @inject ICategoryService CategoryService
 @inject IPublicationService PublicationService
 @inject NavigationManager Nav
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Category> L
 
 @if (pub == null)
 {
-    <p><em>Publication not found.</em></p>
+    <p><em>@L["Publication not found."]</em></p>
 }
 else if (category == null)
 {
-    <h2>Category not found</h2>
+    <h2>@L["Category not found"]</h2>
 }
 else
 {
@@ -29,34 +30,34 @@ else
     if (primaryPost != null && pub.Slug == primaryPost.Slug)
     {
         <p class="text-muted mb-4">
-            <small>Category: @fullCategoryPath</small>
+            <small>@L["Category:"] @fullCategoryPath</small>
         </p>
     }else{
         <p class="text-muted mb-4">
-            <small>Category: @fullArticlePath</small>
+            <small>@L["Category:"] @fullArticlePath</small>
         </p>
     }
     <div class="mce-content-body">
         @((MarkupString)pub.Html)
     </div>
 
-    <p><small>Created: @pub.CreatedAt:f</small></p>
+    <p><small>@L["Created:"] @pub.CreatedAt:f</small></p>
 
     @if (pub.PublishedAt.HasValue)
     {
-        <p><small>Published: @pub.PublishedAt.Value:f</small></p>
+        <p><small>@L["Published:"] @pub.PublishedAt.Value:f</small></p>
     }
 
     <AuthorizeView Roles="Admin">
         <div class="mt-3">
             <button class="btn btn-secondary" @onclick="SetAsDraft">
-                Set as Draft
+                @L["Set as Draft"]
             </button>
         </div>
     </AuthorizeView>
     if (subcats.Any())
     {
-        <h4>Sub-categories</h4>
+        <h4>@L["Sub-categories"]</h4>
         <ul class="list-inline">
             @foreach (var sub in subcats)
             {
@@ -71,7 +72,7 @@ else
 
     if (otherPosts.Any())
     {
-        <h4>Other Articles in this category</h4>
+        <h4>@L["Other Articles in this category"]</h4>
         <ul class="list-unstyled">
             @foreach (var p in otherPosts)
             {
@@ -86,7 +87,7 @@ else
     }
     <div class="mt-4">
         <NavLink href="@CmsRoutes.Combine(pub?.CategorySlug ?? string.Empty)" Match="NavLinkMatch.Prefix">
-            Back to @pub?.CategoryName
+            @L["Back to"] @pub?.CategoryName
         </NavLink>
     </div>
 }

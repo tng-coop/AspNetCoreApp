@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="New Publication" xml:space="preserve"><value>New Publication</value></data>
+  <data name="Edit Publication" xml:space="preserve"><value>Edit Publication</value></data>
+  <data name="Unknown Publication – creating new" xml:space="preserve"><value>Unknown Publication – creating new</value></data>
+  <data name="Category" xml:space="preserve"><value>Category</value></data>
+  <data name="Title" xml:space="preserve"><value>Title</value></data>
+  <data name="Title (JA)" xml:space="preserve"><value>Title (JA)</value></data>
+  <data name="Slug" xml:space="preserve"><value>Slug</value></data>
+  <data name="Slug should contain ASCII characters only." xml:space="preserve"><value>Slug should contain ASCII characters only.</value></data>
+  <data name="Featured Order" xml:space="preserve"><value>Featured Order</value></data>
+  <data name="Content" xml:space="preserve"><value>Content</value></data>
+  <data name="Save Draft" xml:space="preserve"><value>Save Draft</value></data>
+  <data name="Publish" xml:space="preserve"><value>Publish</value></data>
+  <data name="Revision History" xml:space="preserve"><value>Revision History</value></data>
+  <data name="Loading revisions…" xml:space="preserve"><value>Loading revisions…</value></data>
+  <data name="No past revisions." xml:space="preserve"><value>No past revisions.</value></data>
+  <data name="When" xml:space="preserve"><value>When</value></data>
+  <data name="Restore" xml:space="preserve"><value>Restore</value></data>
+</root>

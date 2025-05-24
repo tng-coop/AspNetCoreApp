@@ -2,26 +2,28 @@
 @page "/{Tenant}/_cms/_categories"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject ICategoryService CategoryService
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CategoryAdmin> L
 
-<h3>Edit Categories</h3>
+<h3>@L["Edit Categories"]</h3>
 
 <AuthorizeView Roles="Admin">
     <Authorized>
         @if (rows == null)
         {
-            <p>Loading…</p>
+            <p>@L["Loading…"]</p>
         }
         else
         {
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Name (JA)</th>
-                        <th>Slug</th>
-                        <th>Parent</th>
-                        <th>Sort Order</th>
+                        <th>@L["Name"]</th>
+                        <th>@L["Name (JA)"]</th>
+                        <th>@L["Slug"]</th>
+                        <th>@L["Parent"]</th>
+                        <th>@L["Sort Order"]</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -34,7 +36,7 @@
                         <td><InputText class="form-control" @bind-Value="row.Dto.Slug" /></td>
                         <td>
                             <InputSelect class="form-select" @bind-Value="row.Dto.ParentCategoryId">
-                                <option value="">(none)</option>
+                                <option value="">@L["(none)"]</option>
                                 @foreach (var opt in categories)
                                 {
                                     if (opt.Id != row.Id)
@@ -46,7 +48,7 @@
                         </td>
                         <td><InputNumber class="form-control" @bind-Value="row.Dto.SortOrder" /></td>
                         <td>
-                            <button class="btn btn-sm btn-primary" @onclick="() => Save(row)">Save</button>
+                            <button class="btn btn-sm btn-primary" @onclick="() => Save(row)">@L["Save"]</button>
                         </td>
                     </tr>
                 }
@@ -55,7 +57,7 @@
         }
     </Authorized>
     <NotAuthorized>
-        <p>You’re not authorized.</p>
+        <p>@L["You’re not authorized."]</p>
     </NotAuthorized>
 </AuthorizeView>
 

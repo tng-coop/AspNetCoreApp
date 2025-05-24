@@ -1,22 +1,24 @@
 @page "/dashboard"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Dashboard> L
 
-<PageTitle>Dashboard</PageTitle>
+<PageTitle>@L["Dashboard"]</PageTitle>
 
 @using Microsoft.AspNetCore.Identity
 @using BlazorWebApp.Data
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthStateProvider
 
-<h1>Dashboard</h1>
+<h1>@L["Dashboard"]</h1>
 
 @if (userName is null)
 {
-    <p>Loading…</p>
+    <p>@L["Loading…"]</p>
 }
 else
 {
-    <p>Welcome @userName (@userRole)</p>
+    <p>@string.Format(L["WelcomeUser"], userName, userRole)</p>
 
 }
 

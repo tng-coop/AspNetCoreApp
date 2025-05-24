@@ -3,6 +3,8 @@
 @page "/{Tenant}/_cms/_editor"
 @page "/{Tenant}/_cms/_editor/{Id:guid}"
 @rendermode InteractiveServer
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Editor> L
 
 @using TinyMCE.Blazor
 @using BlazorWebApp.Models
@@ -15,10 +17,10 @@
 
 <h3>
   @(Id == null
-      ? "New Publication"
+      ? L["New Publication"].Value
       : (loadedExisting
-          ? "Edit Publication"
-          : "Unknown Publication – creating new"))
+          ? L["Edit Publication"].Value
+          : L["Unknown Publication – creating new"].Value))
 </h3>
 
 <EditForm EditContext="editContext"
@@ -28,7 +30,7 @@
 
   <!-- Category -->
   <div class="mb-3">
-    <label class="form-label">Category</label>
+    <label class="form-label">@L["Category"]</label>
     <InputSelect class="form-select" @bind-Value="dto.CategoryId">
       @foreach (var opt in categoryOptions)
       {
@@ -40,36 +42,36 @@
 
   <!-- Title -->
   <div class="mb-3">
-    <label class="form-label">Title</label>
+    <label class="form-label">@L["Title"]</label>
     <InputText class="form-control" @bind-Value="dto.Title" @oninput="TitleChanged" />
     <ValidationMessage For="@(() => dto.Title)" />
   </div>
 
   <!-- Title (JA) -->
   <div class="mb-3">
-    <label class="form-label">Title (JA)</label>
+    <label class="form-label">@L["Title (JA)"]</label>
     <InputText class="form-control" @bind-Value="dto.TitleJa" />
   </div>
 
   <!-- Slug -->
   <div class="mb-3">
-    <label class="form-label">Slug</label>
+    <label class="form-label">@L["Slug"]</label>
     <InputText class="form-control" @bind-Value="dto.Slug" />
     @if (!slugAscii)
     {
-        <div class="text-warning"><small>Slug should contain ASCII characters only.</small></div>
+        <div class="text-warning"><small>@L["Slug should contain ASCII characters only."]</small></div>
     }
   </div>
 
   <!-- Featured Order -->
   <div class="mb-3">
-    <label class="form-label" for="featuredOrder">Featured Order</label>
+    <label class="form-label" for="featuredOrder">@L["Featured Order"]</label>
     <InputNumber class="form-control" @bind-Value="dto.FeaturedOrder" id="featuredOrder" />
   </div>
 
   <!-- TinyMCE Editor -->
   <div class="mb-3">
-    <label class="form-label">Content</label>
+    <label class="form-label">@L["Content"]</label>
     <TinyMCE.Blazor.Editor
       ApiKey="no-api-key"
       @bind-Value="dto.Html"
@@ -79,14 +81,14 @@
   </div>
 
   <!-- Buttons -->
-  <button type="submit" class="btn btn-primary">Save Draft</button>
+  <button type="submit" class="btn btn-primary">@L["Save Draft"]</button>
   <AuthorizeView Roles="Admin">
     <Authorized Context="authState">
       <button type="button"
               class="btn btn-success ms-2"
               @onclick="PublishAsync"
               disabled="@(!canPublish)">
-        Publish
+        @L["Publish"]
       </button>
     </Authorized>
     <NotAuthorized Context="authState">
@@ -99,20 +101,20 @@
 
 @if (loadedExisting)
 {
-  <h4 class="mt-5">Revision History</h4>
+  <h4 class="mt-5">@L["Revision History"]</h4>
   @if (revisions == null)
   {
-    <p>Loading revisions…</p>
+    <p>@L["Loading revisions…"]</p>
   }
   else if (!revisions.Any())
   {
-    <p><em>No past revisions.</em></p>
+    <p><em>@L["No past revisions."]</em></p>
   }
   else
   {
     <table class="table table-striped">
       <thead>
-        <tr><th>When</th><th>Title</th><th></th></tr>
+        <tr><th>@L["When"]</th><th>@L["Title"]</th><th></th></tr>
       </thead>
       <tbody>
         @foreach (var r in revisions)
@@ -123,7 +125,7 @@
             <td>
               <button class="btn btn-sm btn-outline-secondary"
                       @onclick="() => Restore(r.Id)">
-                Restore
+                @L["Restore"]
               </button>
             </td>
           </tr>
