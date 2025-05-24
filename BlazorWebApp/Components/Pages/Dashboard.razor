@@ -1,39 +1,151 @@
 @page "/dashboard"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
 @using BlazorWebApp.Models
+@using Microsoft.AspNetCore.Identity
+@using BlazorWebApp.Data
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject AuthenticationStateProvider AuthStateProvider
 
-@inject BlazorWebApp.Services.ITenantService TenantService
+<h1>Dashboard</h1>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<h3>Tenants</h3>
-@if (tenants is null)
+@if (userName is null)
 {
-    <em>Loading…</em>
-}
-else if (tenants.Count == 0)
-{
-    <em>No tenants found.</em>
+    <p>Loading…</p>
 }
 else
 {
-    <ul>
-    @foreach (var t in tenants)
-    {
-        <li>@t.Name (@t.Slug)</li>
-    }
-    </ul>
+    <p>Welcome @userName (@userRole)</p>
+
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <h3>User Administration</h3>
+            @if (users is null)
+            {
+                <p>Loading users…</p>
+            }
+            else if (users.Count == 0)
+            {
+                <p>No users found.</p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var row in users)
+                    {
+                        <tr>
+                            <td>@row.Email</td>
+                            <td>
+                                <InputSelect @bind-Value="row.Role" class="form-select" @onchange="() => ChangeRoleAsync(row)">
+                                    @foreach (var role in allRoles)
+                                    {
+                                        <option value="@role">@role</option>
+                                    }
+                                </InputSelect>
+                            </td>
+                            <td>@(row.Disabled ? "Disabled" : "Active")</td>
+                            <td>
+                                <button class="btn btn-sm @(row.Disabled ? "btn-success" : "btn-warning")" @onclick="() => ToggleDisabledAsync(row)">
+                                    @(row.Disabled ? "Enable" : "Disable")
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+        </Authorized>
+    </AuthorizeView>
 }
 
 @code {
-    private List<TenantDto>? tenants;
+    private string? userName;
+    private string? userRole;
+
+    private List<UserRow>? users;
+    private List<string>? allRoles;
+
+    private class UserRow
+    {
+        public string Id { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public string Role { get; set; } = "";
+        public bool Disabled { get; set; }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        tenants = await TenantService.ListAsync();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        if (user != null)
+        {
+            userName = user.Email;
+            var roles = await UserManager.GetRolesAsync(user);
+            userRole = roles.FirstOrDefault() ?? "Member";
+            if (userRole == "Admin")
+            {
+                await LoadUsersAsync();
+            }
+        }
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        allRoles = RoleManager.Roles.Select(r => r.Name!).ToList();
+        users = new List<UserRow>();
+        foreach (var u in UserManager.Users.ToList())
+        {
+            var roles = await UserManager.GetRolesAsync(u);
+            users.Add(new UserRow
+            {
+                Id = u.Id,
+                Email = u.Email,
+                Role = roles.FirstOrDefault() ?? "Member",
+                Disabled = await UserManager.IsLockedOutAsync(u)
+            });
+        }
+    }
+
+    private async Task ToggleDisabledAsync(UserRow row)
+    {
+        var user = await UserManager.FindByIdAsync(row.Id);
+        if (user == null)
+            return;
+
+        if (row.Disabled)
+        {
+            await UserManager.SetLockoutEndDateAsync(user, null);
+            row.Disabled = false;
+        }
+        else
+        {
+            await UserManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            row.Disabled = true;
+        }
+    }
+
+    private async Task ChangeRoleAsync(UserRow row)
+    {
+        var user = await UserManager.FindByIdAsync(row.Id);
+        if (user == null)
+            return;
+
+        var currentRoles = await UserManager.GetRolesAsync(user);
+        foreach (var r in currentRoles)
+            await UserManager.RemoveFromRoleAsync(user, r);
+
+        await UserManager.AddToRoleAsync(user, row.Role);
     }
 }
