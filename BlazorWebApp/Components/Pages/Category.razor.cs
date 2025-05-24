@@ -102,17 +102,5 @@ namespace BlazorWebApp.Components.Pages
             pub = await PublicationService.GetAsync(pub.Id);
             StateHasChanged();
         }
-
-        private string GetFirstParagraph(string html)
-        {
-            if (string.IsNullOrEmpty(html))
-                return string.Empty;
-
-            var end = html.IndexOf("</p>", StringComparison.OrdinalIgnoreCase);
-            if (end != -1)
-                return html.Substring(0, end + 4);
-
-            return html;
-        }
     }
 }
