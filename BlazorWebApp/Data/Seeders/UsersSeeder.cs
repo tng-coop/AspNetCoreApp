@@ -26,6 +26,7 @@ namespace BlazorWebApp.Data.Seeders
 
             await Add("superadmin@yourdomain.com", "SuperAdmin");
             await Add("admin@yourdomain.com", "Admin");
+            await Add("admin2@yourdomain.com", "Admin");
             await Add("member@yourdomain.com", "Member");
             await Add("member2@yourdomain.com", "Member");
         }
