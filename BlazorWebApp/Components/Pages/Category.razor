@@ -9,6 +9,7 @@
 @using BlazorWebApp.Utils
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Authorization
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject ICategoryService CategoryService
 @inject IPublicationService PublicationService
 @inject NavigationManager Nav
@@ -61,7 +62,7 @@ else
             {
                 <li class="list-inline-item">
                     <NavLink class="btn btn-outline-primary btn-sm" href="@CmsRoutes.Combine(sub.Slug)" Match="NavLinkMatch.Prefix">
-                        @sub.Name
+                        @CategoryUtils.LocalizedName(sub)
                     </NavLink>
                 </li>
             }

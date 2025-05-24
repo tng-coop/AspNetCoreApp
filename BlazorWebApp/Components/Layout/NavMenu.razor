@@ -1,8 +1,10 @@
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @using BlazorWebApp.Utils
+@using System
 @using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Options
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -119,14 +121,23 @@
     private bool isMenuOpen;
     private bool hasDefaultTenant;
     private string cmsPrefix = string.Empty;
+    private Action? _cultureChangedHandler;
+
+    private async Task LoadMenuAsync()
+    {
+        if (hasDefaultTenant)
+        {
+            treeItems = await TreeMenuService.GetMenuAsync();
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         hasDefaultTenant = !string.IsNullOrWhiteSpace(TenantOptions.Value.DefaultTenantSlug);
-        if (hasDefaultTenant)
-        {
-            treeItems = await TreeMenuService.GetMenuAsync();
-        }
+        _cultureChangedHandler = async () => await LoadMenuAsync();
+        Localization.OnChange += _cultureChangedHandler;
+        await LoadMenuAsync();
     }
 
     protected override void OnInitialized()
@@ -153,5 +164,9 @@
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+        if (_cultureChangedHandler != null)
+        {
+            Localization.OnChange -= _cultureChangedHandler;
+        }
     }
 }

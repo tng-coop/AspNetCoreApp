@@ -81,7 +81,7 @@ namespace BlazorWebApp.Components.Pages
             {
                 var ancestry = await CategoryService.GetAncestryAsync(pub.CategoryId.Value);
                 var crumbs = ancestry
-                              .Select(c => c.Name)
+                              .Select(CategoryUtils.LocalizedName)
                               .Append(pub.CategoryName!)
                               .ToList();
                 var crumbs2 = new List<string>(crumbs)

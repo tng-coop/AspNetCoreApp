@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.JSInterop;
 using BlazorWebApp.Data;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorWebApp.Services;
 
@@ -10,18 +11,18 @@ public class LocalizationService
 {
     private readonly IJSRuntime _js;
     private readonly AuthenticationStateProvider _authStateProvider;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     public event Action? OnChange;
 
     public LocalizationService(
         IJSRuntime js,
         AuthenticationStateProvider authStateProvider,
-        UserManager<ApplicationUser> userManager)
+        IServiceScopeFactory scopeFactory)
     {
         _js = js;
         _authStateProvider = authStateProvider;
-        _userManager = userManager;
+        _scopeFactory = scopeFactory;
         CurrentCulture = CultureInfo.CurrentCulture;
     }
 
@@ -36,7 +37,9 @@ public class LocalizationService
 
         if (user.Identity?.IsAuthenticated == true)
         {
-            var appUser = await _userManager.GetUserAsync(user);
+            using var scope = _scopeFactory.CreateScope();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var appUser = await userManager.GetUserAsync(user);
             culture = appUser?.PreferredLanguage ?? "en";
         }
         else
@@ -57,11 +60,13 @@ public class LocalizationService
 
         if (user.Identity?.IsAuthenticated == true)
         {
-            var appUser = await _userManager.GetUserAsync(user);
+            using var scope = _scopeFactory.CreateScope();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var appUser = await userManager.GetUserAsync(user);
             if (appUser != null && appUser.PreferredLanguage != culture)
             {
                 appUser.PreferredLanguage = culture;
-                await _userManager.UpdateAsync(appUser);
+                await userManager.UpdateAsync(appUser);
             }
         }
         else

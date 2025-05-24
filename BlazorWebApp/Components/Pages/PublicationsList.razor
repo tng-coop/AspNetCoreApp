@@ -2,8 +2,10 @@
 @page "/{Tenant}/_cms/_publications"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using BlazorWebApp.Utils
 @inject IPublicationService PublicationService
 @inject ICategoryService    CategoryService
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 
 <AuthorizeView>
   <Authorized>
@@ -64,7 +66,7 @@
             var ancestry = p.CategoryId.HasValue
                 ? await CategoryService.GetAncestryAsync(p.CategoryId.Value)
                 : new List<CategoryDto>();
-            var crumbs = ancestry.Select(c => c.Name ?? throw new InvalidOperationException("Category name cannot be null"))
+            var crumbs = ancestry.Select(CategoryUtils.LocalizedName)
                                  .Append(p.CategoryName!)
                                  .ToList();
             _categoryPaths[p.Id] = string.Join(" > ", crumbs);

@@ -1,6 +1,7 @@
 using System;
 using BlazorWebApp.Data;
 using BlazorWebApp.Models;
+using BlazorWebApp.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorWebApp.Services
@@ -66,7 +67,7 @@ namespace BlazorWebApp.Services
                     return new MenuItemDto
                     {
                         Id            = cat.Id,
-                        Title         = cat.Name,
+                        Title         = CategoryUtils.LocalizedName(cat),
                         Slug          = cat.Slug,
                         IconCss       = cat.Slug.Equals("home", StringComparison.OrdinalIgnoreCase)
                                        ? "house-door-fill-nav-menu"

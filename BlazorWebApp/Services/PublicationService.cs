@@ -194,7 +194,9 @@ namespace BlazorWebApp.Services
             CreatedAt    = p.CreatedAt,
             PublishedAt  = p.PublishedAt,
             CategoryId   = p.CategoryId,
-            CategoryName = p.Category?.Name,
+            CategoryName = p.Category == null
+                ? null
+                : CategoryUtils.LocalizedName(p.Category),
             CategorySlug = p.Category?.Slug
         };
 
