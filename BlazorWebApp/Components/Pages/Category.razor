@@ -25,15 +25,16 @@ else
 {
     <h1>@pub.Title</h1>
 
-    @if (!string.IsNullOrEmpty(fullArticlePath))
+    if (primaryPost != null && pub.Slug == primaryPost.Slug)
     {
+        <p class="text-muted mb-4">
+            <small>Category: @fullCategoryPath</small>
+        </p>
+    }else{
         <p class="text-muted mb-4">
             <small>Category: @fullArticlePath</small>
         </p>
     }
-
-    <!-- direct HTML render, styled by TinyMCE's content CSS -->
-    <p>MCE03</p>
     <div class="mce-content-body">
         @((MarkupString)pub.Html)
     </div>
