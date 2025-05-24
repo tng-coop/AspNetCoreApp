@@ -66,7 +66,10 @@ namespace BlazorWebApp.Data
             // --- PublicationCategory join table configuration ---
             builder.Entity<PublicationCategory>(e =>
             {
+                // enforce at most one category per publication
                 e.HasKey(pc => new { pc.PublicationId, pc.CategoryId });
+                e.HasIndex(pc => pc.PublicationId)
+                 .IsUnique();
                 e.HasOne(pc => pc.Publication)
                  .WithMany(p => p.PublicationCategories)
                  .HasForeignKey(pc => pc.PublicationId);
