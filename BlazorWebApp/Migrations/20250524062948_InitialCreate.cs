@@ -59,6 +59,7 @@ namespace BlazorWebApp.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
+                    SortOrder = table.Column<int>(type: "integer", nullable: true),
                     ParentCategoryId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -322,6 +323,11 @@ namespace BlazorWebApp.Migrations
                 table: "Categories",
                 column: "Slug",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_SortOrder",
+                table: "Categories",
+                column: "SortOrder");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MenuItems_ParentMenuItemId",

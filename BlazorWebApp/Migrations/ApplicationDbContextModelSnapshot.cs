@@ -107,12 +107,17 @@ namespace BlazorWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("SortOrder")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentCategoryId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
+
+                    b.HasIndex("SortOrder");
 
                     b.ToTable("Categories");
                 });

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250524021155_InitialCreate")]
+    [Migration("20250524062948_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -110,12 +110,17 @@ namespace BlazorWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("SortOrder")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentCategoryId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
+
+                    b.HasIndex("SortOrder");
 
                     b.ToTable("Categories");
                 });
