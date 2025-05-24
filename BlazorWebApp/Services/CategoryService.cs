@@ -29,6 +29,7 @@ namespace BlazorWebApp.Services
                 {
                     Id = c.Id,
                     Name = c.Name,
+                    NameJa = c.NameJa,
                     ParentCategoryId = c.ParentCategoryId,
                     Slug = c.Slug,
                     SortOrder = c.SortOrder
@@ -47,6 +48,7 @@ namespace BlazorWebApp.Services
                 {
                     Id = c.Id,
                     Name = c.Name,
+                    NameJa = c.NameJa,
                     ParentCategoryId = c.ParentCategoryId,
                     Slug = c.Slug,
                     SortOrder = c.SortOrder
@@ -85,6 +87,7 @@ namespace BlazorWebApp.Services
             {
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
+                NameJa = dto.NameJa,
                 Slug = slug,
                 ParentCategoryId = dto.ParentCategoryId,
                 SortOrder = dto.SortOrder
@@ -97,6 +100,7 @@ namespace BlazorWebApp.Services
             {
                 Id = cat.Id,
                 Name = cat.Name,
+                NameJa = cat.NameJa,
                 ParentCategoryId = cat.ParentCategoryId,
                 Slug = cat.Slug,
                 SortOrder = cat.SortOrder
@@ -112,6 +116,7 @@ namespace BlazorWebApp.Services
             var slugBase = SlugUtils.Normalize(dto.Slug);
             cat.Slug = await GenerateUniqueSlugAsync(db, slugBase, id);
             cat.Name = dto.Name;
+            cat.NameJa = dto.NameJa;
             cat.ParentCategoryId = dto.ParentCategoryId;
             cat.SortOrder = dto.SortOrder;
 
@@ -121,6 +126,7 @@ namespace BlazorWebApp.Services
             {
                 Id = cat.Id,
                 Name = cat.Name,
+                NameJa = cat.NameJa,
                 ParentCategoryId = cat.ParentCategoryId,
                 Slug = cat.Slug,
                 SortOrder = cat.SortOrder

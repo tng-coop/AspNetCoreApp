@@ -6,6 +6,7 @@ namespace BlazorWebApp.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string NameJa { get; set; } = string.Empty;
         public Guid? ParentCategoryId { get; set; }
 
         // Added Slug so we can route and link correctly

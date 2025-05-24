@@ -7,6 +7,7 @@ namespace BlazorWebApp.Models
     {
         [Required]
         public string Name { get; set; } = string.Empty;
+        public string NameJa { get; set; } = string.Empty;
 
         // Manual slug entry; defaults to "default" when unspecified
         public string Slug { get; set; } = "default";

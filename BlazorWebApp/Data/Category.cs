@@ -8,6 +8,9 @@ namespace BlazorWebApp.Data
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
 
+        // Japanese display name
+        public string NameJa { get; set; } = string.Empty;
+
         // URL-friendly slug for routing
         public string Slug { get; set; } = string.Empty;
 

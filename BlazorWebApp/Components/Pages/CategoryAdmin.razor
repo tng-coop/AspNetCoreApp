@@ -18,6 +18,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Name (JA)</th>
                         <th>Slug</th>
                         <th>Parent</th>
                         <th>Sort Order</th>
@@ -29,6 +30,7 @@
                 {
                     <tr>
                         <td><InputText class="form-control" @bind-Value="row.Dto.Name" /></td>
+                        <td><InputText class="form-control" @bind-Value="row.Dto.NameJa" /></td>
                         <td><InputText class="form-control" @bind-Value="row.Dto.Slug" /></td>
                         <td>
                             <InputSelect class="form-select" @bind-Value="row.Dto.ParentCategoryId">
@@ -78,6 +80,7 @@
             Dto = new CategoryWriteDto
             {
                 Name = c.Name,
+                NameJa = c.NameJa,
                 Slug = c.Slug,
                 ParentCategoryId = c.ParentCategoryId,
                 SortOrder = c.SortOrder

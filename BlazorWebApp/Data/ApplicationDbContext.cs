@@ -27,6 +27,7 @@ namespace BlazorWebApp.Data
             {
                 e.HasKey(c => c.Id);
                 e.Property(c => c.Name).IsRequired();
+                e.Property(c => c.NameJa).IsRequired(false);
                 e.Property(c => c.Slug).IsRequired();
                 e.Property(c => c.SortOrder).IsRequired(false);
                 e.HasIndex(c => c.Slug)
