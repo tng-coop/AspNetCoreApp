@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.FileProviders;
 using System.Globalization;
 
@@ -63,6 +64,17 @@ public static class MiddlewareExtensions
         });
 
         app.UseRouting();
+
+// in Startup.Configure (or after UseRouting, before UseAuthentication)
+        var rewriteOpts = new RewriteOptions()
+            .AddRedirect(
+                @"^_login$",           // match path “/_login” (regex is applied to the path sans leading slash)
+                "Account/Login",      // redirect target
+                statusCode: 302       // optional: 302 is default; use 301 for permanent
+            );
+
+        app.UseRewriter(rewriteOpts);
+
         app.UseAuthentication();
         app.UseAuthorization();
 
