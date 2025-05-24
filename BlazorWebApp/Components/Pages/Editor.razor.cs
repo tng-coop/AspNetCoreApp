@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using TinyMCE.Blazor;
 using BlazorWebApp.Models;
 using BlazorWebApp.Services;
+using BlazorWebApp.Utils;
 
 namespace BlazorWebApp.Components.Pages
 {
@@ -60,8 +61,8 @@ private readonly Dictionary<string, object> editorConfig = new()
     {
       var ancestors = await CategoryService.GetAncestryAsync(cat.Id);
       var fullPath = string.Join(" > ",
-                        ancestors.Select(a => a.Name)
-                                 .Append(cat.Name));
+                        ancestors.Select(CategoryUtils.LocalizedName)
+                                 .Append(CategoryUtils.LocalizedName(cat)));
       categoryOptions.Add((cat.Id, fullPath));
     }
     categoryOptions.Sort((a, b) =>

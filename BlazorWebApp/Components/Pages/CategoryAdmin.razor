@@ -2,6 +2,7 @@
 @page "/{Tenant}/_cms/_categories"
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using BlazorWebApp.Utils
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject ICategoryService CategoryService
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CategoryAdmin> L
@@ -41,7 +42,7 @@
                                 {
                                     if (opt.Id != row.Id)
                                     {
-                                        <option value="@opt.Id">@opt.Name</option>
+                                        <option value="@opt.Id">@CategoryUtils.LocalizedName(opt)</option>
                                     }
                                 }
                             </InputSelect>
