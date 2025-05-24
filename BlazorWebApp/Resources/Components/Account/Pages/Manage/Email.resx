@@ -10,4 +10,8 @@
   <data name="Your email is unchanged." xml:space="preserve"><value>Your email is unchanged.</value></data>
   <data name="Confirmation link to change email sent. Please check your email." xml:space="preserve"><value>Confirmation link to change email sent. Please check your email.</value></data>
   <data name="Verification email sent. Please check your email." xml:space="preserve"><value>Verification email sent. Please check your email.</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="New email" xml:space="preserve"><value>New email</value></data>
+  <data name="Enter your email" xml:space="preserve"><value>Enter your email</value></data>
+  <data name="Enter a new email" xml:space="preserve"><value>Enter a new email</value></data>
 </root>

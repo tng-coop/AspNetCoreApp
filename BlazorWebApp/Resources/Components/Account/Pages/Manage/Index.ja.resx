@@ -6,4 +6,10 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Profile" xml:space="preserve"><value>プロフィール</value></data>
   <data name="Your profile has been updated" xml:space="preserve"><value>プロフィールが更新されました</value></data>
+  <data name="Choose your username." xml:space="preserve"><value>ユーザー名を選択してください。</value></data>
+  <data name="Username" xml:space="preserve"><value>ユーザー名</value></data>
+  <data name="Enter your phone number" xml:space="preserve"><value>電話番号を入力してください</value></data>
+  <data name="Phone number" xml:space="preserve"><value>電話番号</value></data>
+  <data name="Save" xml:space="preserve"><value>保存</value></data>
+  <data name="Failed to set phone number" xml:space="preserve"><value>電話番号の設定に失敗しました。</value></data>
 </root>

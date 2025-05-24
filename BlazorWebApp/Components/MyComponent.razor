@@ -1,17 +1,18 @@
 @namespace BlazorWebApp.Components
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MyComponent> L
 
 <div class="card m-3" style="width: 18rem;">
   <div class="card-body">
-    <h5 class="card-title">Simple Counter</h5>
+    <h5 class="card-title">@L["Simple Counter"]</h5>
     <p class="card-text">
-      Current count: <strong>@currentCount</strong>
+      @L["Current count"]: <strong>@currentCount</strong>
     </p>
     <p class="card-text">
       @(Localization.CurrentCulture.Name == "en" ? "EN" : "JP")
-    </p>    
+    </p>
     <button class="btn btn-primary" @onclick="IncrementCount">
-      Click me
+      @L["Click me"]
     </button>
   </div>
 </div>

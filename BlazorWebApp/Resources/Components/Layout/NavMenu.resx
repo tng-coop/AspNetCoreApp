@@ -12,5 +12,7 @@
   <data name="Logout" xml:space="preserve"><value>Logout</value></data>
   <data name="Register" xml:space="preserve"><value>Register</value></data>
   <data name="Login" xml:space="preserve"><value>Login</value></data>
+  <data name="Categories" xml:space="preserve"><value>Categories</value></data>
+  <data name="Users" xml:space="preserve"><value>Users</value></data>
   <data name="NoDefaultTenant" xml:space="preserve"><value>No default CMS tenant configured.</value></data>
 </root>

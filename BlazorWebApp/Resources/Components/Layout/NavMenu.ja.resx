@@ -12,5 +12,7 @@
   <data name="Logout" xml:space="preserve"><value>ログアウト</value></data>
   <data name="Register" xml:space="preserve"><value>登録</value></data>
   <data name="Login" xml:space="preserve"><value>ログイン</value></data>
+  <data name="Categories" xml:space="preserve"><value>カテゴリー</value></data>
+  <data name="Users" xml:space="preserve"><value>ユーザー</value></data>
   <data name="NoDefaultTenant" xml:space="preserve"><value>既定のCMSテナントが設定されていません。</value></data>
 </root>
