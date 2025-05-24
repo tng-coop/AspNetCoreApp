@@ -31,27 +31,23 @@ namespace BlazorWebApp.Components.Pages
         {
             if (Nav.Uri.TrimEnd('/').EndsWith(Nav.BaseUri.TrimEnd('/')))
             {
-                CategorySlug  = "home";
+                CategorySlug = "home";
                 displayPublication = true;
             }
 
-            displayPublication = !string.IsNullOrEmpty(ArticleSlug);
-
-            if (displayPublication)
+            if (string.IsNullOrEmpty(ArticleSlug))
             {
-                Console.WriteLine($"Loading publication for {ArticleSlug}");
-                await LoadPublicationAsync();
-            }
-            else
-            {
-                //  BUG12345
                 var all = await PublicationService.ListAsync();
-                var pub = all.FirstOrDefault(p => p.Slug == CategorySlug);
-                ArticleSlug = pub?.Slug;
-                Console.WriteLine($"Discovered article slug {ArticleSlug}");
-
-                await LoadCategoryAsync();
+                var pub = all.FirstOrDefault(p => p.CategorySlug == CategorySlug);
+                if (pub != null)
+                {
+                    ArticleSlug = pub.Slug;
+                    // displayPublication = true;              // now we want to show the article
+                    Console.WriteLine($"Discovered article slug {ArticleSlug}");
+                }
             }
+                await LoadPublicationAsync();
+                await LoadCategoryAsync();
 
         }
 
