@@ -1,0 +1,94 @@
+@page "/_cms/_categories"
+@page "/{Tenant}/_cms/_categories"
+@using BlazorWebApp.Models
+@using BlazorWebApp.Services
+@inject ICategoryService CategoryService
+
+<h3>Edit Categories</h3>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        @if (rows == null)
+        {
+            <p>Loading…</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Parent</th>
+                        <th>Sort Order</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        <td><InputText class="form-control" @bind-Value="row.Dto.Name" /></td>
+                        <td><InputText class="form-control" @bind-Value="row.Dto.Slug" /></td>
+                        <td>
+                            <InputSelect class="form-select" @bind-Value="row.Dto.ParentCategoryId">
+                                <option value="">(none)</option>
+                                @foreach (var opt in categories)
+                                {
+                                    if (opt.Id != row.Id)
+                                    {
+                                        <option value="@opt.Id">@opt.Name</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </td>
+                        <td><InputNumber class="form-control" @bind-Value="row.Dto.SortOrder" /></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" @onclick="() => Save(row)">Save</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>You’re not authorized.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter] public string? Tenant { get; set; }
+
+    private List<CategoryDto>? categories;
+    private List<CategoryRow>? rows;
+
+    private class CategoryRow
+    {
+        public Guid Id { get; set; }
+        public CategoryWriteDto Dto { get; set; } = new();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.ListAsync();
+        rows = categories.Select(c => new CategoryRow
+        {
+            Id = c.Id,
+            Dto = new CategoryWriteDto
+            {
+                Name = c.Name,
+                Slug = c.Slug,
+                ParentCategoryId = c.ParentCategoryId,
+                SortOrder = c.SortOrder
+            }
+        }).ToList();
+    }
+
+    private async Task Save(CategoryRow row)
+    {
+        await CategoryService.UpdateAsync(row.Id, row.Dto);
+        categories = await CategoryService.ListAsync();
+    }
+}
+

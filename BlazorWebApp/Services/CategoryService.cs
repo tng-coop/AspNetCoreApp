@@ -103,6 +103,30 @@ namespace BlazorWebApp.Services
             };
         }
 
+        public async Task<CategoryDto> UpdateAsync(Guid id, CategoryWriteDto dto)
+        {
+            await using var db = CreateDb();
+            var cat = await db.Categories.FindAsync(id)
+                       ?? throw new KeyNotFoundException();
+
+            var slugBase = SlugUtils.Normalize(dto.Slug);
+            cat.Slug = await GenerateUniqueSlugAsync(db, slugBase, id);
+            cat.Name = dto.Name;
+            cat.ParentCategoryId = dto.ParentCategoryId;
+            cat.SortOrder = dto.SortOrder;
+
+            await db.SaveChangesAsync();
+
+            return new CategoryDto
+            {
+                Id = cat.Id,
+                Name = cat.Name,
+                ParentCategoryId = cat.ParentCategoryId,
+                Slug = cat.Slug,
+                SortOrder = cat.SortOrder
+            };
+        }
+
         private static async Task<string> GenerateUniqueSlugAsync(
             ApplicationDbContext db,
             string baseSlug,
