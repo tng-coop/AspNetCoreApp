@@ -61,7 +61,7 @@ else
     [Parameter] public string? Tenant { get; set; }
 
     private List<UserRow>? users;
-    private List<string>? allRoles;
+    private List<string> allRoles = new();
 
     private class UserRow
     {

@@ -241,12 +241,13 @@
         return Task.CompletedTask;
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
         if (_cultureChangedHandler != null)
         {
             Localization.OnChange -= _cultureChangedHandler;
         }
+        base.Dispose();
     }
 }

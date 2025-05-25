@@ -16,8 +16,6 @@ namespace BlazorWebApp.Components.Pages
         [Parameter] public string? ArticleSlug { get; set; }
         [Parameter] public string? Tenant { get; set; }
 
-        private bool displayPublication;
-
         private CategoryDto? category;
         private List<CategoryDto> subcats = new();
         private PublicationReadDto? primaryPost;
@@ -32,7 +30,6 @@ namespace BlazorWebApp.Components.Pages
             if (Nav.Uri.TrimEnd('/').EndsWith(Nav.BaseUri.TrimEnd('/')))
             {
                 CategorySlug = "home";
-                displayPublication = true;
             }
 
             if (string.IsNullOrEmpty(ArticleSlug))
@@ -43,7 +40,6 @@ namespace BlazorWebApp.Components.Pages
                 if (pub != null)
                 {
                     ArticleSlug = pub.Slug;
-                    // displayPublication = true;              // now we want to show the article
                     Console.WriteLine($"Discovered article slug {ArticleSlug}");
                 }
             }

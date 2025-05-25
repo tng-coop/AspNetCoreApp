@@ -65,7 +65,7 @@
 @code {
     [Parameter] public string? Tenant { get; set; }
 
-    private List<CategoryDto>? categories;
+    private List<CategoryDto> categories = new();
     private List<CategoryRow>? rows;
 
     private class CategoryRow
