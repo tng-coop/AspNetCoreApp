@@ -48,14 +48,14 @@
                  style="height:auto; line-height:2;"
                  href="@CmsRoutes.CombinePrefixed(Prefix, item.Slug)"
                  Match="NavLinkMatch.All">
-          @if (!string.IsNullOrEmpty(item.IconCss))
+          @if (!string.IsNullOrEmpty(item.IconFile))
           {
                         <span aria-hidden="true"
                               style="display:inline-block;
                                      width:16px;
                                      height:16px;
-                                     -webkit-mask: url('./lib/bootstrap-icons/icons/@(item.IconCss).svg') no-repeat center/contain;
-                                     mask: url('./lib/bootstrap-icons/icons/@(item.IconCss).svg') no-repeat center/contain;
+                                     -webkit-mask: url('./lib/bootstrap-icons/icons/@(item.IconFile).svg') no-repeat center/contain;
+                                     mask: url('./lib/bootstrap-icons/icons/@(item.IconFile).svg') no-repeat center/contain;
                                      background-color: white;
                                      margin-right:0.5rem;">
                         </span>

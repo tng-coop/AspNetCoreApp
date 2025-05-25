@@ -13,9 +13,6 @@ namespace BlazorWebApp.Data
         // URL-friendly slug for routing
         public string Slug { get; set; } = string.Empty;
 
-        // Icon CSS class (e.g. "bi bi-folder")
-        public string IconCss { get; set; } = string.Empty;
-
         public int SortOrder { get; set; }
 
         public Guid? ParentMenuItemId { get; set; }
