@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250524100518_InitialCreate")]
+    [Migration("20250525080431_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -158,10 +158,6 @@ namespace BlazorWebApp.Migrations
 
                     b.Property<Guid?>("ContentItemId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("IconCss")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<Guid?>("ParentMenuItemId")
                         .HasColumnType("uuid");

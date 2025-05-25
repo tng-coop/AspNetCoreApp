@@ -95,7 +95,6 @@ namespace BlazorWebApp.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
-                    IconCss = table.Column<string>(type: "text", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
                     ParentMenuItemId = table.Column<Guid>(type: "uuid", nullable: true),
                     ContentItemId = table.Column<Guid>(type: "uuid", nullable: true)

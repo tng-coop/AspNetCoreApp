@@ -156,10 +156,6 @@ namespace BlazorWebApp.Migrations
                     b.Property<Guid?>("ContentItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("IconCss")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid?>("ParentMenuItemId")
                         .HasColumnType("uuid");
 
