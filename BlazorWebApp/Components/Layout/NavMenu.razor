@@ -63,7 +63,20 @@
                 <NavLink class="nav-link"
                          href='@CmsRoutes.CombinePrefixed(cmsPrefix, "_publications")'
                          Match="NavLinkMatch.All">
-                    <span class="bi bi-book"></span> @L["Publications"]
+
+  <span aria-hidden="true"
+        style="
+          display:inline-block;
+          width:16px;
+          height:16px;
+          -webkit-mask: url('./lib/bootstrap-icons/icons/book.svg') no-repeat center/contain;
+          mask: url('./lib/bootstrap-icons/icons/book.svg') no-repeat center/contain;
+          background-color: white;
+          margin-right:0.5rem;
+        ">
+  </span>
+                    
+                    @L["Publications"]
                 </NavLink>
             </div>
             <div class="nav-item px-3">

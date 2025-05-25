@@ -59,7 +59,7 @@ namespace BlazorWebApp.Services
                                 Id            = pub.Id,
                                 Title         = PublicationUtils.LocalizedTitle(pub),
                                 Slug          = $"{cat.Slug}/{pub.Slug}",
-                                IconCss       = "bi-file-earmark-text",
+                                IconCss       = "bi bi-file-earmark-text",
                                 SortOrder     = 0,
                                 ContentItemId = pub.Id,
                                 Children      = new List<MenuItemDto>()
@@ -73,7 +73,7 @@ namespace BlazorWebApp.Services
                         Title         = CategoryUtils.LocalizedName(cat),
                         Slug          = cat.Slug,
                         IconCss       = cat.Slug.Equals("home", StringComparison.OrdinalIgnoreCase)
-                                       ? "house-door-fill-nav-menu"
+                                       ? "bi bi-house-door-fill"
                                        : "",
                         SortOrder     = cat.SortOrder ?? 0,
                         ContentItemId = null,
