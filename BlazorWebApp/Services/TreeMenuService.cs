@@ -1,88 +1,57 @@
 using System;
-using BlazorWebApp.Data;
+using System.Collections.Generic;
+using System.Linq;
 using BlazorWebApp.Models;
 using BlazorWebApp.Utils;
-using Microsoft.EntityFrameworkCore;
 
 namespace BlazorWebApp.Services
 {
 
     public class TreeMenuService : ITreeMenuService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        public TreeMenuService(IServiceScopeFactory scopeFactory) 
-            => _scopeFactory = scopeFactory;
+        private readonly IPublicationTreeService _treeService;
+
+        public TreeMenuService(IPublicationTreeService treeService)
+            => _treeService = treeService;
 
         public async Task<List<MenuItemDto>> GetMenuAsync()
         {
-            using var scope = _scopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var tree = await _treeService.GetTreeAsync();
 
-            var allCats = await db.Categories
-                .AsNoTracking()
-                .ToListAsync();
-
-            allCats = allCats
-                .OrderBy(c => c.SortOrder ?? int.MaxValue)
-                .ThenBy(CategoryUtils.LocalizedName)
-                .ToList();
-            var catLookup = allCats.ToLookup(c => c.ParentCategoryId);
-
-            var published = await db.Publications
-                .Where(p => p.Status == PublicationStatus.Published)
-                .Include(p => p.Category)
-                .ToListAsync();
-            var pubsByCat = published
-                .GroupBy(p => p.CategoryId)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(x => x)
-                          .OrderByDescending(p => p.PublishedAt)
-                          .ToList()
-                );
-
-            List<MenuItemDto> MapCats(IEnumerable<Category> cats) =>
-                cats.Select(cat =>
+            List<MenuItemDto> MapNodes(IEnumerable<CategoryTreeNode> nodes) =>
+                nodes.Select(node =>
                 {
-                    var children = MapCats(catLookup[cat.Id]);
+                    var children = MapNodes(node.Children);
 
-                    if (pubsByCat.TryGetValue(cat.Id, out var posts))
+                    foreach (var pub in node.Publications.Skip(1))
                     {
-                        // The first (highest priority) article is reserved for
-                        // the category page itself. Skip it in the tree menu
-                        // so only articles starting from the second one are
-                        // displayed under the category.
-                        foreach (var pub in posts.Skip(1))
+                        children.Add(new MenuItemDto
                         {
-                            children.Add(new MenuItemDto
-                            {
-                                Id            = pub.Id,
-                                Title         = PublicationUtils.LocalizedTitle(pub),
-                                Slug          = $"{cat.Slug}/{pub.Slug}",
-                                IconFile       = "file-earmark-text",
-                                SortOrder     = 0,
-                                ContentItemId = pub.Id,
-                                Children      = new List<MenuItemDto>()
-                            });
-                        }
+                            Id            = pub.Id,
+                            Title         = PublicationUtils.LocalizedTitle(pub),
+                            Slug          = $"{node.Category.Slug}/{pub.Slug}",
+                            IconFile       = "file-earmark-text",
+                            SortOrder     = 0,
+                            ContentItemId = pub.Id,
+                            Children      = new List<MenuItemDto>()
+                        });
                     }
 
                     return new MenuItemDto
                     {
-                        Id            = cat.Id,
-                        Title         = CategoryUtils.LocalizedName(cat),
-                        Slug          = cat.Slug,
-                        IconFile       = cat.Slug.Equals("home", StringComparison.OrdinalIgnoreCase)
+                        Id            = node.Category.Id,
+                        Title         = CategoryUtils.LocalizedName(node.Category),
+                        Slug          = node.Category.Slug,
+                        IconFile       = node.Category.Slug.Equals("home", StringComparison.OrdinalIgnoreCase)
                                        ? "house-door-fill"
                                        : "",
-                        SortOrder     = cat.SortOrder ?? 0,
+                        SortOrder     = node.Category.SortOrder ?? 0,
                         ContentItemId = null,
                         Children      = children
                     };
                 })
                 .ToList();
-
-            return MapCats(catLookup[null]);
+            return MapNodes(tree);
         }
     }
 }
