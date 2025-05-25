@@ -61,20 +61,37 @@
         var pubs = await PublicationService.ListAsync();
         var categories = await CategoryService.ListAsync();
 
-        // Build full category paths
+        var lookup = categories.ToDictionary(c => c.Id);
+
+        List<CategoryDto> BuildAncestry(Guid catId)
+        {
+            var result = new List<CategoryDto>();
+            if (!lookup.TryGetValue(catId, out var current))
+                return result;
+
+            while (current.ParentCategoryId.HasValue &&
+                   lookup.TryGetValue(current.ParentCategoryId.Value, out var parent))
+            {
+                result.Add(parent);
+                current = parent;
+            }
+
+            result.Reverse();
+            return result;
+        }
+
+        // Build full category paths without extra DB queries
         foreach (var p in pubs.Where(x => x.CategoryId.HasValue))
         {
-            var ancestry = p.CategoryId.HasValue
-                ? await CategoryService.GetAncestryAsync(p.CategoryId.Value)
-                : new List<CategoryDto>();
+            var ancestry = BuildAncestry(p.CategoryId!.Value);
             var crumbs = ancestry.Select(CategoryUtils.LocalizedName)
                                  .Append(p.CategoryName!)
                                  .ToList();
             _categoryPaths[p.Id] = string.Join(" > ", crumbs);
-            var categoryId = p.CategoryId ?? throw new InvalidOperationException("CategoryId cannot be null");
-            var catSlug = categories.FirstOrDefault(c => c.Id == categoryId)?.Slug;
-            if (!string.IsNullOrEmpty(catSlug))
-                _categorySlugs[p.Id] = catSlug;
+
+            var categoryId = p.CategoryId!.Value;
+            if (lookup.TryGetValue(categoryId, out var cat))
+                _categorySlugs[p.Id] = cat.Slug;
         }
 
         // Sort and split by status
