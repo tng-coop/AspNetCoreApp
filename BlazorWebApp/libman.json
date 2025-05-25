@@ -12,6 +12,13 @@
             "files": [
         "langs7/ja.js"
             ]
+    },
+    {
+      "library": "bootstrap-icons@1.13.1",
+      "destination": "wwwroot/lib/bootstrap-icons/",
+            "files": [
+        "icons/pause-circle-fill.svg"
+      ]
     }
   ]
 }
