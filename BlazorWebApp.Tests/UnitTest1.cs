@@ -6,33 +6,31 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using BlazorWebApp.Services;
 using System.Globalization;
-using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 public class CounterComponentTests : TestContext
 {
-    private class DummyStringLocalizer<T> : IStringLocalizer<T>
-    {
-        public LocalizedString this[string name] => new(name, name);
-        public LocalizedString this[string name, params object[] arguments]
-            => new(name, string.Format(name, arguments));
-        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => new List<LocalizedString>();
-        public IStringLocalizer WithCulture(CultureInfo culture) => this;
-    }
-
+    // JSInterop stub
     private class DummyJSRuntime : IJSRuntime
     {
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args) => new(default(TValue)!);
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args) => new(default(TValue)!);
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
+            => new(default(TValue)!);
+
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
+            => new(default(TValue)!);
     }
 
+    // Authentication state stub
     private class DummyAuthStateProvider : AuthenticationStateProvider
     {
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
             => Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
     }
 
+    // Scope factory stub for localization
     private class DummyScopeFactory : IServiceScopeFactory
     {
         private readonly IServiceProvider _provider;
@@ -46,25 +44,38 @@ public class CounterComponentTests : TestContext
             public void Dispose() { }
         }
     }
-    [Fact]
-    public void CounterIncrementsWhenClicked()
+
+    public CounterComponentTests()
     {
-        Services.AddSingleton<IStringLocalizer<Counter>>(new DummyStringLocalizer<Counter>());
+        // Localization: point to Resources folder and register services
+        Services.AddLocalization(options => options.ResourcesPath = "Resources");
+        // Ensure culture is consistent
+        CultureInfo.DefaultThreadCurrentCulture   = new CultureInfo("en-US");
+        CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
+
+        // If AddLocalization doesn't wire up the generic localizer, register it:
+        Services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+
+        // Register other dependencies
         Services.AddSingleton<IJSRuntime>(new DummyJSRuntime());
         Services.AddSingleton<AuthenticationStateProvider>(new DummyAuthStateProvider());
         Services.AddSingleton<IServiceScopeFactory>(sp => new DummyScopeFactory(sp));
         Services.AddScoped<LocalizationService>();
+    }
 
+    [Fact]
+    public void CounterIncrementsWhenClicked()
+    {
         // Act
         var cut = RenderComponent<Counter>();
 
-        // Assert initial state
+        // Assert initial state is zero
         Assert.Contains("Current count: 0", cut.Markup);
 
-        // Click the first button to increment the count
+        // Perform click
         cut.Find("button").Click();
 
-        // Assert count has incremented
+        // After click, count should be one
         Assert.Contains("Current count: 1", cut.Markup);
     }
 }
