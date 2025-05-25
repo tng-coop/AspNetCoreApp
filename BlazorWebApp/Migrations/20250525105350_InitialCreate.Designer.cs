@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250525080431_InitialCreate")]
+    [Migration("20250525105350_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -128,7 +128,7 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.ImageAsset", b =>
+            modelBuilder.Entity("BlazorWebApp.Data.FileAsset", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,6 +139,10 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("bytea");
 
                     b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
 

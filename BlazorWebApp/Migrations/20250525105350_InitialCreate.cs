@@ -81,6 +81,7 @@ namespace BlazorWebApp.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Content = table.Column<byte[]>(type: "bytea", nullable: false),
                     ContentType = table.Column<string>(type: "text", nullable: false),
+                    FileName = table.Column<string>(type: "text", nullable: false),
                     UploadedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

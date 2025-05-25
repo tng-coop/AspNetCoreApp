@@ -125,7 +125,7 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.ImageAsset", b =>
+            modelBuilder.Entity("BlazorWebApp.Data.FileAsset", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -136,6 +136,10 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("bytea");
 
                     b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
 
