@@ -43,11 +43,12 @@ namespace BlazorWebApp.Components.Pages
   ["paste_data_images"] = true,
     ["promotion"] = false,
     ["branding"] = false,
+    ["license_key"] = "gpl",
 
 
 
   // allow iframes and your custom element
-  ["custom_elements"] = "my-component",
+    ["custom_elements"] = "my-component",
     ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen],my-component[*]",
     // ["skin"] = "oxide-dark",
     // ["content_css"] = "dark",
