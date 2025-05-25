@@ -54,12 +54,12 @@ public static class MiddlewareExtensions
         }
 
         app.UseStaticFiles();
-        var cachePath = Path.Combine(app.Environment.WebRootPath, "imgcache");
+        var cachePath = Path.Combine(app.Environment.WebRootPath, "filecache");
         Directory.CreateDirectory(cachePath);
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(cachePath),
-            RequestPath = "/imgcache",
+            RequestPath = "/filecache",
             OnPrepareResponse = ctx => ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=604800"
         });
 

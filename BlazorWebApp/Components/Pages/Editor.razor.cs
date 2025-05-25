@@ -38,7 +38,7 @@ namespace BlazorWebApp.Components.Pages
   ["menubar"] = "file edit view insert format tools media table help",
   ["plugins"] = new[] { "link", "lists", "code", "image", "paste", "table", "media" },
   ["toolbar"] = "undo redo | bold italic underline | alignleft aligncenter | bullist numlist | link image media | code",
-  ["images_upload_url"] = "/api/images/upload",
+  ["images_upload_url"] = "/api/files/upload",
   ["automatic_uploads"] = true,
   ["paste_data_images"] = true,
     ["promotion"] = false,

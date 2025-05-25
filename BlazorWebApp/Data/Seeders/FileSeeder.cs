@@ -1,13 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
 
 namespace BlazorWebApp.Data.Seeders
 {
-    public static class ImageSeeder
+    public static class FileSeeder
     {
         public static async Task SeedAsync(ApplicationDbContext dbContext)
         {
-            // Exit if any images already exist
-            if (await dbContext.Images.AnyAsync())
+            // Exit if any files already exist
+            if (await dbContext.Files.AnyAsync())
                 return;
 
             // Path to your fractal PNGs
@@ -21,10 +23,11 @@ namespace BlazorWebApp.Data.Seeders
             foreach (var path in files)
             {
                 var bytes = await File.ReadAllBytesAsync(path);
-                dbContext.Images.Add(new ImageAsset
+                dbContext.Files.Add(new FileAsset
                 {
                     Content     = bytes,
                     ContentType = "image/png",
+                    FileName    = Path.GetFileName(path),
                     UploadedAt  = DateTimeOffset.UtcNow
                 });
             }

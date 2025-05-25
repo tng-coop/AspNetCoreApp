@@ -12,7 +12,7 @@ namespace BlazorWebApp.Data
 
         public DbSet<MenuItem>    MenuItems     { get; set; } = null!;
         public DbSet<Publication> Publications   { get; set; } = null!;
-        public DbSet<ImageAsset>  Images         { get; set; } = null!;
+        public DbSet<FileAsset>  Files         { get; set; } = null!;
         public DbSet<Category>    Categories     { get; set; } = null!;
         public DbSet<PublicationRevision> PublicationRevisions { get; set; } = null!;
         public DbSet<Tenant> Tenants { get; set; } = null!;

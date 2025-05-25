@@ -6,19 +6,19 @@ using System.IO;
 using System.Threading.Tasks;
 
 [ApiController]
-[Route("api/images")]
+[Route("api/files")]
 // Enable client/CDN caching for 1 hour
 [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
-public class ImagesController : ControllerBase
+public class FilesController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
     private readonly string _cacheDir;
 
-    public ImagesController(ApplicationDbContext db, IWebHostEnvironment env)
+    public FilesController(ApplicationDbContext db, IWebHostEnvironment env)
     {
         _db = db;
         // Prepare the disk cache directory once
-        _cacheDir = Path.Combine(env.WebRootPath, "imgcache");
+        _cacheDir = Path.Combine(env.WebRootPath, "filecache");
         Directory.CreateDirectory(_cacheDir);
     }
 
@@ -31,35 +31,31 @@ public class ImagesController : ControllerBase
         using var ms = new MemoryStream();
         await file.CopyToAsync(ms);
 
-        var asset = new ImageAsset
+        var asset = new FileAsset
         {
             Id = Guid.NewGuid(),
             Content = ms.ToArray(),
             ContentType = file.ContentType,
+            FileName = file.FileName,
             UploadedAt = DateTimeOffset.UtcNow
         };
-        _db.Images.Add(asset);
+        _db.Files.Add(asset);
         await _db.SaveChangesAsync();
 
-        var url = Url.Action(nameof(Get), "Images", new { id = asset.Id }, Request.Scheme);
+        var url = Url.Action(nameof(Get), "Files", new { id = asset.Id }, Request.Scheme);
         return Ok(new { location = url });
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var img = await _db.Images.FindAsync(id);
-        if (img == null)
+        var fileAsset = await _db.Files.FindAsync(id);
+        if (fileAsset == null)
             return NotFound();
 
-        // Determine extension from content-type
-        string extension = img.ContentType switch
-        {
-            "image/png"  => ".png",
-            "image/jpeg" => ".jpg",
-            "image/gif"  => ".gif",
-            _             => ".bin"
-        };
+        var extension = Path.GetExtension(fileAsset.FileName);
+        if (string.IsNullOrEmpty(extension))
+            extension = ".bin";
 
         var fileName = id + extension;
         var cachePath = Path.Combine(_cacheDir, fileName);
@@ -67,10 +63,10 @@ public class ImagesController : ControllerBase
         // Write cache file if missing
         if (!System.IO.File.Exists(cachePath))
         {
-            await System.IO.File.WriteAllBytesAsync(cachePath, img.Content);
+            await System.IO.File.WriteAllBytesAsync(cachePath, fileAsset.Content);
         }
 
         // Serve the file via optimized file streaming
-        return PhysicalFile(cachePath, img.ContentType);
+        return PhysicalFile(cachePath, fileAsset.ContentType);
     }
 }

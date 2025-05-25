@@ -40,7 +40,7 @@ namespace BlazorWebApp.Data
             await RunSeederAsync(factory, CategorySeeder.SeedAsync);
             await RunSeederAsync(factory, PublicationSeeder.SeedAsync);
             await RunSeederAsync(factory, MenuItemSeeder.SeedAsync);
-            await RunSeederAsync(factory, ImageSeeder.SeedAsync);
+            await RunSeederAsync(factory, FileSeeder.SeedAsync);
         }
 
         /// <summary>
