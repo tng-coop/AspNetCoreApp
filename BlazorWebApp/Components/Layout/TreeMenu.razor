@@ -50,7 +50,15 @@
                  Match="NavLinkMatch.All">
           @if (!string.IsNullOrEmpty(item.IconCss))
           {
-            <span class="@item.IconCss" aria-hidden="true"></span>
+                        <span aria-hidden="true"
+                              style="display:inline-block;
+                                     width:16px;
+                                     height:16px;
+                                     -webkit-mask: url('./lib/bootstrap-icons/icons/@(item.IconCss).svg') no-repeat center/contain;
+                                     mask: url('./lib/bootstrap-icons/icons/@(item.IconCss).svg') no-repeat center/contain;
+                                     background-color: white;
+                                     margin-right:0.5rem;">
+                        </span>
           }
 
           @item.Title
