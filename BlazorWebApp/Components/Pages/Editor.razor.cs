@@ -32,8 +32,8 @@ namespace BlazorWebApp.Components.Pages
   private bool slugAscii => ContainsOnlyAscii(dto.Slug);
 
   // TinyMCE configuration dictionary—with YouTube paste/embed support
-private readonly Dictionary<string, object> editorConfig = new()
-{
+  private readonly Dictionary<string, object> editorConfig = new()
+  {
   ["height"] = 300,
   ["menubar"] = "file edit view insert format tools media table help",
   ["plugins"] = new[] { "link", "lists", "code", "image", "paste", "table", "media" },
@@ -41,21 +41,41 @@ private readonly Dictionary<string, object> editorConfig = new()
   ["images_upload_url"] = "/api/images/upload",
   ["automatic_uploads"] = true,
   ["paste_data_images"] = true,
-  ["promotion"] = false,
-  ["branding"] = false,
+    ["promotion"] = false,
+    ["branding"] = false,
 
 
 
   // allow iframes and your custom element
   ["custom_elements"] = "my-component",
-  ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen],my-component[*]",
-  // ["skin"] = "oxide-dark",
-  // ["content_css"] = "dark",
-};
+    ["extended_valid_elements"] = "iframe[src|width|height|frameborder|allowfullscreen],my-component[*]",
+    // ["skin"] = "oxide-dark",
+    // ["content_css"] = "dark",
+  };
+
+  private string editorKey = Guid.NewGuid().ToString();
+
+  private void SetEditorLanguage()
+  {
+    var lang = Localization.CurrentCulture.TwoLetterISOLanguageName;
+    if (lang == "ja")
+    {
+      editorConfig["language"] = "ja";
+      editorConfig["language_url"] = "/lib/tinymce/langs/langs7/ja.js";
+    }
+    else
+    {
+      editorConfig.Remove("language");
+      editorConfig.Remove("language_url");
+    }
+
+    editorKey = Guid.NewGuid().ToString();
+  }
 
   protected override async Task OnInitializedAsync()
   {
     editContext = new EditContext(dto);
+    SetEditorLanguage();
     categories = await CategoryService.ListAsync();
     categoryOptions.Clear();
 
@@ -91,6 +111,30 @@ private readonly Dictionary<string, object> editorConfig = new()
         revisions = await PublicationService.ListRevisionsAsync(Id.Value);
       }
     }
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    await base.OnAfterRenderAsync(firstRender);
+    if (firstRender)
+    {
+      Localization.OnChange += CultureChanged;
+    }
+  }
+
+  private void CultureChanged()
+  {
+    InvokeAsync(() =>
+    {
+      SetEditorLanguage();
+      StateHasChanged();
+    });
+  }
+
+  public new void Dispose()
+  {
+    Localization.OnChange -= CultureChanged;
+    base.Dispose();
   }
 
 private async Task HandleSubmit()

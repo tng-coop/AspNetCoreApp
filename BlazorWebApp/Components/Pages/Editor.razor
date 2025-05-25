@@ -73,6 +73,7 @@
   <div class="mb-3">
     <label class="form-label">@L["Content"]</label>
     <TinyMCE.Blazor.Editor
+      @key="editorKey"
       ApiKey="no-api-key"
       @bind-Value="dto.Html"
       Field="@(() => dto.Html)"
