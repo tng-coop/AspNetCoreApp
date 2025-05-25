@@ -9,17 +9,25 @@
     {
       "library": "tinymce-i18n@25.5.12",
       "destination": "wwwroot/lib/tinymce/langs/",
-            "files": [
+      "files": [
         "langs7/ja.js"
-            ]
+      ]
     },
     {
       "library": "bootstrap-icons@1.13.1",
       "destination": "wwwroot/lib/bootstrap-icons/",
       "files": [
-        "icons/book.svg"
+        "icons/arrow-bar-left.svg",
+        "icons/book.svg",
+        "icons/file-earmark-text.svg",
+        "icons/folder.svg",
+        "icons/house-door-fill.svg",
+        "icons/people.svg",
+        "icons/person-badge.svg",
+        "icons/person-fill.svg",
+        "icons/person.svg",
+        "icons/plus-circle.svg"
       ]
-
     }
   ]
 }
