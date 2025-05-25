@@ -1,10 +1,17 @@
 {
   "version": "1.0",
-  "defaultProvider": "cdnjs",
+  "defaultProvider": "unpkg",
   "libraries": [
     {
-      "library": "tinymce@7.6.1",
+      "library": "tinymce@7.9.0",
       "destination": "wwwroot/lib/tinymce/"
+    },
+    {
+      "library": "tinymce-i18n@25.5.12",
+      "destination": "wwwroot/lib/tinymce/langs/",
+            "files": [
+        "langs7/ja.js"
+            ]
     }
   ]
 }
