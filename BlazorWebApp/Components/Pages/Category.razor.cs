@@ -16,10 +16,14 @@ namespace BlazorWebApp.Components.Pages
         [Parameter] public string? ArticleSlug { get; set; }
         [Parameter] public string? Tenant { get; set; }
 
+        [Inject] public IPublicationTreeService PublicationTreeService { get; set; } = default!;
+
         private CategoryDto? category;
         private List<CategoryDto> subcats = new();
         private PublicationReadDto? primaryPost;
         private List<PublicationReadDto> otherPosts = new();
+
+        private List<CategoryTreeNode>? tree;
 
         private PublicationReadDto? pub;
         private string fullCategoryPath = string.Empty;
@@ -27,52 +31,47 @@ namespace BlazorWebApp.Components.Pages
 
         protected override async Task OnParametersSetAsync()
         {
-            if (Nav.Uri.TrimEnd('/').EndsWith(Nav.BaseUri.TrimEnd('/')))
+            if (Nav.Uri.TrimEnd('/')
+                    .EndsWith(Nav.BaseUri.TrimEnd('/')))
             {
                 CategorySlug = "home";
             }
 
+            tree = await PublicationTreeService.GetTreeAsync();
             if (string.IsNullOrEmpty(ArticleSlug))
             {
-                var all = await PublicationService.ListAsync();
-                var pub = all.FirstOrDefault(p => p.CategorySlug == CategorySlug
-                                                  && p.Status == "Published");
-                if (pub != null)
+                var node = FindNode(tree, CategorySlug);
+                var first = node?.Publications.FirstOrDefault();
+                if (first != null)
                 {
-                    ArticleSlug = pub.Slug;
-                    Console.WriteLine($"Discovered article slug {ArticleSlug}");
+                    ArticleSlug = first.Slug;
                 }
             }
-                await LoadPublicationAsync();
-                await LoadCategoryAsync();
+
+            await LoadPublicationAsync();
+            await LoadCategoryAsync();
 
         }
 
-        private async Task LoadCategoryAsync()
+        private Task LoadCategoryAsync()
         {
-            var allCats = await CategoryService.ListAsync();
-            category = allCats.FirstOrDefault(c => c.Slug == CategorySlug);
+            var node = FindNode(tree, CategorySlug);
+            category = node?.Category;
             if (category == null)
-                return;
+                return Task.CompletedTask;
 
-            subcats = allCats
-                .Where(c => c.ParentCategoryId == category.Id)
-                .ToList();
+            subcats = node.Children.Select(c => c.Category).ToList();
 
-            var all = (await PublicationService.ListAsync())
-                        .Where(p => p.CategoryId == category.Id
-                                    && p.Status == "Published")
-                        .OrderBy(p => p.FeaturedOrder == 0 ? int.MaxValue : p.FeaturedOrder)
-                        .ThenByDescending(p => p.PublishedAt ?? DateTimeOffset.MinValue)
-                        .ToList();
-
+            var all = node.Publications;
             primaryPost = all.FirstOrDefault();
             otherPosts = all.Skip(1).ToList();
+            return Task.CompletedTask;
         }
 
         private async Task LoadPublicationAsync()
         {
-            pub = await PublicationService.GetBySlugAsync(CategorySlug, ArticleSlug!);
+            var node = FindNode(tree, CategorySlug);
+            pub = node?.Publications.FirstOrDefault(p => p.Slug == ArticleSlug);
 
             if (pub != null && pub.Status != "Published")
             {
@@ -104,6 +103,20 @@ namespace BlazorWebApp.Components.Pages
             await PublicationService.UnpublishAsync(pub.Id);
             pub = await PublicationService.GetAsync(pub.Id);
             StateHasChanged();
+        }
+
+        private static CategoryTreeNode? FindNode(IEnumerable<CategoryTreeNode>? nodes, string slug)
+        {
+            if (nodes == null) return null;
+            foreach (var n in nodes)
+            {
+                if (n.Category.Slug == slug)
+                    return n;
+                var child = FindNode(n.Children, slug);
+                if (child != null)
+                    return child;
+            }
+            return null;
         }
     }
 }

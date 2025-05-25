@@ -17,6 +17,7 @@ namespace BlazorWebApp.Modules.Cms
             services.AddScoped<IPublicationService, PublicationService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ITenantService, TenantService>();
+            services.AddScoped<IPublicationTreeService, PublicationTreeService>();
             services.AddScoped<ITreeMenuService, TreeMenuService>();
 
             return services;
