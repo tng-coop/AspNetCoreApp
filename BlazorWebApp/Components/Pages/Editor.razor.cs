@@ -45,9 +45,6 @@ private readonly Dictionary<string, object> editorConfig = new()
   ["branding"] = false,
 
 
-  // language settings for Japanese UI
-  ["language"]     = "ja",
-  ["language_url"] = "/lib/tinymce/langs/langs7/ja.js",  
 
   // allow iframes and your custom element
   ["custom_elements"] = "my-component",
