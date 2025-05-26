@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using BlazorWebApp.Data;
 using BlazorWebApp.Models;
+using BlazorWebApp.Utils;
 
 namespace BlazorWebApp.Services
 {
@@ -21,6 +22,8 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             var entities = await db.CalendarEvents
+                .Include(e => e.Publication)
+                    .ThenInclude(p => p.Category)
                 .OrderBy(e => e.Start)
                 .ToListAsync();
 
@@ -36,7 +39,9 @@ namespace BlazorWebApp.Services
                         : e.End.Value.ToString("yyyy-MM-dd'T'HH:mm:ss")
                     : null,
                 AllDay = e.AllDay ? true : (bool?)null,
-                Url = e.Url
+                Url = e.Publication != null
+                    ? Utils.CmsRoutes.Combine(e.Publication.Category.Slug, e.Publication.Slug)
+                    : e.Url
             }).ToList();
         }
     }

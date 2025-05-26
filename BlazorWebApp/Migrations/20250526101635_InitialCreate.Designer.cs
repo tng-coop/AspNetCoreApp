@@ -117,7 +117,12 @@ namespace BlazorWebApp.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("PublicationId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PublicationId");
 
                     b.ToTable("CalendarEvents");
                 });
@@ -501,6 +506,17 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Publication");
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.CalendarEvent", b =>
+                {
+                    b.HasOne("BlazorWebApp.Data.Publication", "Publication")
+                        .WithMany("CalendarEvents")
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Publication");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -561,6 +577,7 @@ namespace BlazorWebApp.Migrations
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
+                    b.Navigation("CalendarEvents");
                     b.Navigation("PublicationRevisions");
                 });
 #pragma warning restore 612, 618

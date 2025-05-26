@@ -48,5 +48,8 @@ public class Publication
         // Revision history navigation
         public ICollection<PublicationRevision> PublicationRevisions { get; set; }
             = new List<PublicationRevision>();
+
+        // Events associated with this publication
+        public ICollection<CalendarEvent> CalendarEvents { get; set; } = new List<CalendarEvent>();
 }
 }
