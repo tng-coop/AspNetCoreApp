@@ -101,8 +101,8 @@
         <!-- Dashboard (only for logged-in users) -->
         <AuthorizeView>
           <Authorized>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="/dashboard" Match="NavLinkMatch.All">
+            <div class="nav-item px-3 position-relative">
+                <NavLink class="nav-link position-relative" href="/dashboard" Match="NavLinkMatch.All">
                     <span aria-hidden="true"
                           style="display:inline-block;
                                  width:16px;
@@ -112,6 +112,7 @@
                                  background-color: white;
                                  margin-right:0.5rem;">
                     </span> @L["Dashboard"]
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
                 </NavLink>
             </div>
           </Authorized>
