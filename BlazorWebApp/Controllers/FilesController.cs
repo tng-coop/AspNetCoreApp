@@ -42,12 +42,12 @@ public class FilesController : ControllerBase
         _db.Files.Add(asset);
         await _db.SaveChangesAsync();
 
-        var url = Url.Action(nameof(Get), "Files", new { id = asset.Id }, Request.Scheme);
+        var url = Url.Action(nameof(Get), "Files", new { id = asset.Id, fileName = asset.FileName }, Request.Scheme);
         return Ok(new { location = url });
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get(Guid id)
+    [HttpGet("{id:guid}/{fileName?}")]
+    public async Task<IActionResult> Get(Guid id, string? fileName)
     {
         var fileAsset = await _db.Files.FindAsync(id);
         if (fileAsset == null)
@@ -57,8 +57,8 @@ public class FilesController : ControllerBase
         if (string.IsNullOrEmpty(extension))
             extension = ".bin";
 
-        var fileName = id + extension;
-        var cachePath = Path.Combine(_cacheDir, fileName);
+        var cacheFileName = id + extension;
+        var cachePath = Path.Combine(_cacheDir, cacheFileName);
 
         // Write cache file if missing
         if (!System.IO.File.Exists(cachePath))
