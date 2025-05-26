@@ -30,7 +30,9 @@ namespace BlazorWebApp.Services
 
             return entities.Select(e => new CalendarEventDto
             {
-                Title = e.Title,
+                Title = e.Publication != null
+                    ? PublicationUtils.LocalizedTitle(e.Publication)
+                    : string.Empty,
                 Start = e.AllDay
                     ? e.Start.ToString("yyyy-MM-dd")
                     : e.Start.ToString("yyyy-MM-dd'T'HH:mm:ss"),
@@ -58,7 +60,9 @@ namespace BlazorWebApp.Services
 
             return entities.Select(e => new CalendarEventDto
             {
-                Title = e.Title,
+                Title = e.Publication != null
+                    ? PublicationUtils.LocalizedTitle(e.Publication)
+                    : string.Empty,
                 Start = e.AllDay
                     ? e.Start.ToString("yyyy-MM-dd")
                     : e.Start.ToString("yyyy-MM-dd'T'HH:mm:ss"),

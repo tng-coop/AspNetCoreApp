@@ -104,7 +104,6 @@ namespace BlazorWebApp.Data
             builder.Entity<CalendarEvent>(e =>
             {
                 e.HasKey(c => c.Id);
-                e.Property(c => c.Title).IsRequired();
                 e.Property(c => c.Start).IsRequired();
                 e.Property(c => c.End).IsRequired(false);
                 e.Property(c => c.AllDay).HasDefaultValue(false);
