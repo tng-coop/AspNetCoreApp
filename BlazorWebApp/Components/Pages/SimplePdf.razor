@@ -1,9 +1,0 @@
-@page "/simple-pdf"
-@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
-@inject Microsoft.Extensions.Localization.IStringLocalizer<SimplePdf> L
-
-<PageTitle>@L["Simple PDF"]</PageTitle>
-
-<MudText Typo="Typo.h5" GutterBottom="true">@L["Simple PDF"]</MudText>
-
-<iframe src="/_pdf/simple.pdf" style="width:100%; height:80vh; border:none;"></iframe>

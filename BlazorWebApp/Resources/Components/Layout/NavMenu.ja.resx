@@ -15,8 +15,6 @@
   <data name="Categories" xml:space="preserve"><value>カテゴリー</value></data>
   <data name="Users" xml:space="preserve"><value>ユーザー</value></data>
   <data name="NoDefaultTenant" xml:space="preserve"><value>既定のCMSテナントが設定されていません。</value></data>
-  <data name="Simple PDF" xml:space="preserve"><value>シンプルPDF</value></data>
-  <data name="Seeded PDF" xml:space="preserve"><value>シードPDF</value></data>
   <data name="Calendar" xml:space="preserve"><value>カレンダー</value></data>
   <data name="Leave Comment" xml:space="preserve"><value>コメントを残す</value></data>
 </root>

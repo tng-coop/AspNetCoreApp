@@ -33,25 +33,6 @@ namespace BlazorWebApp.Data.Seeders
                 }
             }
 
-            // Add a seeded PDF example
-            var pdfPath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot", "_pdf", "simple.pdf");
-            var seededId = Guid.Parse("5d46f464-efa8-4c15-b1ea-cd3c6c3a77f0");
-            if (File.Exists(pdfPath) &&
-                !await dbContext.Files.AnyAsync(f => f.Id == seededId))
-            {
-                var pdfBytes = await File.ReadAllBytesAsync(pdfPath);
-                dbContext.Files.Add(new FileAsset
-                {
-                    Id = seededId,
-                    Content     = pdfBytes,
-                    ContentType = "application/pdf",
-                    FileName    = "seeded.pdf",
-                    UploadedAt  = DateTimeOffset.UtcNow
-                });
-            }
-
             await dbContext.SaveChangesAsync();
         }
     }
