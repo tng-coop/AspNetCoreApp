@@ -28,6 +28,7 @@ namespace BlazorWebApp.Components.Pages
         private List<CategoryTreeNode>? tree;
 
         private PublicationReadDto? pub;
+        private CategoryDto? parentCategory;
         private string fullCategoryPath = string.Empty;
         private string fullArticlePath = string.Empty;
 
@@ -84,6 +85,7 @@ namespace BlazorWebApp.Components.Pages
             if (pub?.CategoryId != null)
             {
                 var ancestry = await CategoryService.GetAncestryAsync(pub.CategoryId.Value);
+                parentCategory = ancestry.LastOrDefault();
                 var crumbs = ancestry
                               .Select(CategoryUtils.LocalizedName)
                               .Append(pub.CategoryName!)

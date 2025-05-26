@@ -96,8 +96,17 @@ else
         </ul>
     }
     <div class="mt-4">
-        <NavLink href="@CmsRoutes.Combine(pub?.CategorySlug ?? string.Empty)" Match="NavLinkMatch.Prefix">
-            @L["Back to"] @pub?.CategoryName
+        @{
+            var linkSlug = pub?.CategorySlug ?? string.Empty;
+            var linkName = pub?.CategoryName;
+            if (primaryPost != null && pub?.Slug == primaryPost.Slug && parentCategory != null)
+            {
+                linkSlug = parentCategory.Slug;
+                linkName = CategoryUtils.LocalizedName(parentCategory);
+            }
+        }
+        <NavLink href="@CmsRoutes.Combine(linkSlug)" Match="NavLinkMatch.Prefix">
+            @L["Back to"] @linkName
         </NavLink>
     </div>
 
