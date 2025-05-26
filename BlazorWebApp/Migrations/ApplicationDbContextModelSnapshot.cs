@@ -110,9 +110,6 @@ namespace BlazorWebApp.Migrations
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Url")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PublicationId");
