@@ -11,6 +11,7 @@ using TinyMCE.Blazor;
 using BlazorWebApp.Models;
 using BlazorWebApp.Services;
 using BlazorWebApp.Utils;
+using System.Diagnostics;
 
 namespace BlazorWebApp.Components.Pages
 {
@@ -125,7 +126,8 @@ namespace BlazorWebApp.Components.Pages
         dto.PdfFileId = existing.PdfFileId;
         // load revisions
         revisions = await PublicationService.ListRevisionsAsync(Id.Value);
-        // load calendar events
+          // load calendar events
+          
         eventRows = (await CalendarEventService.ListForPublicationAsync(Id.Value))
             .Select(e => new CalendarEventRow
             {

@@ -139,16 +139,17 @@
   }
   else
   {
+    <p>aaaaaaaaaaaaaaaaaaaaaaaa</p>
     @foreach (var row in eventRows)
     {
       <div>
         <label>@L["Start"]
           <input type="datetime-local"
-                 @bind-value="row.Dto.Start" @bind-value:format="yyyy-MM-ddTHH:mm" />
+                 @bind-value="row.Dto.Start" />
         </label>
         <label>@L["End"]
           <input type="datetime-local"
-                 @bind-value="row.Dto.End" @bind-value:format="yyyy-MM-ddTHH:mm" />
+                 @bind-value="row.Dto.End" />
         </label>
         <label>
           <input type="checkbox" @bind="row.Dto.AllDay" />
@@ -168,7 +169,7 @@
 @if (demoSelectedDate.HasValue)
 {
     <MudText Typo="Typo.body1" Class="mt-2">
-        @string.Format(L["Days from today"], (demoSelectedDate.Value.Date - DateTime.Today).Days)
+        @((demoSelectedDate.Value.Date - DateTime.Today).Days)
     </MudText>
 }
 
