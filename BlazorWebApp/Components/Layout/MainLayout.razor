@@ -24,9 +24,17 @@
         </div>
 
 
-        <article class="content px-4">
-            @Body
-        </article>
+@if (IsPdfPage)
+{
+    @Body
+}
+else
+{
+    <article class="content px-4">
+        @Body
+    </article>
+}
+
     </main>
 </div>
 
@@ -107,5 +115,8 @@
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,
     };
+        bool IsPdfPage =>
+      Nav.ToBaseRelativePath(Nav.Uri)
+         .Equals("seeded-pdf", StringComparison.OrdinalIgnoreCase);
 
 }
