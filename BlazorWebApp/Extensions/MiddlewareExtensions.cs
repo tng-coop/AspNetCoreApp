@@ -30,17 +30,8 @@ public static class MiddlewareExtensions
             });
         }
 
-        app.Use(async (context, next) =>
-        {
-            if (context.Request.Cookies.TryGetValue("blazorCulture", out var culture))
-            {
-                var cultureInfo = new CultureInfo(culture);
-                CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-                CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-            }
-
-            await next();
-        });
+        // Previously looked up the blazorCulture cookie here, but language
+        // preferences are now stored via ProtectedBrowserStorage.
 
         // Migrations and error handling
         if (app.Environment.IsDevelopment())

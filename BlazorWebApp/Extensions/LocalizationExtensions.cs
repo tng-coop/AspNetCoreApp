@@ -1,5 +1,6 @@
 using BlazorWebApp.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace BlazorWebApp.Extensions;
 
@@ -9,6 +10,7 @@ public static class LocalizationExtensions
     {
         // Localization and HttpContextAccessor
         services.AddScoped<LocalizationService>();
+        services.AddScoped<ProtectedLocalStorage>();
         services.AddLocalization(options => options.ResourcesPath = "Resources");
         services.AddHttpContextAccessor();
         

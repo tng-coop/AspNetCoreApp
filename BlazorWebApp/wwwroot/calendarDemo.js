@@ -3,8 +3,8 @@ window.calendarDemo = {
         const el = document.getElementById(id);
         if (!el || typeof FullCalendar === 'undefined') return;
 
-        // Determine the locale: explicit parameter wins, else fall back to blazorCulture helper.
-        const locale = culture || (window.blazorCulture && window.blazorCulture.get && window.blazorCulture.get());
+        // Determine the locale: use provided culture or default to 'en'.
+        const locale = culture || 'en';
 
         const calendar = new FullCalendar.Calendar(el, {
             initialView: 'dayGridMonth',

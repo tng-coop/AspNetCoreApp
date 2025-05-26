@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using BlazorWebApp.Services;
 using System.Globalization;
 using System.Security.Claims;
@@ -57,7 +58,7 @@ public class CounterComponentTests : TestContext
         Services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
         // Register other dependencies
-        Services.AddSingleton<IJSRuntime>(new DummyJSRuntime());
+        Services.AddScoped<ProtectedLocalStorage>(sp => new ProtectedLocalStorage(new DummyJSRuntime()));
         Services.AddSingleton<AuthenticationStateProvider>(new DummyAuthStateProvider());
         Services.AddSingleton<IServiceScopeFactory>(sp => new DummyScopeFactory(sp));
         Services.AddScoped<LocalizationService>();

@@ -1,7 +1,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using BlazorWebApp.Data;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,18 +9,18 @@ namespace BlazorWebApp.Services;
 
 public class LocalizationService
 {
-    private readonly IJSRuntime _js;
+    private readonly ProtectedLocalStorage _storage;
     private readonly AuthenticationStateProvider _authStateProvider;
     private readonly IServiceScopeFactory _scopeFactory;
 
     public event Action? OnChange;
 
     public LocalizationService(
-        IJSRuntime js,
+        ProtectedLocalStorage storage,
         AuthenticationStateProvider authStateProvider,
         IServiceScopeFactory scopeFactory)
     {
-        _js = js;
+        _storage = storage;
         _authStateProvider = authStateProvider;
         _scopeFactory = scopeFactory;
         CurrentCulture = CultureInfo.CurrentCulture;
@@ -44,7 +44,8 @@ public class LocalizationService
         }
         else
         {
-            culture = await _js.InvokeAsync<string>("blazorCulture.get") ?? "en";
+            var result = await _storage.GetAsync<string>("blazorCulture");
+            culture = result.Success ? result.Value : "en";
         }
 
         SetThreadCulture(culture);
@@ -71,7 +72,7 @@ public class LocalizationService
         }
         else
         {
-            await _js.InvokeVoidAsync("blazorCulture.set", culture);
+            await _storage.SetAsync("blazorCulture", culture);
         }
 
         OnChange?.Invoke();

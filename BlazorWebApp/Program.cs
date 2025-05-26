@@ -4,6 +4,7 @@ using BlazorWebApp.Services;
 using MudBlazor.Services;
 using BlazorWebApp.Modules.Cms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using BlazorWebApp.Components;
 
 
@@ -15,6 +16,7 @@ builder.Services
     .AddAuthenticationAndAuthorization(builder.Configuration)
     .AddPersistence(builder.Configuration)          // our factory-only + shim
     .AddLocalizationServices()
+    .AddScoped<ProtectedLocalStorage>()
     .AddScoped<ITenantProvider, StubTenantProvider>()
     .AddMudServices()                              // MudBlazor
     .AddCmsModule();
