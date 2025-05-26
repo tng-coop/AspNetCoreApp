@@ -5,6 +5,7 @@
 @inject IJSRuntime JS
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CalendarDemo> L
 @inject HttpClient Http
+@inject NavigationManager Nav
 
 <PageTitle>@L["Calendar Demo"]</PageTitle>
 
@@ -24,7 +25,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>("api/calendar-events");
+        var apiUri = new Uri(new Uri(Nav.BaseUri), "api/calendar-events");
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUri);
         events = result ?? new List<CalendarEvent>();
     }
 
