@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250526024013_InitialCreate")]
+    [Migration("20250526031111_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -153,7 +153,6 @@ namespace BlazorWebApp.Migrations
 
                     b.ToTable("Images");
                 });
-
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
@@ -437,7 +436,6 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Parent");
                 });
 
-
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.Category", "Category")
@@ -517,7 +515,6 @@ namespace BlazorWebApp.Migrations
 
                     b.Navigation("Publications");
                 });
-
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {

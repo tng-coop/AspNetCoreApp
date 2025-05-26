@@ -151,7 +151,6 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("Images");
                 });
 
-
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
                     b.Property<Guid>("Id")
@@ -434,7 +433,6 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Parent");
                 });
 
-
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.Category", "Category")
@@ -514,7 +512,6 @@ namespace BlazorWebApp.Migrations
 
                     b.Navigation("Publications");
                 });
-
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {

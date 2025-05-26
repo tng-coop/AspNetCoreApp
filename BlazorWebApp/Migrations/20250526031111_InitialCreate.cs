@@ -89,7 +89,6 @@ namespace BlazorWebApp.Migrations
                     table.PrimaryKey("PK_Images", x => x.Id);
                 });
 
-
             migrationBuilder.CreateTable(
                 name: "Slugs",
                 columns: table => new
@@ -325,7 +324,6 @@ namespace BlazorWebApp.Migrations
                 table: "Categories",
                 column: "SortOrder");
 
-
             migrationBuilder.CreateIndex(
                 name: "IX_PublicationRevisions_PublicationId",
                 table: "PublicationRevisions",
@@ -385,7 +383,6 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Images");
-
 
             migrationBuilder.DropTable(
                 name: "PublicationRevisions");
