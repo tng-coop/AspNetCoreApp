@@ -1,0 +1,20 @@
+@page "/date-picker-demo"
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<DatePickerDemo> L
+
+<PageTitle>@L["Date Picker Demo"]</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">@L["Date Picker Demo"]</MudText>
+
+<MudDatePicker @bind-Date="selectedDate" Label="@L["Choose a date"]" />
+
+@if (selectedDate.HasValue)
+{
+    <MudText Typo="Typo.body1" Class="mt-2">
+        @string.Format(L["Days from today"], (selectedDate.Value.Date - DateTime.Today).Days)
+    </MudText>
+}
+
+@code {
+    private DateTime? selectedDate;
+}
