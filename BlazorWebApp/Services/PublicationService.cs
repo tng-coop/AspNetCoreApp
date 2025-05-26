@@ -32,6 +32,8 @@ namespace BlazorWebApp.Services
                 Slug         = slug,
                 Html         = dto.Html,
                 FeaturedOrder = dto.FeaturedOrder,
+                Mode         = dto.Mode,
+                PdfFileId    = dto.PdfFileId,
                 CreatedAt    = DateTimeOffset.UtcNow,
                 CategoryId   = catId
             };
@@ -129,6 +131,8 @@ namespace BlazorWebApp.Services
             pub.TitleJa      = dto.TitleJa;
             pub.Html         = dto.Html;
             pub.FeaturedOrder = dto.FeaturedOrder;
+            pub.Mode         = dto.Mode;
+            pub.PdfFileId    = dto.PdfFileId;
 
             // Manual slug entry; ensure a slug value exists and does not start with '_'
             var slugBase = SlugUtils.Normalize(dto.Slug);
@@ -203,6 +207,8 @@ namespace BlazorWebApp.Services
             Html         = p.Html,
             Status       = p.Status.ToString(),
             FeaturedOrder = p.FeaturedOrder,
+            Mode         = p.Mode,
+            PdfFileId    = p.PdfFileId,
             CreatedAt    = p.CreatedAt,
             PublishedAt  = p.PublishedAt,
             CategoryId   = p.CategoryId,

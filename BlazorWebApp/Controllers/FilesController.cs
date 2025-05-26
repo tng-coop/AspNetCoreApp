@@ -69,7 +69,7 @@ public class FilesController : ControllerBase
         // Serve the file via optimized file streaming
         var result = PhysicalFile(cachePath, fileAsset.ContentType);
 
-        if (fileAsset.ContentType == "application/pdf" && fileAsset.FileName == "seeded.pdf")
+        if (fileAsset.ContentType == "application/pdf")
         {
             result.EnableRangeProcessing = true;
             Response.Headers["Accept-Ranges"] = "bytes";

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BlazorWebApp.Data;
 
 namespace BlazorWebApp.Models
 {
@@ -14,6 +15,10 @@ namespace BlazorWebApp.Models
         // capture rendered HTML
         public string Html { get; set; } = string.Empty;
         public int    FeaturedOrder { get; set; }
+
+        // New PDF-only mode support
+        public PublicationContentMode Mode { get; set; } = PublicationContentMode.Html;
+        public Guid? PdfFileId { get; set; }
 
         // Category mapping 
         public Guid? CategoryId { get; set; }

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Json;
+using BlazorWebApp.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using TinyMCE.Blazor;
@@ -22,11 +25,13 @@ namespace BlazorWebApp.Components.Pages
   private EditContext editContext = default!;
   private bool loadedExisting;
   private List<RevisionDto>? revisions;
+  private bool uploadInProgress;
 
   // Can publish only if title and content are non-empty
   private bool canPublish =>
     !string.IsNullOrWhiteSpace(dto.Title) &&
-    !string.IsNullOrWhiteSpace(dto.Html);
+    ((dto.Mode == PublicationContentMode.Html && !string.IsNullOrWhiteSpace(dto.Html)) ||
+     (dto.Mode == PublicationContentMode.Pdf && dto.PdfFileId != null));
 
   private static bool ContainsOnlyAscii(string text) => text.All(c => c <= sbyte.MaxValue);
   private bool slugAscii => ContainsOnlyAscii(dto.Slug);
@@ -108,6 +113,8 @@ namespace BlazorWebApp.Components.Pages
         dto.Slug = existing.Slug;
         dto.Html = existing.Html;
         dto.FeaturedOrder = existing.FeaturedOrder;
+        dto.Mode = existing.Mode;
+        dto.PdfFileId = existing.PdfFileId;
         // load revisions
         revisions = await PublicationService.ListRevisionsAsync(Id.Value);
       }
@@ -163,6 +170,38 @@ private async Task HandleSubmit()
   private void TitleChanged(ChangeEventArgs e)
   {
     dto.Title = e.Value?.ToString() ?? string.Empty;
+  }
+
+  private async Task UploadPdf(InputFileChangeEventArgs e)
+  {
+    if (e.FileCount == 0) return;
+    var file = e.File;
+    uploadInProgress = true;
+    StateHasChanged();
+
+    using var content = new MultipartFormDataContent();
+    var streamContent = new StreamContent(file.OpenReadStream(long.MaxValue));
+    content.Add(streamContent, "file", file.Name);
+
+    var resp = await Http.PostAsync("/api/files/upload", content);
+    if (resp.IsSuccessStatusCode)
+    {
+        var result = await resp.Content.ReadFromJsonAsync<UploadResult>();
+        if (result != null && Uri.TryCreate(result.location, UriKind.Absolute, out var uri))
+        {
+            var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            if (segments.Length >= 4 && Guid.TryParse(segments[2], out var id))
+                dto.PdfFileId = id;
+        }
+    }
+
+    uploadInProgress = false;
+    StateHasChanged();
+  }
+
+  private class UploadResult
+  {
+      public string location { get; set; } = string.Empty;
   }
 
 

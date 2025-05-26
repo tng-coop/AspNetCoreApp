@@ -9,11 +9,13 @@
 @using TinyMCE.Blazor
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
+@using BlazorWebApp.Data
 @using Microsoft.AspNetCore.Components.Forms
 
 @inject IPublicationService PublicationService
 @inject ICategoryService    CategoryService
 @inject NavigationManager   Nav
+@inject HttpClient         Http
 
 <h3>
   @(Id == null
@@ -69,17 +71,44 @@
     <InputNumber class="form-control" @bind-Value="dto.FeaturedOrder" id="featuredOrder" />
   </div>
 
-  <!-- TinyMCE Editor -->
+  <!-- Content Mode -->
   <div class="mb-3">
-    <label class="form-label">@L["Content"]</label>
-    <TinyMCE.Blazor.Editor
-      @key="editorKey"
-      ApiKey="no-api-key"
-      @bind-Value="dto.Html"
-      Field="@(() => dto.Html)"
-      Conf="@editorConfig" />
-    <ValidationMessage For="@(() => dto.Html)" />
+    <label class="form-label">@L["Content Type"]</label>
+    <InputSelect class="form-select" @bind-Value="dto.Mode">
+      <option value="@PublicationContentMode.Html">HTML</option>
+      <option value="@PublicationContentMode.Pdf">PDF</option>
+    </InputSelect>
   </div>
+
+  @if (dto.Mode == PublicationContentMode.Html)
+  {
+    <!-- TinyMCE Editor -->
+    <div class="mb-3">
+      <label class="form-label">@L["Content"]</label>
+      <TinyMCE.Blazor.Editor
+        @key="editorKey"
+        ApiKey="no-api-key"
+        @bind-Value="dto.Html"
+        Field="@(() => dto.Html)"
+        Conf="@editorConfig" />
+      <ValidationMessage For="@(() => dto.Html)" />
+    </div>
+  }
+  else
+  {
+    <div class="mb-3">
+      <label class="form-label">PDF</label>
+      <InputFile OnChange="UploadPdf" accept="application/pdf" />
+      @if (uploadInProgress)
+      {
+        <MudProgressLinear Indeterminate="true" Class="mt-2" />
+      }
+      @if (dto.PdfFileId != null)
+      {
+        <iframe src="/api/files/@dto.PdfFileId/document.pdf" style="width:100%; height:70vh; border:none;"></iframe>
+      }
+    </div>
+  }
 
   <!-- Buttons -->
   <button type="submit" class="btn btn-primary">@L["Save Draft"]</button>

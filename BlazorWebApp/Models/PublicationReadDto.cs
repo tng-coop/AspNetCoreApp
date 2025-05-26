@@ -1,4 +1,5 @@
 using System;
+using BlazorWebApp.Data;
 
 namespace BlazorWebApp.Models
 {
@@ -11,6 +12,9 @@ namespace BlazorWebApp.Models
         public string Html { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public int    FeaturedOrder { get; set; }
+
+        public PublicationContentMode Mode { get; set; }
+        public Guid? PdfFileId { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? PublishedAt { get; set; }

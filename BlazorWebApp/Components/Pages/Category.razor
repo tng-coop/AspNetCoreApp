@@ -7,6 +7,7 @@
 @using BlazorWebApp.Models
 @using BlazorWebApp.Services
 @using BlazorWebApp.Utils
+@using BlazorWebApp.Data
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
@@ -37,9 +38,16 @@ else
             <small>@L["Category:"] @fullArticlePath</small>
         </p>
     }
-    <div class="mce-content-body">
-        @((MarkupString)pub.Html)
-    </div>
+    @if (pub.Mode == PublicationContentMode.Pdf && pub.PdfFileId != null)
+    {
+        <iframe src="/api/files/@pub.PdfFileId/document.pdf" style="width:100%; height:80vh; border:none;"></iframe>
+    }
+    else
+    {
+        <div class="mce-content-body">
+            @((MarkupString)pub.Html)
+        </div>
+    }
 
     <p><small>@L["Created:"] @pub.CreatedAt:f</small></p>
 
