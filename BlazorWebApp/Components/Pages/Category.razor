@@ -118,7 +118,7 @@ else
         }
         @if (showBackLink)
         {
-            <NavLink href="@CmsRoutes.Combine(linkSlug)" Match="NavLinkMatch.Prefix">
+            <NavLink class="btn btn-outline-primary btn-sm" href="@CmsRoutes.Combine(linkSlug)" Match="NavLinkMatch.Prefix">
                 @L["Back to"] @linkName
             </NavLink>
         }
