@@ -12,7 +12,7 @@
 @inject ITreeMenuService    TreeMenuService
 @inject IOptions<StubTenantProviderOptions> TenantOptions
 @inject IStringLocalizer<NavMenu> L
-@inject BlazorWebApp.Services.ICommentService CommentService
+@inject ICommentService CommentService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -113,7 +113,10 @@
                                  background-color: white;
                                  margin-right:0.5rem;">
                     </span> @L["Dashboard"]
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@commentCount</span>
+                    @if (unreadCount > 0)
+                    {
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@unreadCount</span>
+                    }
                 </NavLink>
             </div>
           </Authorized>
@@ -259,6 +262,8 @@
     private string cmsPrefix = string.Empty;
     private int commentCount;
     private Action? _cultureChangedHandler;
+    private Action<int>? _unreadChangedHandler;
+    private int unreadCount;
 
     private async Task LoadMenuAsync()
     {
@@ -275,7 +280,10 @@
         _cultureChangedHandler = async () => await LoadMenuAsync();
         Localization.OnChange += _cultureChangedHandler;
         await LoadMenuAsync();
-        commentCount = (await CommentService.ListAsync()).Count;
+
+        unreadCount = await CommentService.CountUnreadAsync();
+        _unreadChangedHandler = count => { unreadCount = count; InvokeAsync(StateHasChanged); };
+        CommentService.OnUnreadCountChanged += _unreadChangedHandler;
     }
 
     protected override void OnInitialized()
@@ -305,6 +313,10 @@
         if (_cultureChangedHandler != null)
         {
             Localization.OnChange -= _cultureChangedHandler;
+        }
+        if (_unreadChangedHandler != null)
+        {
+            CommentService.OnUnreadCountChanged -= _unreadChangedHandler;
         }
         base.Dispose();
     }

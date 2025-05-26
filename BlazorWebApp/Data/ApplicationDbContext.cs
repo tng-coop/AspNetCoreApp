@@ -123,6 +123,8 @@ namespace BlazorWebApp.Data
                 e.Property(c => c.Text).IsRequired();
                 e.Property(c => c.CreatedAt)
                     .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+                e.Property(c => c.IsRead)
+                    .HasDefaultValue(false);
             });
         }
     }

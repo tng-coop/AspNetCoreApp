@@ -165,10 +165,15 @@ namespace BlazorWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Text")
                         .IsRequired()

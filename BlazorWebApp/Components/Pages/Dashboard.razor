@@ -3,6 +3,8 @@
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Dashboard> L
 
+@using MudBlazor
+
 <PageTitle>@L["Dashboard"]</PageTitle>
 
 @using Microsoft.AspNetCore.Identity
@@ -33,12 +35,15 @@ else
     else
     {
         <h5 class="mt-4">@L["Comments"]</h5>
-        <ul>
+        <MudList T="CommentDto" Dense="true">
             @foreach (var c in comments)
             {
-                <li>@c.CreatedAt.ToString("g"): @c.Text</li>
+                <MudListItem T="CommentDto" Class="d-flex align-items-center">
+                    <MudCheckBox T="bool" @bind-Checked="c.IsRead" OnChanged="async _ => await ToggleReadAsync(c)" />
+                    <span class="ms-2">@c.CreatedAt.ToString("g"): @c.Text</span>
+                </MudListItem>
             }
-        </ul>
+        </MudList>
     }
 
 }
@@ -60,5 +65,10 @@ else
         }
 
         comments = await CommentService.ListAsync();
+    }
+
+    private async Task ToggleReadAsync(CommentDto comment)
+    {
+        await CommentService.SetReadStatusAsync(comment.Id, comment.IsRead);
     }
 }

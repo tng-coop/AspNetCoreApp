@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,20 @@ namespace BlazorWebApp.Controllers
 
             await _service.AddAsync(text);
             return Ok();
+        }
+
+        [HttpPost("{id:guid}/read")]
+        public async Task<IActionResult> SetRead(Guid id, [FromQuery] bool isRead = true)
+        {
+            await _service.SetReadStatusAsync(id, isRead);
+            return Ok();
+        }
+
+        [HttpGet("unread-count")]
+        public async Task<ActionResult<int>> UnreadCount()
+        {
+            var count = await _service.CountUnreadAsync();
+            return Ok(count);
         }
     }
 }
