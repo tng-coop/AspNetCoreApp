@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using BlazorWebApp.Data;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -33,11 +34,20 @@ public class FilesController : ControllerBase
         using var ms = new MemoryStream();
         await file.CopyToAsync(ms);
 
+        var contentType = file.ContentType;
+        if (string.IsNullOrWhiteSpace(contentType) || !MediaTypeHeaderValue.TryParse(contentType, out _))
+        {
+            var ext = Path.GetExtension(file.FileName);
+            contentType = string.Equals(ext, ".pdf", StringComparison.OrdinalIgnoreCase)
+                ? "application/pdf"
+                : "application/octet-stream";
+        }
+
         var asset = new FileAsset
         {
             Id = Guid.NewGuid(),
             Content = ms.ToArray(),
-            ContentType = file.ContentType,
+            ContentType = contentType,
             FileName = file.FileName,
             UploadedAt = DateTimeOffset.UtcNow
         };
@@ -71,9 +81,18 @@ public class FilesController : ControllerBase
         }
 
         // Serve the file via optimized file streaming
-        var result = PhysicalFile(cachePath, fileAsset.ContentType);
+        var contentType = fileAsset.ContentType;
+        if (string.IsNullOrWhiteSpace(contentType) || !MediaTypeHeaderValue.TryParse(contentType, out _))
+        {
+            var ext = Path.GetExtension(fileAsset.FileName);
+            contentType = string.Equals(ext, ".pdf", StringComparison.OrdinalIgnoreCase)
+                ? "application/pdf"
+                : "application/octet-stream";
+        }
 
-        if (fileAsset.ContentType == "application/pdf")
+        var result = PhysicalFile(cachePath, contentType);
+
+        if (contentType == "application/pdf")
         {
             result.EnableRangeProcessing = true;
             Response.Headers["Accept-Ranges"] = "bytes";
