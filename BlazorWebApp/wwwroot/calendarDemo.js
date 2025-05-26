@@ -8,6 +8,11 @@ window.calendarDemo = {
 
         const calendar = new FullCalendar.Calendar(el, {
             initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            },
             events: events,
             locale: locale,
             height: '100%',           // match parent container’s height

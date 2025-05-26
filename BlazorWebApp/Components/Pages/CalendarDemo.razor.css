@@ -1,0 +1,9 @@
+#calendar {
+    min-height: 60vh;
+}
+
+@media (min-width: 641px) {
+    #calendar {
+        height: 80vh;
+    }
+}
