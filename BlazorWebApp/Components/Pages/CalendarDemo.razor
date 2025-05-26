@@ -1,0 +1,29 @@
+@page "/calendar-demo"
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject IJSRuntime JS
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CalendarDemo> L
+
+<PageTitle>Calendar Demo</PageTitle>
+
+<MudText Typo="Typo.h5" GutterBottom="true">@L["Calendar Demo"]</MudText>
+
+<div id="calendar" style="max-width:900px;margin:auto;"></div>
+
+@code {
+    private record CalendarEvent(string title, string start);
+
+    private readonly List<CalendarEvent> events = new()
+    {
+        new("Board meeting", DateTime.Today.ToString("yyyy-MM-dd")),
+        new("Team lunch", DateTime.Today.AddDays(3).ToString("yyyy-MM-dd")),
+        new("Conference", DateTime.Today.AddDays(7).ToString("yyyy-MM-dd"))
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("calendarDemo.init", "calendar", events);
+        }
+    }
+}

@@ -26,8 +26,14 @@
         "icons/person-badge.svg",
         "icons/person-fill.svg",
         "icons/person.svg",
-        "icons/plus-circle.svg"
+        "icons/plus-circle.svg",
+        "icons/calendar-event.svg"
       ]
+    }
+    ,
+    {
+      "library": "fullcalendar@6.1.17",
+      "destination": "wwwroot/lib/fullcalendar/"
     }
   ]
 }
