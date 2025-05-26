@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.DataProtection;
 using BlazorWebApp.Services;
 using System.Globalization;
 using System.Security.Claims;
@@ -46,6 +47,14 @@ public class CounterComponentTests : TestContext
         }
     }
 
+    // Data protection stub
+    private class DummyDataProtectionProvider : IDataProtectionProvider, IDataProtector
+    {
+        public IDataProtector CreateProtector(string purpose) => this;
+        public byte[] Protect(byte[] plaintext) => plaintext;
+        public byte[] Unprotect(byte[] protectedData) => protectedData;
+    }
+
     public CounterComponentTests()
     {
         // Localization: point to Resources folder and register services
@@ -58,7 +67,8 @@ public class CounterComponentTests : TestContext
         Services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
         // Register other dependencies
-        Services.AddScoped<ProtectedLocalStorage>(sp => new ProtectedLocalStorage(new DummyJSRuntime()));
+        Services.AddScoped<ProtectedLocalStorage>(sp =>
+            new ProtectedLocalStorage(new DummyJSRuntime(), new DummyDataProtectionProvider()));
         Services.AddSingleton<AuthenticationStateProvider>(new DummyAuthStateProvider());
         Services.AddSingleton<IServiceScopeFactory>(sp => new DummyScopeFactory(sp));
         Services.AddScoped<LocalizationService>();
