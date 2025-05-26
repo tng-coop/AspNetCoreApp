@@ -1,4 +1,4 @@
-window.calendarDemo = {
+window.calendar = {
     init: function (id, events, culture) {
         const el = document.getElementById(id);
         if (!el || typeof FullCalendar === 'undefined') return;

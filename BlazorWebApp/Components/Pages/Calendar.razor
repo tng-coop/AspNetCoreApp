@@ -1,11 +1,11 @@
-@page "/calendar-demo"
+@page "/calendar"
 @using BlazorWebApp.Models
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject IJSRuntime JS
-@inject Microsoft.Extensions.Localization.IStringLocalizer<CalendarDemo> L
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Calendar> L
 @inject BlazorWebApp.Services.ICalendarEventService CalendarEventService
 
-<PageTitle>@L["Calendar Demo"]</PageTitle>
+<PageTitle>@L["Calendar"]</PageTitle>
 
 
 <div id="calendar"></div>
@@ -24,7 +24,7 @@
         if (firstRender)
         {
             var culture = Localization.CurrentCulture.Name;
-            await JS.InvokeVoidAsync("calendarDemo.init", "calendar", events, culture);
+            await JS.InvokeVoidAsync("calendar.init", "calendar", events, culture);
         }
     }
 }

@@ -54,14 +54,14 @@ else
             @foreach (var ev in calendarEvents)
             {
                 <li>
-                    <NavLink href="/calendar-demo">
+                    <NavLink href="/calendar">
                         @ev.Title (@ev.Start)
                     </NavLink>
                 </li>
             }
         </ul>
         <p>
-            <NavLink href="/calendar-demo">@L["View Calendar"]</NavLink>
+            <NavLink href="/calendar">@L["View Calendar"]</NavLink>
         </p>
     }
 
