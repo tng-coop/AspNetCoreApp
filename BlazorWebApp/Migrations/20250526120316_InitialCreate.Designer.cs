@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250526115238_InitialCreate")]
+    [Migration("20250526120316_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -112,10 +112,6 @@ namespace BlazorWebApp.Migrations
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Url")
                         .HasColumnType("text");

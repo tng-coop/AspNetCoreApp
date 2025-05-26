@@ -274,7 +274,6 @@ namespace BlazorWebApp.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
                     Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     End = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     AllDay = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
