@@ -1,4 +1,5 @@
 @page "/calendar-demo"
+@using System.Text.Json.Serialization
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject IJSRuntime JS
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CalendarDemo> L
@@ -9,13 +10,51 @@
 <div id="calendar"></div>
 
 @code {
-    private record CalendarEvent(string title, string start);
+
+    private record CalendarEvent(
+        [property: JsonPropertyName("title")] string Title,
+        [property: JsonPropertyName("start")] string Start,
+        [property: JsonPropertyName("end")] string? End = null,
+        [property: JsonPropertyName("allDay")] bool? AllDay = null,
+        [property: JsonPropertyName("url")] string? Url = null);
 
     private readonly List<CalendarEvent> events = new()
     {
-        new("Board meeting", DateTime.Today.ToString("yyyy-MM-dd")),
-        new("Team lunch", DateTime.Today.AddDays(3).ToString("yyyy-MM-dd")),
-        new("Conference", DateTime.Today.AddDays(7).ToString("yyyy-MM-dd"))
+        new(
+            "Board meeting",
+            DateTime.Today.AddDays(1).AddHours(9).ToString("yyyy-MM-dd'T'HH:mm:ss"),
+            DateTime.Today.AddDays(1).AddHours(11).ToString("yyyy-MM-dd'T'HH:mm:ss")),
+        new(
+            "Sprint planning",
+            DateTime.Today.AddDays(2).AddHours(10).ToString("yyyy-MM-dd'T'HH:mm:ss"),
+            DateTime.Today.AddDays(2).AddHours(12).ToString("yyyy-MM-dd'T'HH:mm:ss")),
+        new(
+            "Team lunch",
+            DateTime.Today.AddDays(3).AddHours(12).ToString("yyyy-MM-dd'T'HH:mm:ss"),
+            DateTime.Today.AddDays(3).AddHours(13).ToString("yyyy-MM-dd'T'HH:mm:ss")),
+        new(
+            "All hands",
+            DateTime.Today.AddDays(5).ToString("yyyy-MM-dd"),
+            AllDay: true),
+        new(
+            "Conference",
+            DateTime.Today.AddDays(7).ToString("yyyy-MM-dd"),
+            DateTime.Today.AddDays(9).ToString("yyyy-MM-dd"),
+            AllDay: true),
+        new(
+            "Customer meeting",
+            DateTime.Today.AddDays(10).AddHours(15).ToString("yyyy-MM-dd'T'HH:mm:ss"),
+            DateTime.Today.AddDays(10).AddHours(16).ToString("yyyy-MM-dd'T'HH:mm:ss"),
+            Url: "https://example.com"),
+        new(
+            "Sprint demo",
+            DateTime.Today.AddDays(14).AddHours(11).ToString("yyyy-MM-dd'T'HH:mm:ss"),
+            DateTime.Today.AddDays(14).AddHours(12).ToString("yyyy-MM-dd'T'HH:mm:ss")),
+        new(
+            "Hackathon",
+            DateTime.Today.AddDays(20).ToString("yyyy-MM-dd"),
+            DateTime.Today.AddDays(21).ToString("yyyy-MM-dd"),
+            AllDay: true)
     };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
