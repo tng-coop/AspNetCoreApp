@@ -112,6 +112,20 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Slugs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: false),
+                    EntityId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EntityType = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Slugs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tenants",
                 columns: table => new
                 {
@@ -370,6 +384,12 @@ namespace BlazorWebApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Slugs_Value",
+                table: "Slugs",
+                column: "Value",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tenants_Slug",
                 table: "Tenants",
                 column: "Slug",
@@ -402,6 +422,9 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "PublicationRevisions");
+
+            migrationBuilder.DropTable(
+                name: "Slugs");
 
             migrationBuilder.DropTable(
                 name: "Tenants");

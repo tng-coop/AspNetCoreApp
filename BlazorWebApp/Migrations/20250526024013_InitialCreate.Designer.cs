@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250525105350_InitialCreate")]
+    [Migration("20250526024013_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -278,6 +278,31 @@ namespace BlazorWebApp.Migrations
                     b.HasIndex("PublicationId");
 
                     b.ToTable("PublicationRevisions");
+                });
+
+            modelBuilder.Entity("BlazorWebApp.Data.SlugRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Value")
+                        .IsUnique();
+
+                    b.ToTable("Slugs");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.Tenant", b =>
