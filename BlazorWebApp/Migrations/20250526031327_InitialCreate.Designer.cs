@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250526031111_InitialCreate")]
+    [Migration("20250526031327_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
