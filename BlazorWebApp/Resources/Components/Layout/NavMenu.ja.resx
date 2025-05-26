@@ -18,5 +18,6 @@
   <data name="Simple PDF" xml:space="preserve"><value>シンプルPDF</value></data>
   <data name="Seeded PDF" xml:space="preserve"><value>シードPDF</value></data>
   <data name="Calendar" xml:space="preserve"><value>カレンダー</value></data>
+  <data name="Leave Comment" xml:space="preserve"><value>コメントを残す</value></data>
 </root>
 
