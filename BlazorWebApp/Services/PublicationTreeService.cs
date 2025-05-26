@@ -74,6 +74,8 @@ namespace BlazorWebApp.Services
                     Html = p.Html,
                     Status = p.Status.ToString(),
                     FeaturedOrder = p.FeaturedOrder,
+                    Mode = p.Mode,
+                    PdfFileId = p.PdfFileId,
                     CreatedAt = p.CreatedAt,
                     PublishedAt = p.PublishedAt,
                     CategoryId = p.CategoryId,
