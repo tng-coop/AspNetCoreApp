@@ -159,6 +159,26 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("BlazorWebApp.Data.FileAsset", b =>
                 {
                     b.Property<Guid>("Id")
