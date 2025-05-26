@@ -12,6 +12,7 @@
 @inject ITreeMenuService    TreeMenuService
 @inject IOptions<StubTenantProviderOptions> TenantOptions
 @inject IStringLocalizer<NavMenu> L
+@inject BlazorWebApp.Services.ICommentService CommentService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -112,7 +113,7 @@
                                  background-color: white;
                                  margin-right:0.5rem;">
                     </span> @L["Dashboard"]
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@commentCount</span>
                 </NavLink>
             </div>
           </Authorized>
@@ -256,6 +257,7 @@
     private bool isMenuOpen;
     private bool hasDefaultTenant;
     private string cmsPrefix = string.Empty;
+    private int commentCount;
     private Action? _cultureChangedHandler;
 
     private async Task LoadMenuAsync()
@@ -273,6 +275,7 @@
         _cultureChangedHandler = async () => await LoadMenuAsync();
         Localization.OnChange += _cultureChangedHandler;
         await LoadMenuAsync();
+        commentCount = (await CommentService.ListAsync()).Count;
     }
 
     protected override void OnInitialized()
