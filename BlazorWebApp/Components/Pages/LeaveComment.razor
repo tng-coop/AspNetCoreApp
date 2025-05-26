@@ -2,7 +2,7 @@
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject Microsoft.Extensions.Localization.IStringLocalizer<LeaveComment> L
 @inject BlazorWebApp.Services.ICommentService CommentService
-@inject NavigationManager Nav
+@using BlazorWebApp.Models
 
 <PageTitle>@L["Leave a Comment"]</PageTitle>
 
@@ -17,16 +17,23 @@
     <button type="submit" class="btn btn-primary">@L["Submit"]</button>
 </EditForm>
 
+@if (lastComment != null)
+{
+    <div class="alert alert-success mt-3">@L["Comment Sent"]</div>
+    <p>@lastComment.CreatedAt.ToString("g"): @lastComment.Text</p>
+}
+
 @code {
     private string commentText = string.Empty;
+    private CommentDto? lastComment;
 
     private async Task HandleSubmit()
     {
         if (!string.IsNullOrWhiteSpace(commentText))
         {
-            await CommentService.AddAsync(commentText);
+            lastComment = await CommentService.AddAsync(commentText);
             commentText = string.Empty;
-            Nav.NavigateTo("/dashboard");
+            StateHasChanged();
         }
     }
 }

@@ -6,4 +6,5 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Leave a Comment" xml:space="preserve"><value>コメントを残す</value></data>
   <data name="Submit" xml:space="preserve"><value>送信</value></data>
+  <data name="Comment Sent" xml:space="preserve"><value>コメントが送信されました</value></data>
 </root>

@@ -9,7 +9,7 @@ namespace BlazorWebApp.Services
     {
         event Action<int>? OnUnreadCountChanged;
 
-        Task AddAsync(string text);
+        Task<CommentDto> AddAsync(string text);
         Task<List<CommentDto>> ListAsync();
         Task SetReadStatusAsync(Guid id, bool isRead);
         Task<int> CountUnreadAsync();

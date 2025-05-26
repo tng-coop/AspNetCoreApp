@@ -23,13 +23,13 @@ namespace BlazorWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] string text)
+        public async Task<ActionResult<CommentDto>> Create([FromBody] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return BadRequest();
 
-            await _service.AddAsync(text);
-            return Ok();
+            var dto = await _service.AddAsync(text);
+            return Ok(dto);
         }
 
         [HttpPost("{id:guid}/read")]

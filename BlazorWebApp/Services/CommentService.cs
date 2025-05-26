@@ -19,7 +19,7 @@ namespace BlazorWebApp.Services
 
         private ApplicationDbContext CreateDb() => _factory.CreateDbContext();
 
-        public async Task AddAsync(string text)
+        public async Task<CommentDto> AddAsync(string text)
         {
             await using var db = CreateDb();
             var entity = new Comment
@@ -34,6 +34,14 @@ namespace BlazorWebApp.Services
 
             var count = await db.Comments.CountAsync(c => !c.IsRead);
             OnUnreadCountChanged?.Invoke(count);
+
+            return new CommentDto
+            {
+                Id = entity.Id,
+                Text = entity.Text,
+                CreatedAt = entity.CreatedAt,
+                IsRead = entity.IsRead
+            };
         }
 
         public async Task<List<CommentDto>> ListAsync()
