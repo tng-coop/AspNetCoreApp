@@ -139,38 +139,44 @@
   }
   else
   {
-    @foreach (var row in eventRows)
-    {
-      <div>
-        <label>@L["Start"]
-          <input type="datetime-local"
-                 @bind-value="row.Dto.Start" />
-        </label>
-        <label>@L["End"]
-          <input type="datetime-local"
-                 @bind-value="row.Dto.End" />
-        </label>
-        <label>
-          <input type="checkbox" @bind="row.Dto.AllDay" />
-          @L["All Day"]
-        </label>
-        <button type="button" @onclick="() => SaveEvent(row)">@L["Save"]</button>
-        <button type="button" @onclick="() => DeleteEvent(row)">@L["Delete"]</button>
-      </div>
-    }
-    <button type="button" @onclick="AddEvent">@L["Add Event"]</button>
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>@L["Start"]</th>
+          <th>@L["End"]</th>
+          <th class="text-center">@L["All Day"]</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var row in eventRows)
+        {
+          <tr>
+            <td>
+              <input type="datetime-local" class="form-control"
+                     @bind-value="row.Dto.Start" />
+            </td>
+            <td>
+              <input type="datetime-local" class="form-control"
+                     @bind-value="row.Dto.End" />
+            </td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input" @bind="row.Dto.AllDay" />
+            </td>
+            <td>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-secondary" @onclick="() => SaveEvent(row)">@L["Save"]</button>
+                <button type="button" class="btn btn-sm btn-danger" @onclick="() => DeleteEvent(row)">@L["Delete"]</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-outline-primary" @onclick="AddEvent">@L["Add Event"]</button>
   }
 }
 
-<h4 class="mt-5">@L["Date Picker Demo"]</h4>
-<MudDatePicker @bind-Date="demoSelectedDate" Label="@L["Choose a date"]" />
-
-@if (demoSelectedDate.HasValue)
-{
-    <MudText Typo="Typo.body1" Class="mt-2">
-        @((demoSelectedDate.Value.Date - DateTime.Today).Days)
-    </MudText>
-}
 
 @if (loadedExisting)
 {
