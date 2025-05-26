@@ -39,7 +39,6 @@ namespace BlazorWebApp.Data
             // 6) Seed application data
             await RunSeederAsync(factory, CategorySeeder.SeedAsync);
             await RunSeederAsync(factory, PublicationSeeder.SeedAsync);
-            await RunSeederAsync(factory, MenuItemSeeder.SeedAsync);
             await RunSeederAsync(factory, FileSeeder.SeedAsync);
         }
 

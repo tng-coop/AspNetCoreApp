@@ -10,7 +10,6 @@ namespace BlazorWebApp.Data
         {
         }
 
-        public DbSet<MenuItem>    MenuItems     { get; set; } = null!;
         public DbSet<Publication> Publications   { get; set; } = null!;
         public DbSet<FileAsset>   Files         { get; set; } = null!;
         public DbSet<Category>    Categories    { get; set; } = null!;
@@ -40,19 +39,6 @@ namespace BlazorWebApp.Data
                  .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // --- MenuItem entity configuration ---
-            builder.Entity<MenuItem>(e =>
-            {
-                e.HasKey(mi => mi.Id);
-                e.Property(mi => mi.Slug).IsRequired();
-                e.HasIndex(mi => mi.Slug)
-                 .IsUnique();
-                // Optional: configure parent-child relationship if not already annotated
-                e.HasOne(mi => mi.Parent)
-                 .WithMany(mi => mi.Children)
-                 .HasForeignKey(mi => mi.ParentMenuItemId)
-                 .OnDelete(DeleteBehavior.Restrict);
-            });
 
             // --- PublicationRevision configuration ---
             builder.Entity<PublicationRevision>(e =>

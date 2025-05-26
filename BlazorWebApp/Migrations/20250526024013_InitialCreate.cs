@@ -89,27 +89,6 @@ namespace BlazorWebApp.Migrations
                     table.PrimaryKey("PK_Images", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "MenuItems",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Slug = table.Column<string>(type: "text", nullable: false),
-                    SortOrder = table.Column<int>(type: "integer", nullable: false),
-                    ParentMenuItemId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ContentItemId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MenuItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MenuItems_MenuItems_ParentMenuItemId",
-                        column: x => x.ParentMenuItemId,
-                        principalTable: "MenuItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
 
             migrationBuilder.CreateTable(
                 name: "Slugs",
@@ -346,16 +325,6 @@ namespace BlazorWebApp.Migrations
                 table: "Categories",
                 column: "SortOrder");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_MenuItems_ParentMenuItemId",
-                table: "MenuItems",
-                column: "ParentMenuItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MenuItems_Slug",
-                table: "MenuItems",
-                column: "Slug",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PublicationRevisions_PublicationId",
@@ -417,8 +386,6 @@ namespace BlazorWebApp.Migrations
             migrationBuilder.DropTable(
                 name: "Images");
 
-            migrationBuilder.DropTable(
-                name: "MenuItems");
 
             migrationBuilder.DropTable(
                 name: "PublicationRevisions");

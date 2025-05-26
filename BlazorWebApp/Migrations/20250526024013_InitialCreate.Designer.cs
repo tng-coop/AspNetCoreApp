@@ -154,38 +154,6 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.MenuItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ContentItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ParentMenuItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentMenuItemId");
-
-                    b.HasIndex("Slug")
-                        .IsUnique();
-
-                    b.ToTable("MenuItems");
-                });
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
@@ -469,15 +437,6 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.MenuItem", b =>
-                {
-                    b.HasOne("BlazorWebApp.Data.MenuItem", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentMenuItemId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Parent");
-                });
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
@@ -559,10 +518,6 @@ namespace BlazorWebApp.Migrations
                     b.Navigation("Publications");
                 });
 
-            modelBuilder.Entity("BlazorWebApp.Data.MenuItem", b =>
-                {
-                    b.Navigation("Children");
-                });
 
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
