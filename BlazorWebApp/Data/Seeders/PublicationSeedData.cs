@@ -18,7 +18,7 @@ namespace BlazorWebApp.Data.Seeders
         public static readonly PublicationSeedEntry[] Entries =
         [
             new("about", "Getting Started with Our CMS", "CMSの始め方",        "getting-started-with-our-cms",        "<h1>Welcome</h1><p>This is your first post. Edit me!</p>",          PublicationStatus.Published,   -7, -6),
-            new("home", "defraul", "defraul",                               "defraul",                               "<h1>Welcome Homepage</h1><p>Homepage</p>",          PublicationStatus.Published,   -7, -6, false),
+            new("home", "default", "default",                               "default",                               "<h1>Welcome Homepage</h1><p>Homepage</p>",          PublicationStatus.Published,   -7, -6, true),
             new("ministries", "Annual Ministries Kickoff", "年間ミニストリー開始",          "annual-ministries-kickoff",          "<h2>Ministries Begin</h2><p>Ministries launch details...</p>",   PublicationStatus.Published,   -5, -4),
             new("service", "Service Opportunities Update", "奉仕の機会の更新",       "service-opportunities-update",       "<h2>Volunteer Service</h2><p>Latest service opportunities...</p>", PublicationStatus.Published,   -4, -3),
             new("outreach", "Outreach Team Training", "アウトリーチチームの研修",             "outreach-team-training",             "<h2>Training</h2><p>Upcoming outreach training...</p>",         PublicationStatus.Published,   -3, -2),
