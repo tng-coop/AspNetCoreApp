@@ -99,15 +99,29 @@ else
         @{
             var linkSlug = pub?.CategorySlug ?? string.Empty;
             var linkName = pub?.CategoryName;
-            if (primaryPost != null && pub?.Slug == primaryPost.Slug && parentCategory != null)
+            var showBackLink = true;
+
+            if (primaryPost != null && pub?.Slug == primaryPost.Slug)
             {
-                linkSlug = parentCategory.Slug;
-                linkName = CategoryUtils.LocalizedName(parentCategory);
+                if (parentCategory != null)
+                {
+                    linkSlug = parentCategory.Slug;
+                    linkName = CategoryUtils.LocalizedName(parentCategory);
+                }
+                else
+                {
+                    // Already at a top-level category. No parent to navigate
+                    // back to, so hide the link entirely.
+                    showBackLink = false;
+                }
             }
         }
-        <NavLink href="@CmsRoutes.Combine(linkSlug)" Match="NavLinkMatch.Prefix">
-            @L["Back to"] @linkName
-        </NavLink>
+        @if (showBackLink)
+        {
+            <NavLink href="@CmsRoutes.Combine(linkSlug)" Match="NavLinkMatch.Prefix">
+                @L["Back to"] @linkName
+            </NavLink>
+        }
     </div>
 
     if (primaryPost != null && pub.Slug == primaryPost.Slug)
