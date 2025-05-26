@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250526101635_InitialCreate")]
+    [Migration("20250526104628_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -107,6 +107,9 @@ namespace BlazorWebApp.Migrations
                     b.Property<DateTime?>("End")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("PublicationId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp with time zone");
 
@@ -116,9 +119,6 @@ namespace BlazorWebApp.Migrations
 
                     b.Property<string>("Url")
                         .HasColumnType("text");
-
-                    b.Property<Guid>("PublicationId")
-                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -468,6 +468,17 @@ namespace BlazorWebApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BlazorWebApp.Data.CalendarEvent", b =>
+                {
+                    b.HasOne("BlazorWebApp.Data.Publication", "Publication")
+                        .WithMany("CalendarEvents")
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Publication");
+                });
+
             modelBuilder.Entity("BlazorWebApp.Data.Category", b =>
                 {
                     b.HasOne("BlazorWebApp.Data.Category", "Parent")
@@ -499,17 +510,6 @@ namespace BlazorWebApp.Migrations
                 {
                     b.HasOne("BlazorWebApp.Data.Publication", "Publication")
                         .WithMany("PublicationRevisions")
-                        .HasForeignKey("PublicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Publication");
-                });
-
-            modelBuilder.Entity("BlazorWebApp.Data.CalendarEvent", b =>
-                {
-                    b.HasOne("BlazorWebApp.Data.Publication", "Publication")
-                        .WithMany("CalendarEvents")
                         .HasForeignKey("PublicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -578,6 +578,7 @@ namespace BlazorWebApp.Migrations
             modelBuilder.Entity("BlazorWebApp.Data.Publication", b =>
                 {
                     b.Navigation("CalendarEvents");
+
                     b.Navigation("PublicationRevisions");
                 });
 #pragma warning restore 612, 618

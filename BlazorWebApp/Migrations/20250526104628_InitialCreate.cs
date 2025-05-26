@@ -53,34 +53,6 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CalendarEvents",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    End = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    AllDay = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    Url = table.Column<string>(type: "text", nullable: true),
-                    PublicationId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CalendarEvents", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CalendarEvents_Publications_PublicationId",
-                        column: x => x.PublicationId,
-                        principalTable: "Publications",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CalendarEvents_PublicationId",
-                table: "CalendarEvents",
-                column: "PublicationId");
-
-            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -284,6 +256,29 @@ namespace BlazorWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CalendarEvents",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    End = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    AllDay = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    Url = table.Column<string>(type: "text", nullable: true),
+                    PublicationId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CalendarEvents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CalendarEvents_Publications_PublicationId",
+                        column: x => x.PublicationId,
+                        principalTable: "Publications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PublicationRevisions",
                 columns: table => new
                 {
@@ -342,6 +337,11 @@ namespace BlazorWebApp.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CalendarEvents_PublicationId",
+                table: "CalendarEvents",
+                column: "PublicationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_ParentCategoryId",
