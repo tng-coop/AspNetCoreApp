@@ -13,4 +13,6 @@
   <data name="Sub-categories" xml:space="preserve"><value>サブカテゴリ</value></data>
   <data name="Other Articles in this category" xml:space="preserve"><value>このカテゴリの他の記事</value></data>
   <data name="Back to" xml:space="preserve"><value>戻る:</value></data>
+  <data name="Events linked to this article" xml:space="preserve"><value>この記事に関連するイベント</value></data>
+  <data name="View Calendar" xml:space="preserve"><value>カレンダーを見る</value></data>
 </root>

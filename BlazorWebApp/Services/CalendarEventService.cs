@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,34 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             var entities = await db.CalendarEvents
+                .Include(e => e.Publication)
+                    .ThenInclude(p => p.Category)
+                .OrderBy(e => e.Start)
+                .ToListAsync();
+
+            return entities.Select(e => new CalendarEventDto
+            {
+                Title = e.Title,
+                Start = e.AllDay
+                    ? e.Start.ToString("yyyy-MM-dd")
+                    : e.Start.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                End = e.End.HasValue
+                    ? e.AllDay
+                        ? e.End.Value.ToString("yyyy-MM-dd")
+                        : e.End.Value.ToString("yyyy-MM-dd'T'HH:mm:ss")
+                    : null,
+                AllDay = e.AllDay ? true : (bool?)null,
+                Url = e.Publication != null
+                    ? Utils.CmsRoutes.Combine(e.Publication.Category.Slug, e.Publication.Slug)
+                    : e.Url
+            }).ToList();
+        }
+
+        public async Task<List<CalendarEventDto>> ListByPublicationAsync(Guid publicationId)
+        {
+            await using var db = CreateDb();
+            var entities = await db.CalendarEvents
+                .Where(e => e.PublicationId == publicationId)
                 .Include(e => e.Publication)
                     .ThenInclude(p => p.Category)
                 .OrderBy(e => e.Start)

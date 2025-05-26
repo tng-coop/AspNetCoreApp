@@ -13,4 +13,6 @@
   <data name="Sub-categories" xml:space="preserve"><value>Sub-categories</value></data>
   <data name="Other Articles in this category" xml:space="preserve"><value>Other Articles in this category</value></data>
   <data name="Back to" xml:space="preserve"><value>Back to</value></data>
+  <data name="Events linked to this article" xml:space="preserve"><value>Events linked to this article</value></data>
+  <data name="View Calendar" xml:space="preserve"><value>View Calendar</value></data>
 </root>

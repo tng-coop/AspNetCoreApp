@@ -17,11 +17,13 @@ namespace BlazorWebApp.Components.Pages
         [Parameter] public string? Tenant { get; set; }
 
         [Inject] public IPublicationTreeService PublicationTreeService { get; set; } = default!;
+        [Inject] public ICalendarEventService CalendarEventService { get; set; } = default!;
 
         private CategoryDto? category;
         private List<CategoryDto> subcats = new();
         private PublicationReadDto? primaryPost;
         private List<PublicationReadDto> otherPosts = new();
+        private List<CalendarEventDto> calendarEvents = new();
 
         private List<CategoryTreeNode>? tree;
 
@@ -93,6 +95,11 @@ namespace BlazorWebApp.Components.Pages
 
                 fullCategoryPath = string.Join(" > ", crumbs);
                 fullArticlePath = string.Join(" > ", crumbs2);
+            }
+
+            if (pub != null)
+            {
+                calendarEvents = await CalendarEventService.ListByPublicationAsync(pub.Id);
             }
         }
 
