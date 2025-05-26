@@ -81,6 +81,8 @@ namespace BlazorWebApp.Services
 
             // Manual slug entry; ensure a slug value exists and does not start with '_'
             var slugBase = SlugUtils.Normalize(dto.Slug);
+            if (!SlugUtils.IsAsciiSlug(slugBase))
+                throw new ArgumentException("Slug may contain only ASCII letters, digits and hyphens.", nameof(dto.Slug));
             var slug = await SlugService.GenerateUniqueSlugAsync(db, slugBase);
 
             var cat = new Category
@@ -115,6 +117,8 @@ namespace BlazorWebApp.Services
                        ?? throw new KeyNotFoundException();
 
             var slugBase = SlugUtils.Normalize(dto.Slug);
+            if (!SlugUtils.IsAsciiSlug(slugBase))
+                throw new ArgumentException("Slug may contain only ASCII letters, digits and hyphens.", nameof(dto.Slug));
             cat.Slug = await SlugService.GenerateUniqueSlugAsync(db, slugBase, id, nameof(Category));
             cat.Name = dto.Name;
             cat.NameJa = dto.NameJa;

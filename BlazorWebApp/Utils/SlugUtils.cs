@@ -15,5 +15,22 @@ namespace BlazorWebApp.Utils
                 return "default";
             return slug;
         }
+
+        /// <summary>
+        /// Validate that a slug contains only ASCII letters, digits and hyphens.
+        /// </summary>
+        public static bool IsAsciiSlug(string slug)
+        {
+            foreach (var ch in slug)
+            {
+                bool letterOrDigit =
+                    (ch >= 'a' && ch <= 'z') ||
+                    (ch >= 'A' && ch <= 'Z') ||
+                    (ch >= '0' && ch <= '9');
+                if (!(letterOrDigit || ch == '-'))
+                    return false;
+            }
+            return true;
+        }
     }
 }
