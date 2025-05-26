@@ -107,7 +107,6 @@ namespace BlazorWebApp.Data
                 e.Property(c => c.Start).IsRequired();
                 e.Property(c => c.End).IsRequired(false);
                 e.Property(c => c.AllDay).HasDefaultValue(false);
-                e.Property(c => c.Url).IsRequired(false);
 
                 e.HasOne(c => c.Publication)
                  .WithMany(p => p.CalendarEvents)

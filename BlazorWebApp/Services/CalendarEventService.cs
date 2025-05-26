@@ -44,7 +44,7 @@ namespace BlazorWebApp.Services
                 AllDay = e.AllDay ? true : (bool?)null,
                 Url = e.Publication != null
                     ? Utils.CmsRoutes.Combine(e.Publication.Category.Slug, e.Publication.Slug)
-                    : e.Url
+                    : null
             }).ToList();
         }
 
@@ -74,7 +74,7 @@ namespace BlazorWebApp.Services
                 AllDay = e.AllDay ? true : (bool?)null,
                 Url = e.Publication != null
                     ? Utils.CmsRoutes.Combine(e.Publication.Category.Slug, e.Publication.Slug)
-                    : e.Url
+                    : null
             }).ToList();
         }
 
@@ -83,8 +83,7 @@ namespace BlazorWebApp.Services
             Id = e.Id,
             Start = e.Start,
             End = e.End,
-            AllDay = e.AllDay,
-            Url = e.Url
+            AllDay = e.AllDay
         };
 
         public async Task<List<CalendarEventEditDto>> ListForPublicationAsync(Guid publicationId)
@@ -107,8 +106,7 @@ namespace BlazorWebApp.Services
                 PublicationId = publicationId,
                 Start = dto.Start,
                 End = dto.End,
-                AllDay = dto.AllDay,
-                Url = dto.Url
+                AllDay = dto.AllDay
             };
             db.CalendarEvents.Add(entity);
             await db.SaveChangesAsync();
@@ -122,7 +120,6 @@ namespace BlazorWebApp.Services
             entity.Start = dto.Start;
             entity.End = dto.End;
             entity.AllDay = dto.AllDay;
-            entity.Url = dto.Url;
             await db.SaveChangesAsync();
             return ToEditDto(entity);
         }

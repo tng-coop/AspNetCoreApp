@@ -133,8 +133,7 @@ namespace BlazorWebApp.Components.Pages
                 {
                     Start = e.Start,
                     End = e.End,
-                    AllDay = e.AllDay,
-                    Url = e.Url
+                    AllDay = e.AllDay
                 }
             }).ToList();
       }
