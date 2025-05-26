@@ -11,7 +11,9 @@ namespace BlazorWebApp.Data.Seeders
             if (await db.CalendarEvents.AnyAsync())
                 return;
 
-            var today = DateTime.Today;
+            // Use UTC dates to satisfy PostgreSQL's
+            // `timestamp with time zone` requirements
+            var today = DateTime.UtcNow.Date;
             var events = new[]
             {
                 new CalendarEvent
