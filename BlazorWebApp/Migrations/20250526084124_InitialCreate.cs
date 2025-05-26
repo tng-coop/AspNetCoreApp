@@ -232,6 +232,8 @@ namespace BlazorWebApp.Migrations
                     Slug = table.Column<string>(type: "text", nullable: false),
                     Html = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
                     FeaturedOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    Mode = table.Column<int>(type: "integer", nullable: false),
+                    PdfFileId = table.Column<Guid>(type: "uuid", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
                     PublishedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -246,6 +248,11 @@ namespace BlazorWebApp.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Publications_Images_PdfFileId",
+                        column: x => x.PdfFileId,
+                        principalTable: "Images",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -345,6 +352,11 @@ namespace BlazorWebApp.Migrations
                 column: "FeaturedOrder");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Publications_PdfFileId",
+                table: "Publications",
+                column: "PdfFileId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Publications_Slug",
                 table: "Publications",
                 column: "Slug",
@@ -382,9 +394,6 @@ namespace BlazorWebApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Images");
-
-            migrationBuilder.DropTable(
                 name: "PublicationRevisions");
 
             migrationBuilder.DropTable(
@@ -404,6 +413,9 @@ namespace BlazorWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Images");
         }
     }
 }

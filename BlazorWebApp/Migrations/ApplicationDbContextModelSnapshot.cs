@@ -176,6 +176,12 @@ namespace BlazorWebApp.Migrations
                         .HasColumnType("text")
                         .HasDefaultValue("");
 
+                    b.Property<int>("Mode")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("PdfFileId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -202,6 +208,8 @@ namespace BlazorWebApp.Migrations
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("FeaturedOrder");
+
+                    b.HasIndex("PdfFileId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -441,7 +449,13 @@ namespace BlazorWebApp.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("BlazorWebApp.Data.FileAsset", "PdfFile")
+                        .WithMany()
+                        .HasForeignKey("PdfFileId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("PdfFile");
                 });
 
             modelBuilder.Entity("BlazorWebApp.Data.PublicationRevision", b =>
