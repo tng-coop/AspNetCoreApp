@@ -17,6 +17,7 @@ namespace BlazorWebApp.Data
         public DbSet<Tenant>      Tenants       { get; set; } = null!;
         public DbSet<SlugRecord>  Slugs         { get; set; } = null!;
         public DbSet<CalendarEvent> CalendarEvents { get; set; } = null!;
+        public DbSet<Comment> Comments { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -112,7 +113,16 @@ namespace BlazorWebApp.Data
                 e.HasOne(c => c.Publication)
                  .WithMany(p => p.CalendarEvents)
                  .HasForeignKey(c => c.PublicationId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // --- Comment configuration ---
+            builder.Entity<Comment>(e =>
+            {
+                e.HasKey(c => c.Id);
+                e.Property(c => c.Text).IsRequired();
+                e.Property(c => c.CreatedAt)
+                    .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
             });
         }
     }

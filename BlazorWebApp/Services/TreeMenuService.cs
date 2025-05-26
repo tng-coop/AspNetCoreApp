@@ -51,7 +51,18 @@ namespace BlazorWebApp.Services
                     };
                 })
                 .ToList();
-            return MapNodes(tree);
+            var items = MapNodes(tree);
+            items.Add(new MenuItemDto
+            {
+                Id = Guid.NewGuid(),
+                Title = "Leave Comment",
+                Slug = "leave-comment",
+                IconFile = "people",
+                SortOrder = int.MaxValue,
+                ContentItemId = null,
+                Children = new List<MenuItemDto>()
+            });
+            return items;
         }
     }
 }

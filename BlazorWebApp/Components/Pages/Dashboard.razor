@@ -7,8 +7,10 @@
 
 @using Microsoft.AspNetCore.Identity
 @using BlazorWebApp.Data
+@using BlazorWebApp.Models
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthStateProvider
+@inject BlazorWebApp.Services.ICommentService CommentService
 
 <h1>@L["Dashboard"]</h1>
 
@@ -20,11 +22,31 @@ else
 {
     <p>@string.Format(L["WelcomeUser"], userName, userRole)</p>
 
+    @if (comments == null)
+    {
+        <p>@L["Loading…"]</p>
+    }
+    else if (comments.Count == 0)
+    {
+        <p><em>@L["No comments yet"]</em></p>
+    }
+    else
+    {
+        <h5 class="mt-4">@L["Comments"]</h5>
+        <ul>
+            @foreach (var c in comments)
+            {
+                <li>@c.CreatedAt.ToString("g"): @c.Text</li>
+            }
+        </ul>
+    }
+
 }
 
 @code {
     private string? userName;
     private string? userRole;
+    private List<CommentDto>? comments;
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,5 +58,7 @@ else
             var roles = await UserManager.GetRolesAsync(user);
             userRole = roles.FirstOrDefault() ?? "Member";
         }
+
+        comments = await CommentService.ListAsync();
     }
 }

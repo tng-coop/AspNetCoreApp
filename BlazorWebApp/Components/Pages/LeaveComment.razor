@@ -1,0 +1,32 @@
+@page "/leave-comment"
+@inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<LeaveComment> L
+@inject BlazorWebApp.Services.ICommentService CommentService
+@inject NavigationManager Nav
+
+<PageTitle>@L["Leave a Comment"]</PageTitle>
+
+<h3>@L["Leave a Comment"]</h3>
+
+<EditForm Model="this" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <InputTextArea class="form-control" @bind-Value="commentText" />
+    </div>
+    <button type="submit" class="btn btn-primary">@L["Submit"]</button>
+</EditForm>
+
+@code {
+    private string commentText = string.Empty;
+
+    private async Task HandleSubmit()
+    {
+        if (!string.IsNullOrWhiteSpace(commentText))
+        {
+            await CommentService.AddAsync(commentText);
+            commentText = string.Empty;
+            Nav.NavigateTo("/dashboard");
+        }
+    }
+}
