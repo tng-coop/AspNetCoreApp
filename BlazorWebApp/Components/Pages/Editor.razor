@@ -162,6 +162,16 @@
   }
 }
 
+<h4 class="mt-5">@L["Date Picker Demo"]</h4>
+<MudDatePicker @bind-Date="demoSelectedDate" Label="@L["Choose a date"]" />
+
+@if (demoSelectedDate.HasValue)
+{
+    <MudText Typo="Typo.body1" Class="mt-2">
+        @string.Format(L["Days from today"], (demoSelectedDate.Value.Date - DateTime.Today).Days)
+    </MudText>
+}
+
 @if (loadedExisting)
 {
   <h4 class="mt-5">@L["Revision History"]</h4>

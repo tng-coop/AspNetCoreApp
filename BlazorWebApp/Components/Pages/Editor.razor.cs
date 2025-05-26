@@ -27,6 +27,7 @@ namespace BlazorWebApp.Components.Pages
   private List<RevisionDto>? revisions;
   private bool uploadInProgress;
   private List<CalendarEventRow>? eventRows;
+  private DateTime? demoSelectedDate;
 
   private class CalendarEventRow
   {
