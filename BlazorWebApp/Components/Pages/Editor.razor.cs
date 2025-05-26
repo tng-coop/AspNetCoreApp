@@ -268,8 +268,8 @@ private async Task HandleSubmit()
     {
         Dto = new CalendarEventWriteDto
         {
-            Start = DateTime.Now,
-            End = DateTime.Now.AddHours(1)
+            Start = DateTime.UtcNow,
+            End = DateTime.UtcNow.AddHours(1)
         }
     });
   }

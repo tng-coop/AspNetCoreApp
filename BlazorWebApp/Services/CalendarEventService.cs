@@ -19,6 +19,16 @@ namespace BlazorWebApp.Services
 
         private ApplicationDbContext CreateDb() => _factory.CreateDbContext();
 
+        private static DateTime EnsureUtc(DateTime dt)
+        {
+            return dt.Kind switch
+            {
+                DateTimeKind.Utc => dt,
+                DateTimeKind.Unspecified => DateTime.SpecifyKind(dt, DateTimeKind.Utc),
+                _ => dt.ToUniversalTime()
+            };
+        }
+
         public async Task<List<CalendarEventDto>> ListAsync()
         {
             await using var db = CreateDb();
@@ -104,8 +114,8 @@ namespace BlazorWebApp.Services
             {
                 Id = Guid.NewGuid(),
                 PublicationId = publicationId,
-                Start = dto.Start,
-                End = dto.End,
+                Start = EnsureUtc(dto.Start),
+                End = dto.End.HasValue ? EnsureUtc(dto.End.Value) : null,
                 AllDay = dto.AllDay
             };
             db.CalendarEvents.Add(entity);
@@ -117,8 +127,8 @@ namespace BlazorWebApp.Services
         {
             await using var db = CreateDb();
             var entity = await db.CalendarEvents.FindAsync(id) ?? throw new KeyNotFoundException();
-            entity.Start = dto.Start;
-            entity.End = dto.End;
+            entity.Start = EnsureUtc(dto.Start);
+            entity.End = dto.End.HasValue ? EnsureUtc(dto.End.Value) : null;
             entity.AllDay = dto.AllDay;
             await db.SaveChangesAsync();
             return ToEditDto(entity);
