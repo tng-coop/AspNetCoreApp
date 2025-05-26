@@ -1,14 +1,19 @@
 window.calendarDemo = {
-    init: function (id, events) {
+    init: function (id, events, culture) {
         const el = document.getElementById(id);
         if (!el || typeof FullCalendar === 'undefined') return;
+
+        // Determine the locale: explicit parameter wins, else fall back to blazorCulture helper.
+        const locale = culture || (window.blazorCulture && window.blazorCulture.get && window.blazorCulture.get());
+
         const calendar = new FullCalendar.Calendar(el, {
             initialView: 'dayGridMonth',
             events: events,
-            height: '100%',           // match parent container’s height :contentReference[oaicite:1]{index=1}
-            contentHeight: 'auto',    // let content determine scrolling if needed :contentReference[oaicite:2]{index=2}
-            expandRows: true,         // grow month‐view rows to fill height :contentReference[oaicite:3]{index=3}
-            handleWindowResize: true, // re-render when the window/container resizes :contentReference[oaicite:4]{index=4}
+            locale: locale,
+            height: '100%',           // match parent container’s height
+            contentHeight: 'auto',    // let content determine scrolling if needed
+            expandRows: true,         // grow month‐view rows to fill height
+            handleWindowResize: true, // re-render when the window/container resizes
         });
         calendar.render();
     }

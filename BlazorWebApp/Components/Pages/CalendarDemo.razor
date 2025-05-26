@@ -3,7 +3,7 @@
 @inject IJSRuntime JS
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CalendarDemo> L
 
-<PageTitle>Calendar Demo</PageTitle>
+<PageTitle>@L["Calendar Demo"]</PageTitle>
 
 
 <div id="calendar"></div>
@@ -22,7 +22,8 @@
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("calendarDemo.init", "calendar", events);
+            var culture = Localization.CurrentCulture.Name;
+            await JS.InvokeVoidAsync("calendarDemo.init", "calendar", events, culture);
         }
     }
 }
