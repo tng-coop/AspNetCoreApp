@@ -28,6 +28,8 @@ public class FilesController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest("No file.");
 
+        Console.WriteLine($"FilesController.Upload: received {file.FileName} ({file.Length} bytes)");
+
         using var ms = new MemoryStream();
         await file.CopyToAsync(ms);
 
@@ -41,6 +43,8 @@ public class FilesController : ControllerBase
         };
         _db.Files.Add(asset);
         await _db.SaveChangesAsync();
+
+        Console.WriteLine($"FilesController.Upload: stored as {asset.Id}");
 
         var url = Url.Action(nameof(Get), "Files", new { id = asset.Id, fileName = asset.FileName }, Request.Scheme);
         return Ok(new { location = url });

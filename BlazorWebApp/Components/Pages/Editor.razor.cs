@@ -176,14 +176,16 @@ private async Task HandleSubmit()
   {
     if (e.FileCount == 0) return;
     var file = e.File;
+    Console.WriteLine($"UploadPdf: starting upload of {file.Name} ({file.Size} bytes)");
     uploadInProgress = true;
     StateHasChanged();
 
     using var content = new MultipartFormDataContent();
     var streamContent = new StreamContent(file.OpenReadStream(long.MaxValue));
     content.Add(streamContent, "file", file.Name);
-
-    var resp = await Http.PostAsync("/api/files/upload", content);
+    var uploadUrl = Nav.ToAbsoluteUri("/api/files/upload");
+    Console.WriteLine($"UploadPdf: posting to {uploadUrl}");
+    var resp = await Http.PostAsync(uploadUrl, content);
     if (resp.IsSuccessStatusCode)
     {
         var result = await resp.Content.ReadFromJsonAsync<UploadResult>();
@@ -194,6 +196,8 @@ private async Task HandleSubmit()
                 dto.PdfFileId = id;
         }
     }
+
+    Console.WriteLine($"UploadPdf: finished with status {resp.StatusCode}");
 
     uploadInProgress = false;
     StateHasChanged();
