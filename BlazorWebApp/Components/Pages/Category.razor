@@ -26,7 +26,16 @@ else if (category == null)
 }
 else
 {
-    <h1>@PublicationUtils.LocalizedTitle(pub)</h1>
+    @if (pub.Mode == PublicationContentMode.Pdf && pub.PdfFileId != null)
+    {
+        <iframe src="/api/files/@pub.PdfFileId/document.pdf" style="width:100%; height:80vh; border:none;"></iframe>
+    }
+    else
+    {
+        <div class="mce-content-body">
+            @((MarkupString)pub.Html)
+        </div>
+    }
 
     if (primaryPost != null && pub.Slug == primaryPost.Slug)
     {
@@ -37,16 +46,6 @@ else
         <p class="text-muted mb-4">
             <small>@L["Category:"] @fullArticlePath</small>
         </p>
-    }
-    @if (pub.Mode == PublicationContentMode.Pdf && pub.PdfFileId != null)
-    {
-        <iframe src="/api/files/@pub.PdfFileId/document.pdf" style="width:100%; height:80vh; border:none;"></iframe>
-    }
-    else
-    {
-        <div class="mce-content-body">
-            @((MarkupString)pub.Html)
-        </div>
     }
 
     <p><small>@L["Created:"] @pub.CreatedAt:f</small></p>
