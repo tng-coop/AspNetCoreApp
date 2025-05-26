@@ -1,8 +1,10 @@
 @page "/calendar-demo"
 @using System.Text.Json.Serialization
+@using System.Net.Http.Json
 @inherits BlazorWebApp.Components.Shared.LocalizedComponentBase
 @inject IJSRuntime JS
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CalendarDemo> L
+@inject HttpClient Http
 
 <PageTitle>@L["Calendar Demo"]</PageTitle>
 
@@ -18,44 +20,13 @@
         [property: JsonPropertyName("allDay")] bool? AllDay = null,
         [property: JsonPropertyName("url")] string? Url = null);
 
-    private readonly List<CalendarEvent> events = new()
+    private List<CalendarEvent> events = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        new(
-            "Board meeting",
-            DateTime.Today.AddDays(1).AddHours(9).ToString("yyyy-MM-dd'T'HH:mm:ss"),
-            DateTime.Today.AddDays(1).AddHours(11).ToString("yyyy-MM-dd'T'HH:mm:ss")),
-        new(
-            "Sprint planning",
-            DateTime.Today.AddDays(2).AddHours(10).ToString("yyyy-MM-dd'T'HH:mm:ss"),
-            DateTime.Today.AddDays(2).AddHours(12).ToString("yyyy-MM-dd'T'HH:mm:ss")),
-        new(
-            "Team lunch",
-            DateTime.Today.AddDays(3).AddHours(12).ToString("yyyy-MM-dd'T'HH:mm:ss"),
-            DateTime.Today.AddDays(3).AddHours(13).ToString("yyyy-MM-dd'T'HH:mm:ss")),
-        new(
-            "All hands",
-            DateTime.Today.AddDays(5).ToString("yyyy-MM-dd"),
-            AllDay: true),
-        new(
-            "Conference",
-            DateTime.Today.AddDays(7).ToString("yyyy-MM-dd"),
-            DateTime.Today.AddDays(9).ToString("yyyy-MM-dd"),
-            AllDay: true),
-        new(
-            "Customer meeting",
-            DateTime.Today.AddDays(10).AddHours(15).ToString("yyyy-MM-dd'T'HH:mm:ss"),
-            DateTime.Today.AddDays(10).AddHours(16).ToString("yyyy-MM-dd'T'HH:mm:ss"),
-            Url: "https://example.com"),
-        new(
-            "Sprint demo",
-            DateTime.Today.AddDays(14).AddHours(11).ToString("yyyy-MM-dd'T'HH:mm:ss"),
-            DateTime.Today.AddDays(14).AddHours(12).ToString("yyyy-MM-dd'T'HH:mm:ss")),
-        new(
-            "Hackathon",
-            DateTime.Today.AddDays(20).ToString("yyyy-MM-dd"),
-            DateTime.Today.AddDays(21).ToString("yyyy-MM-dd"),
-            AllDay: true)
-    };
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>("api/calendar-events");
+        events = result ?? new List<CalendarEvent>();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

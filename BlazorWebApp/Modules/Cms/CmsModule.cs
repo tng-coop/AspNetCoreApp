@@ -19,6 +19,7 @@ namespace BlazorWebApp.Modules.Cms
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<IPublicationTreeService, PublicationTreeService>();
             services.AddScoped<ITreeMenuService, TreeMenuService>();
+            services.AddScoped<ICalendarEventService, CalendarEventService>();
 
             return services;
         }

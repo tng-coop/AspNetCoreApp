@@ -16,6 +16,7 @@ namespace BlazorWebApp.Data
         public DbSet<PublicationRevision> PublicationRevisions { get; set; } = null!;
         public DbSet<Tenant>      Tenants       { get; set; } = null!;
         public DbSet<SlugRecord>  Slugs         { get; set; } = null!;
+        public DbSet<CalendarEvent> CalendarEvents { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -96,6 +97,17 @@ namespace BlazorWebApp.Data
                 e.Property(s => s.Value).IsRequired();
                 e.Property(s => s.EntityType).IsRequired();
                 e.HasIndex(s => s.Value).IsUnique();
+            });
+
+            // --- CalendarEvent configuration ---
+            builder.Entity<CalendarEvent>(e =>
+            {
+                e.HasKey(c => c.Id);
+                e.Property(c => c.Title).IsRequired();
+                e.Property(c => c.Start).IsRequired();
+                e.Property(c => c.End).IsRequired(false);
+                e.Property(c => c.AllDay).HasDefaultValue(false);
+                e.Property(c => c.Url).IsRequired(false);
             });
         }
     }
