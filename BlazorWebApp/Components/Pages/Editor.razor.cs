@@ -26,6 +26,13 @@ namespace BlazorWebApp.Components.Pages
   private bool loadedExisting;
   private List<RevisionDto>? revisions;
   private bool uploadInProgress;
+  private List<CalendarEventRow>? eventRows;
+
+  private class CalendarEventRow
+  {
+    public Guid? Id { get; set; }
+    public CalendarEventWriteDto Dto { get; set; } = new();
+  }
 
   // Can publish only if title and content are non-empty
   private bool canPublish =>
@@ -117,6 +124,19 @@ namespace BlazorWebApp.Components.Pages
         dto.PdfFileId = existing.PdfFileId;
         // load revisions
         revisions = await PublicationService.ListRevisionsAsync(Id.Value);
+        // load calendar events
+        eventRows = (await CalendarEventService.ListForPublicationAsync(Id.Value))
+            .Select(e => new CalendarEventRow
+            {
+                Id = e.Id,
+                Dto = new CalendarEventWriteDto
+                {
+                    Start = e.Start,
+                    End = e.End,
+                    AllDay = e.AllDay,
+                    Url = e.Url
+                }
+            }).ToList();
       }
     }
   }
@@ -240,6 +260,41 @@ private async Task HandleSubmit()
     // reload history
     if (Id is Guid pubId)
       revisions = await PublicationService.ListRevisionsAsync(pubId);
+  }
+
+  private void AddEvent()
+  {
+    eventRows ??= new();
+    eventRows.Add(new CalendarEventRow
+    {
+        Dto = new CalendarEventWriteDto
+        {
+            Start = DateTime.Now,
+            End = DateTime.Now.AddHours(1)
+        }
+    });
+  }
+
+  private async Task SaveEvent(CalendarEventRow row)
+  {
+    if (!Id.HasValue) return;
+
+    if (row.Id.HasValue)
+    {
+        await CalendarEventService.UpdateAsync(row.Id.Value, row.Dto);
+    }
+    else
+    {
+        var created = await CalendarEventService.CreateAsync(Id.Value, row.Dto);
+        row.Id = created.Id;
+    }
+  }
+
+  private async Task DeleteEvent(CalendarEventRow row)
+  {
+    if (row.Id.HasValue)
+        await CalendarEventService.DeleteAsync(row.Id.Value);
+    eventRows?.Remove(row);
   }
 }
 }

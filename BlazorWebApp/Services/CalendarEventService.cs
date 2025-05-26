@@ -77,5 +77,65 @@ namespace BlazorWebApp.Services
                     : e.Url
             }).ToList();
         }
+
+        private static CalendarEventEditDto ToEditDto(CalendarEvent e) => new()
+        {
+            Id = e.Id,
+            Start = e.Start,
+            End = e.End,
+            AllDay = e.AllDay,
+            Url = e.Url
+        };
+
+        public async Task<List<CalendarEventEditDto>> ListForPublicationAsync(Guid publicationId)
+        {
+            await using var db = CreateDb();
+            var entities = await db.CalendarEvents
+                .Where(e => e.PublicationId == publicationId)
+                .OrderBy(e => e.Start)
+                .ToListAsync();
+
+            return entities.Select(ToEditDto).ToList();
+        }
+
+        public async Task<CalendarEventEditDto> CreateAsync(Guid publicationId, CalendarEventWriteDto dto)
+        {
+            await using var db = CreateDb();
+            var entity = new CalendarEvent
+            {
+                Id = Guid.NewGuid(),
+                PublicationId = publicationId,
+                Start = dto.Start,
+                End = dto.End,
+                AllDay = dto.AllDay,
+                Url = dto.Url
+            };
+            db.CalendarEvents.Add(entity);
+            await db.SaveChangesAsync();
+            return ToEditDto(entity);
+        }
+
+        public async Task<CalendarEventEditDto> UpdateAsync(Guid id, CalendarEventWriteDto dto)
+        {
+            await using var db = CreateDb();
+            var entity = await db.CalendarEvents.FindAsync(id) ?? throw new KeyNotFoundException();
+            entity.Start = dto.Start;
+            entity.End = dto.End;
+            entity.AllDay = dto.AllDay;
+            entity.Url = dto.Url;
+            await db.SaveChangesAsync();
+            return ToEditDto(entity);
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            await using var db = CreateDb();
+            var entity = await db.CalendarEvents.FindAsync(id);
+            if (entity != null)
+            {
+                db.CalendarEvents.Remove(entity);
+                await db.SaveChangesAsync();
+            }
+        }
     }
 }
