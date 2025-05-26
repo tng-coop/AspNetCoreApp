@@ -16,5 +16,7 @@
   <data name="Users" xml:space="preserve"><value>Users</value></data>
   <data name="NoDefaultTenant" xml:space="preserve"><value>No default CMS tenant configured.</value></data>
   <data name="Simple PDF" xml:space="preserve"><value>Simple PDF</value></data>
+  <data name="Seeded PDF" xml:space="preserve"><value>Seeded PDF</value></data>
   <data name="Calendar Demo" xml:space="preserve"><value>Calendar Demo</value></data>
 </root>
+
