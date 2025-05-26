@@ -15,4 +15,5 @@
   <data name="Back to" xml:space="preserve"><value>戻る:</value></data>
   <data name="Events linked to this article" xml:space="preserve"><value>この記事に関連するイベント</value></data>
   <data name="View Calendar" xml:space="preserve"><value>カレンダーを見る</value></data>
+  <data name="Categories at this level" xml:space="preserve"><value>同階層のカテゴリ</value></data>
 </root>

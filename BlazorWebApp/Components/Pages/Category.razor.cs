@@ -21,6 +21,7 @@ namespace BlazorWebApp.Components.Pages
 
         private CategoryDto? category;
         private List<CategoryDto> subcats = new();
+        private List<CategoryDto> siblingCats = new();
         private PublicationReadDto? primaryPost;
         private List<PublicationReadDto> otherPosts = new();
         private List<CalendarEventDto> calendarEvents = new();
@@ -64,6 +65,16 @@ namespace BlazorWebApp.Components.Pages
                 return Task.CompletedTask;
 
             subcats = node.Children.Select(c => c.Category).ToList();
+
+            var parentNode = FindParentNode(tree, CategorySlug);
+            if (parentNode != null)
+            {
+                siblingCats = parentNode.Children.Select(c => c.Category).ToList();
+            }
+            else
+            {
+                siblingCats = tree?.Select(c => c.Category).ToList() ?? new List<CategoryDto>();
+            }
 
             var all = node.Publications;
             primaryPost = all.FirstOrDefault();
@@ -122,6 +133,21 @@ namespace BlazorWebApp.Components.Pages
                 if (n.Category.Slug == slug)
                     return n;
                 var child = FindNode(n.Children, slug);
+                if (child != null)
+                    return child;
+            }
+            return null;
+        }
+
+        private static CategoryTreeNode? FindParentNode(IEnumerable<CategoryTreeNode>? nodes, string slug)
+        {
+            if (nodes == null) return null;
+            foreach (var n in nodes)
+            {
+                if (n.Children.Any(c => c.Category.Slug == slug))
+                    return n;
+
+                var child = FindParentNode(n.Children, slug);
                 if (child != null)
                     return child;
             }
