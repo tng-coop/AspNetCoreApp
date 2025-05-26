@@ -12,10 +12,11 @@ namespace BlazorWebApp.Data
 
         public DbSet<MenuItem>    MenuItems     { get; set; } = null!;
         public DbSet<Publication> Publications   { get; set; } = null!;
-        public DbSet<FileAsset>  Files         { get; set; } = null!;
-        public DbSet<Category>    Categories     { get; set; } = null!;
+        public DbSet<FileAsset>   Files         { get; set; } = null!;
+        public DbSet<Category>    Categories    { get; set; } = null!;
         public DbSet<PublicationRevision> PublicationRevisions { get; set; } = null!;
-        public DbSet<Tenant> Tenants { get; set; } = null!;
+        public DbSet<Tenant>      Tenants       { get; set; } = null!;
+        public DbSet<SlugRecord>  Slugs         { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -100,6 +101,15 @@ namespace BlazorWebApp.Data
                 e.Property(t => t.Name).IsRequired();
                 e.Property(t => t.Slug).IsRequired();
                 e.HasIndex(t => t.Slug).IsUnique();
+            });
+
+            // --- SlugRecord configuration ---
+            builder.Entity<SlugRecord>(e =>
+            {
+                e.HasKey(s => s.Id);
+                e.Property(s => s.Value).IsRequired();
+                e.Property(s => s.EntityType).IsRequired();
+                e.HasIndex(s => s.Value).IsUnique();
             });
         }
     }

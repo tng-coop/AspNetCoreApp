@@ -81,7 +81,7 @@ namespace BlazorWebApp.Services
 
             // Manual slug entry; ensure a slug value exists and does not start with '_'
             var slugBase = SlugUtils.Normalize(dto.Slug);
-            var slug = await GenerateUniqueSlugAsync(db, slugBase);
+            var slug = await SlugService.GenerateUniqueSlugAsync(db, slugBase);
 
             var cat = new Category
             {
@@ -94,6 +94,7 @@ namespace BlazorWebApp.Services
             };
 
             db.Categories.Add(cat);
+            await SlugService.UpsertSlugRecordAsync(db, cat.Id, nameof(Category), slug);
             await db.SaveChangesAsync();
 
             return new CategoryDto
@@ -114,11 +115,12 @@ namespace BlazorWebApp.Services
                        ?? throw new KeyNotFoundException();
 
             var slugBase = SlugUtils.Normalize(dto.Slug);
-            cat.Slug = await GenerateUniqueSlugAsync(db, slugBase, id);
+            cat.Slug = await SlugService.GenerateUniqueSlugAsync(db, slugBase, id, nameof(Category));
             cat.Name = dto.Name;
             cat.NameJa = dto.NameJa;
             cat.ParentCategoryId = dto.ParentCategoryId;
             cat.SortOrder = dto.SortOrder;
+            await SlugService.UpsertSlugRecordAsync(db, cat.Id, nameof(Category), cat.Slug);
 
             await db.SaveChangesAsync();
 
@@ -133,19 +135,5 @@ namespace BlazorWebApp.Services
             };
         }
 
-        private static async Task<string> GenerateUniqueSlugAsync(
-            ApplicationDbContext db,
-            string baseSlug,
-            Guid? excludeId = null)
-        {
-            var slug = baseSlug;
-            var counter = 1;
-            while (await db.Categories.AnyAsync(c => c.Slug == slug &&
-                                                    (excludeId == null || c.Id != excludeId)))
-            {
-                slug = $"{baseSlug}-{counter++}";
-            }
-            return slug;
-        }
     }
 }

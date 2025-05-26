@@ -21,7 +21,7 @@ namespace BlazorWebApp.Services
             await using var db = CreateDb();
             // Manual slug entry; ensure a slug value exists and does not start with '_'
             var slugBase = SlugUtils.Normalize(dto.Slug);
-            var slug = await GenerateUniqueSlugAsync(db, slugBase);
+            var slug = await SlugService.GenerateUniqueSlugAsync(db, slugBase);
 
             var catId = dto.CategoryId ?? await GetHomeIdAsync(db);
             var pub = new Publication
@@ -36,6 +36,7 @@ namespace BlazorWebApp.Services
                 CategoryId   = catId
             };
             db.Publications.Add(pub);
+            await SlugService.UpsertSlugRecordAsync(db, pub.Id, nameof(Publication), slug);
             await db.SaveChangesAsync();
 
             return ToDto(pub);
@@ -96,6 +97,9 @@ namespace BlazorWebApp.Services
             var p = await db.Publications.FindAsync(id)
                       ?? throw new KeyNotFoundException();
             db.Publications.Remove(p);
+            var slugRecord = await db.Slugs.FirstOrDefaultAsync(s => s.EntityId == id && s.EntityType == nameof(Publication));
+            if (slugRecord != null)
+                db.Slugs.Remove(slugRecord);
             await db.SaveChangesAsync();
         }
 
@@ -128,12 +132,13 @@ namespace BlazorWebApp.Services
 
             // Manual slug entry; ensure a slug value exists and does not start with '_'
             var slugBase = SlugUtils.Normalize(dto.Slug);
-            pub.Slug = await GenerateUniqueSlugAsync(db, slugBase, pub.Id);
+            pub.Slug = await SlugService.GenerateUniqueSlugAsync(db, slugBase, pub.Id, nameof(Publication));
 
             // 3) reassign category
             var catId = dto.CategoryId ?? await GetHomeIdAsync(db);
             pub.CategoryId = catId;
 
+            await SlugService.UpsertSlugRecordAsync(db, pub.Id, nameof(Publication), pub.Slug);
             await db.SaveChangesAsync();
         }
 
@@ -207,20 +212,6 @@ namespace BlazorWebApp.Services
             CategorySlug = p.Category?.Slug
         };
 
-        private static async Task<string> GenerateUniqueSlugAsync(
-            ApplicationDbContext db,
-            string baseSlug,
-            Guid? excludeId = null)
-        {
-            var slug = baseSlug;
-            var counter = 1;
-            while (await db.Publications.AnyAsync(p => p.Slug == slug &&
-                                                    (excludeId == null || p.Id != excludeId)))
-            {
-                slug = $"{baseSlug}-{counter++}";
-            }
-            return slug;
-        }
 
         private static async Task<Guid> GetHomeIdAsync(ApplicationDbContext db)
         {
