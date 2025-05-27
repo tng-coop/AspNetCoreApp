@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
-using BlazorWebApp.Data;
+using BlazorWebApp.Services;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
@@ -12,15 +11,11 @@ using System.Threading.Tasks;
 [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
 public class FilesController : ControllerBase
 {
-    private readonly ApplicationDbContext _db;
-    private readonly string _cacheDir;
+    private readonly IFileAssetService _service;
 
-    public FilesController(ApplicationDbContext db, IWebHostEnvironment env)
+    public FilesController(IFileAssetService service)
     {
-        _db = db;
-        // Prepare the disk cache directory once
-        _cacheDir = Path.Combine(env.WebRootPath, "filecache");
-        Directory.CreateDirectory(_cacheDir);
+        _service = service;
     }
 
     [HttpPost("upload")]
@@ -31,28 +26,7 @@ public class FilesController : ControllerBase
 
         Console.WriteLine($"FilesController.Upload: received {file.FileName} ({file.Length} bytes)");
 
-        using var ms = new MemoryStream();
-        await file.CopyToAsync(ms);
-
-        var contentType = file.ContentType;
-        if (string.IsNullOrWhiteSpace(contentType) || !MediaTypeHeaderValue.TryParse(contentType, out _))
-        {
-            var ext = Path.GetExtension(file.FileName);
-            contentType = string.Equals(ext, ".pdf", StringComparison.OrdinalIgnoreCase)
-                ? "application/pdf"
-                : "application/octet-stream";
-        }
-
-        var asset = new FileAsset
-        {
-            Id = Guid.NewGuid(),
-            Content = ms.ToArray(),
-            ContentType = contentType,
-            FileName = file.FileName,
-            UploadedAt = DateTimeOffset.UtcNow
-        };
-        _db.Files.Add(asset);
-        await _db.SaveChangesAsync();
+        var asset = await _service.UploadAsync(file);
 
         Console.WriteLine($"FilesController.Upload: stored as {asset.Id}");
 
@@ -63,22 +37,11 @@ public class FilesController : ControllerBase
     [HttpGet("{id:guid}/{fileName?}")]
     public async Task<IActionResult> Get(Guid id, string? fileName)
     {
-        var fileAsset = await _db.Files.FindAsync(id);
+        var fileAsset = await _service.GetAsync(id);
         if (fileAsset == null)
             return NotFound();
 
-        var extension = Path.GetExtension(fileAsset.FileName);
-        if (string.IsNullOrEmpty(extension))
-            extension = ".bin";
-
-        var cacheFileName = id + extension;
-        var cachePath = Path.Combine(_cacheDir, cacheFileName);
-
-        // Write cache file if missing
-        if (!System.IO.File.Exists(cachePath))
-        {
-            await System.IO.File.WriteAllBytesAsync(cachePath, fileAsset.Content);
-        }
+        var cachePath = _service.GetCachePath(fileAsset);
 
         // Serve the file via optimized file streaming
         var contentType = fileAsset.ContentType;
