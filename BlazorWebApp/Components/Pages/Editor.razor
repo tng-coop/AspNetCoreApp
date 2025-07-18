@@ -104,10 +104,6 @@
       {
         <MudProgressLinear Indeterminate="true" Class="mt-2" />
       }
-      @if (dto.PdfFileId != null)
-      {
-        <iframe src="/api/files/@dto.PdfFileId/document.pdf" style="width:100%; height:70vh; border:none;"></iframe>
-      }
     </div>
   }
 
