@@ -1,5 +1,6 @@
 using BlazorWebApp.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
+using BlazorWebApp.Services;
 
 namespace BlazorWebApp.Extensions;
 
@@ -9,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         // Add HTTP and application services
         services.AddHttpClient();
+        services.AddScoped<IHostModeService, HostModeService>();
         
         // Add Razor Components and Authentication State
         services.AddRazorComponents()
